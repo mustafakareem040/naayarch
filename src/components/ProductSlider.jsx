@@ -36,7 +36,7 @@ const ProductSlider = () => {
     };
 
     return (
-        <div className="flex mb-12 pt-16 flex-col justify-center items-center gap-6 w-full h-auto bg-opacity-50 bg-[#F6F3F1] rounded-lg relative">
+        <div className="flex mb-12 pt-16 flex-col justify-center items-center gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
             <div className="flex justify-between mb-6 items-center w-[95%]">
                 <h1 className="text-[#201E1C] font-sans font-medium text-[2.625rem] mb-6">Best Seller</h1>
                 <p className="text-[#3B5345] font-serif text-xl font-medium ">Show all</p>
@@ -62,7 +62,7 @@ const ProductSlider = () => {
             </Slider>
             <button
                 onClick={handleNext}
-                className="absolute bottom-[40%] right-2 px-2 py-2 bg-white bg-opacity-50 border border-gray-600 rounded-full"
+                className="absolute bottom-[40%] right-2 px-2 py-2 bg-white border border-gray-600 rounded-full"
             >
                 <span>Swap </span>
                 <Image src="/nextArrow.svg" alt={"next"} width={24} height={24}

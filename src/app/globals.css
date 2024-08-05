@@ -1,7 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+body {
+    overflow-x: hidden;
+}
 .black {
     color: #1C1B19;
 }

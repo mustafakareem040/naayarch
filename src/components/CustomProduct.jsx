@@ -9,7 +9,7 @@ const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flo
                 <Image src={flower} className="rounded-3xl" alt="Flower" width={96} height={96} />
             </div>
         )}
-        <div className={`flex gap-2 w-full justify-center place-content-baseline ${hideFlower ? "mt-2" : "mt-16"}`}>
+        <div className={`flex gap-2 w-full justify-center place-content-baseline ${hideFlower ? "mt-2 mb-16 ssm:mb-2" : "mt-16"}`}>
             <div className={`flex mt-7 ssm:mt-10 ssm4:mt-16 flex-col w-[35%] justify-stretch items-baseline transform ${hideFlower ? "": "relative bottom-8"}`}>
                 <p className="inline font-sans ssm2:text-3xl mb-7 text-2xl md:text-3xl lg:text-4xl">{subtitle}</p>
                 <p className="text-sm font-serif fig mb-7">{description}</p>

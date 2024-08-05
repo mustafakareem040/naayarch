@@ -3,7 +3,7 @@ import SaleBanner from "@/components/SaleBanner";
 
 export function ProductWithSales() {
     return (
-        <div className="bg-[#F6F3F180] mb-8">
+        <div className="bg-[#F6F3F17F] mb-8">
             <CustomProduct
                 title="Special Offer"
                 subtitle="Don't Miss The Chance!"

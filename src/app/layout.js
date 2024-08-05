@@ -28,7 +28,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`m-4 ${nnFont.variable} ${figtree.variable} overflow-x-hidden`}>
+      <body className={`m-4 ${nnFont.variable} ${figtree.variable}`}>
         {children}
       </body>
     </html>

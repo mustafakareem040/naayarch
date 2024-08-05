@@ -36,7 +36,7 @@ const ProductCategorySlider = () => {
     };
 
     return (
-        <div className="flex pt-16 flex-col justify-center items-center p-4 gap-6 w-full h-auto bg-opacity-50 bg-[#F6F3F1] rounded-lg relative">
+        <div className="flex pt-16 flex-col justify-center items-center p-4 gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
             <Slider {...settings} ref={sliderRef} className="relative bottom-12 w-full">
                 {products.map((product) => (
                     <div key={product.id} className="flex flex-col justify-center items-center">
@@ -56,7 +56,7 @@ const ProductCategorySlider = () => {
             </Slider>
             <button
                 onClick={handleNext}
-                className="absolute bottom-[40%] right-6 px-2 py-2 bg-white bg-opacity-50 border border-gray-600 rounded-full"
+                className="absolute bottom-[40%] right-6 px-2 py-2 bg-white border border-gray-600 rounded-full"
             >
                 <span>Swap </span>
                 <Image src="/nextArrow.svg" alt={"next"} width={24} height={24}
