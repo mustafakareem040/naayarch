@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import {Figtree} from "next/font/google";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-export const figtree = Figtree({subsets: ["latin"], variable: "--fig"})
+export const figtree = Figtree({subsets: ["latin"], variable: "--fig", display: "auto"})
 const nnFont = localFont({
     src: [
         {
@@ -18,6 +18,7 @@ const nnFont = localFont({
         },
     ],
     variable: "--nn-font",
+    display: "auto"
 });
 
 export const metadata = {
