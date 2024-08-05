@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Hero() {
     return (
-        <div className="relative font-sans w-full h-[450px] overflow-hidden rounded-lg">
+        <div className="relative mb-12 font-sans w-full h-[450px] overflow-hidden rounded-lg">
             <Image
                 src="/water.png"
                 alt="Ice texture"

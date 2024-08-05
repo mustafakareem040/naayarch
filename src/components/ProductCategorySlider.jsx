@@ -1,0 +1,69 @@
+'use client'
+import React, { useRef } from 'react';
+import Slider from 'react-slick';
+import Image from 'next/image';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+const ProductCategorySlider = () => {
+    const sliderRef = useRef(null);
+
+    const products = [
+        {
+            id: 1,
+            title: 'Korean Products',
+            image: '/korean.png',
+            description: 'Providing our customers with the best Korean Skincare!',
+        },
+        {
+            id: 2,
+            title: 'Global Products',
+            image: '/global.png',
+            description: 'Providing our customers with the best Korean Skincare !',
+        },
+    ];
+
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+    };
+
+    const handleNext = () => {
+        sliderRef.current.slickNext();
+    };
+
+    return (
+        <div className="flex pt-16 flex-col justify-center items-center p-4 gap-6 w-full h-auto bg-opacity-50 bg-[#F6F3F1] rounded-lg relative">
+            <Slider {...settings} ref={sliderRef} className="relative bottom-12 w-full">
+                {products.map((product) => (
+                    <div key={product.id} className="flex flex-col justify-center items-center">
+                        <div className="flex flex-col gap-6 justify-center items-center">
+                            <h1 className="text-[#201E1C] font-sans font-medium text-center w-full text-[2.625rem] mb-6">{product.title}</h1>
+                            <Image src={product.image} alt={product.title} width={364} height={364}
+                                   className="object-cover rounded-md w-full"/>
+                            <p className="font-serif text-2xl mb-6">{product.description}</p>
+                            </div>
+                            <button
+                                className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
+                                Show More
+                            </button>
+                    </div>
+                ))}
+
+            </Slider>
+            <button
+                onClick={handleNext}
+                className="absolute bottom-[40%] right-6 px-2 py-2 bg-white bg-opacity-50 border border-gray-600 rounded-full"
+            >
+                <span>Swap </span>
+                <Image src="/nextArrow.svg" alt={"next"} width={24} height={24}
+                       className="inline"/>
+            </button>
+        </div>
+    );
+};
+
+export default ProductCategorySlider;

@@ -1,7 +1,8 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import {Figtree} from "next/font/google";
-
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 export const figtree = Figtree({subsets: ["latin"], variable: "--fig"})
 const nnFont = localFont({
     src: [
