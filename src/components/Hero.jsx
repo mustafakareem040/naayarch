@@ -13,7 +13,7 @@ export default function Hero() {
                 className="object-cover"
             />
             <div className="absolute -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
-                <h1 className="text-2xl mb-4 text-white">
+                <h1 className="text-2xl mb-4 text-white ">
                     Welcome To<br />Nay Iraq
                 </h1>
                 <Link

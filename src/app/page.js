@@ -10,7 +10,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
 export default function Home() {
-  return (
+    return (
     <>
         <NavBar />
         <Hero />
