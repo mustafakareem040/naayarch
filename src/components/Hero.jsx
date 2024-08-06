@@ -18,7 +18,7 @@ export default function Hero() {
                 </h1>
                 <Link
                     href="/shop"
-                    className="px-8 text-[1em] ssm:text-xl py-[0.535rem] border-white border-[1px] border-solid bg-white bg-opacity-50 black rounded-[20px] backdrop-blur-sm hover:bg-opacity-30 transition-colors"
+                    className="px-8 text-sm sssm:text-[1em] ssm:text-xl py-[0.535rem] border-white border-[1px] border-solid bg-white bg-opacity-50 black rounded-[20px] backdrop-blur-sm hover:bg-opacity-30 transition-colors"
                 >
                     Shop Now
                 </Link>
