@@ -19,7 +19,7 @@ const ProductCategorySlider = () => {
             id: 2,
             title: 'Global Products',
             image: '/global.png',
-            description: 'Providing our customers with the best Korean Skincare !',
+            description: 'Providing our customers with the best Korean Skincare!',
         },
     ];
 
@@ -36,31 +36,34 @@ const ProductCategorySlider = () => {
     };
 
     return (
-        <div className="flex pt-16 flex-col justify-center items-center p-4 gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
+        <div className="flex mb-12 pt-16 flex-col justify-center items-center p-4 gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
             <Slider {...settings} ref={sliderRef} className="relative bottom-12 w-full">
                 {products.map((product) => (
                     <div key={product.id} className="flex flex-col justify-center items-center">
                         <div className="flex flex-col gap-6 justify-center items-center">
                             <h1 className="text-[#201E1C] font-sans font-medium text-center w-full text-[2.625rem] mb-6">{product.title}</h1>
-                            <Image src={product.image} alt={product.title} width={364} height={364}
-                                   className="object-cover rounded-md w-full"/>
-                            <p className="font-serif text-2xl mb-6">{product.description}</p>
+                            <div className="w-full h-[364px] relative">
+                                <Image
+                                    src={product.image}
+                                    alt={product.title}
+                                    fill={true}
+                                    className="object-cover rounded-md"
+                                />
                             </div>
-                            <button
-                                className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
-                                Show More
-                            </button>
+                            <p className="font-serif text-2xl mb-6">{product.description}</p>
+                        </div>
+                        <button className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
+                            Show More
+                        </button>
                     </div>
                 ))}
-
             </Slider>
             <button
                 onClick={handleNext}
-                className="absolute bottom-[40%] right-6 px-2 py-2 bg-white border border-gray-600 rounded-full"
+                className="absolute font-serif text-xl bottom-[40%] right-6 px-2 py-2 little-white border border-[#695C5C] rounded-[20px]"
             >
                 <span>Swap </span>
-                <Image src="/nextArrow.svg" alt={"next"} width={24} height={24}
-                       className="inline"/>
+                <Image src="/nextArrow.svg" alt="next" width={24} height={24} className="inline"/>
             </button>
         </div>
     );

@@ -7,6 +7,9 @@ body {
 .black {
     color: #1C1B19;
 }
+.little-white {
+    background: rgba(255, 255, 255, 0.5);
+}
 .overflow-hidden {
     transform: translateZ(0);
 }
@@ -30,4 +33,7 @@ body {
 }
 .white {
     background: rgba(246, 243, 241, 0.5)
+}
+.staralign {
+    left: calc(25% - 40px);
 }
