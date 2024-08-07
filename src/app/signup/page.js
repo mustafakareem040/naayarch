@@ -1,106 +1,14 @@
-'use client'
-import { useState } from 'react';
-import Link from "next/link";
+import React from 'react';
+import SignUpPage from "@/account/SignUpPage";
 import {NavBar} from "@/components/NavBar";
 import Footer from "@/components/Footer";
 
-export default function SignUpPage() {
-    const [loading, setLoading] = useState(false);
-    const [hasError, setHasError] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-    const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [phone, setPhone] = useState('');
-
-    const onFinish = async (event) => {
-        event.preventDefault();
-        setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setLoading(false);
-    };
-
-    const handleFieldChange = () => {
-        if (hasError) {
-            setHasError(false);
-        }
-    };
-
+export default function SignUp() {
     return (
         <>
-        <main className="flex-grow my-24 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-            <div className="w-full font-serif space-y-6">
-                <div className="space-y-2">
-                    <h3 className="text-3xl text-center font-sans">Create an account</h3>
-                    <p className="text-center text-[1rem]">Let&apos;s together make your skin glow.</p></div>
-                <form onSubmit={onFinish} className="mt-2">
-                    <div className="mb-4">
-                        <label className="block text-[#695C5C] mb-2" htmlFor="fullName">Full Name</label>
-                        <input
-                            id="fullName"
-                            type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            onInput={handleFieldChange}
-                            placeholder="Mustafa Kareem"
-                            className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-[#695C5C] mb-2" htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            onInput={handleFieldChange}
-                            placeholder="example@gmail.com"
-                            className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-[#695C5C] mb-2" htmlFor="phone">Phone</label>
-                        <input
-                            id="phone"
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            onInput={handleFieldChange}
-                            placeholder="077xxx"
-                            className={`w-full p-3 borderblack40 ${hasError ? 'border-red-500' : ''}`}
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-[#695C5C] mb-2" htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onInput={handleFieldChange}
-                            placeholder="Enter Your Password"
-                            className={`w-full borderblack40 p-3  ${hasError ? 'border-red-500' : ''}`}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <button
-                            type="submit"
-                            className="w-full py-3 font-semibold bg-[#44594A] text-white rounded-md hover:bg-[#374c3d] disabled:bg-gray-400"
-                            disabled={loading || disabled}
-                        >
-                            {loading ? 'Loading...' : 'Sign Up'}
-                        </button>
-                    </div>
-                </form>
-                <div className="text-center">
-                    <span className="text-black">Already have an account? </span>
-                    <Link href="/login" className="text-[#44594A] hover:text-[#374c3d]">
-                        Login
-                    </Link>
-                </div>
-            </div>
-        </main>
-            <Footer />
-            </>
+        <NavBar />
+        <SignUpPage />
+        <Footer />
+        </>
     );
 }
