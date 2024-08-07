@@ -10,7 +10,6 @@ export default function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
-    const router = useRouter();
 
     const onFinish = async (event) => {
         event.preventDefault();
@@ -30,7 +29,7 @@ export default function SignUpPage() {
             <div className="w-full font-serif space-y-6">
                 <div className="space-y-2">
                     <h3 className="text-3xl text-center font-sans">Create an account</h3>
-                    <p className="text-center text-[1rem]">Let's together make your skin glow.</p></div>
+                    <p className="text-center text-[1rem]">Let&apos;s together make your skin glow.</p></div>
                 <form onSubmit={onFinish} className="mt-2">
                     <div className="mb-4">
                         <label className="block text-[#695C5C] mb-2" htmlFor="fullName">Full Name</label>
