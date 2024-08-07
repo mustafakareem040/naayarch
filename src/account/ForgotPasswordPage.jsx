@@ -18,7 +18,8 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-            <main className="w-full mb-24 font-serif space-y-8">
+        <main>
+            <div className="w-full mb-24 font-serif space-y-8">
                 <div className="text-left">
                     <Link href="/login" className="flex mt-6 w-full items-center text-[#44594A] hover:text-[#374c3d]">
                         <Image src="/arrow-left.svg" alt={"arrow-left"} width={40} height={40}/>
@@ -57,7 +58,8 @@ const ForgotPasswordPage = () => {
                             {loading ? 'Processing...' : 'Reset Password'}
                         </button>
                 </form>
-            </main>
+            </div>
+        </main>
     );
 };
 
