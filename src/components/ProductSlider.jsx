@@ -48,7 +48,7 @@ const ProductSlider = () => {
                         <div key={product.id} className="flex flex-col justify-center items-center">
                             <div className="flex flex-col gap-4 justify-center items-center w-full">
                                 <div className="w-full h-[400px] relative">
-                                    <Image
+                                    <ScalingImage
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
