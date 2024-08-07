@@ -52,8 +52,6 @@ const ProductSlider = () => {
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
-                                        width={400}
-                                        height={400}
                                         className="object-cover rounded-md"
                                     />
                                 </div>
@@ -72,7 +70,7 @@ const ProductSlider = () => {
                 </Slider>
                 <button
                     onClick={handleNext}
-                    className="absolute font-serif text-xl little-white bottom-[40%] right-6 px-2 py-2 border border-[#695C5C] rounded-[20px]"
+                    className="absolute font-serif text-xl little-white bottom-[40%] right-12 px-2 py-2 border border-[#695C5C] rounded-[20px]"
                 >
                     <span>Swap </span>
                     <Image src="/nextArrow.svg" alt="next" width={24} height={24} className="inline"/>

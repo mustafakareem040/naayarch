@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 
-const ScalingImage = ({ src, alt, width, height, className }) => {
+const ScalingImage = ({ src, alt, width, height, className, fill }) => {
     const imgRef = useRef(null);
     const [scale, setScale] = useState(1);
 
@@ -28,17 +28,17 @@ const ScalingImage = ({ src, alt, width, height, className }) => {
     return (
         <div
             ref={imgRef}
+            className="h-[400px] w-full"
             style={{
                 transform: `scale(${scale})`,
-                transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                transition: 'transform 800ms cubic-bezier(0.25, 0.1, 0.25, 1)',
                 transformOrigin: 'center center',
             }}
         >
             <Image
                 src={src}
                 alt={alt}
-                width={width}
-                height={height}
+                fill={fill}
                 className={className}
             />
         </div>
