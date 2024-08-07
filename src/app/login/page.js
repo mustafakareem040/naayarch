@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react';
 import LoginPage from "@/account/LoginPage";
 import {NotificationProvider} from "@/components/NotificationContext";

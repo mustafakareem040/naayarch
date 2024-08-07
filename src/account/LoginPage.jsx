@@ -1,7 +1,8 @@
+'use client'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useNotification } from '@/components/NotificationContext'; // Make sure to import your context
+import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css'
 
 export default function LoginPage() {
@@ -100,7 +101,7 @@ export default function LoginPage() {
                     </div>
                 </form>
                 <div className="text-center">
-                    <span className="text-black">Don&apos;t have an account?</span>
+                    <span className="text-black">Don&apos;t have an account? </span>
                     <Link href="/signup" className="text-[#44594A] hover:text-[#374c3d]">
                         Sign Up
                     </Link>

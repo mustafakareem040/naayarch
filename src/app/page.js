@@ -1,15 +1,12 @@
-import Image from "next/image";
 import {NavBar} from "@/components/NavBar";
 import Hero from "@/components/Hero";
 import CustomProduct from "@/components/CustomProduct";
-import SaleBanner from "@/components/SaleBanner";
 import {ProductWithSales} from "@/components/ProductWithSales";
 import ProductSlider from "@/components/ProductSlider";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
-import Login from "@/app/login/page";
 export default function Home() {
     return (
     <>

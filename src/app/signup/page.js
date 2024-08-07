@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react';
 import SignUpPage from "@/account/SignUpPage";
 import {NavBar} from "@/components/NavBar";
