@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Drawer from './Drawer';
+import Link from "next/link";
 
 const ImageButton = ({ src, alt, onClick, isClose = false }) => (
     <button
@@ -31,9 +32,9 @@ export function NavBar() {
                     onClick={toggleDrawer}
                     isClose={true}
                 />
-                <div className="absolute z-50 left-1/2 transform -translate-x-1/2">
+                <Link className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
                     <Image src="/logo.svg" alt="Nay Logo" width={53} height={37} />
-                </div>
+                </Link>
                 <div className="flex items-center space-x-2">
                     <ImageButton src="/search.svg" alt="Search" onClick={() => handleClick('Search')} />
                     <ImageButton src="/heart.svg" alt="Favorites" onClick={() => handleClick('Favorites')} />

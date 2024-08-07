@@ -28,7 +28,7 @@ const Drawer = ({ isOpen, onClose }) => {
             )}
 
             <div
-                className={`fixed overflow-y-scroll left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-out ${
+                className={`fixed overflow-y-scroll top-0 left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-out ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
