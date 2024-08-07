@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Image from 'next/image';
+import Link from "next/link";
 
 const MenuItem = ({ label, hasChildren }) => (
     <div className="py-2">
@@ -27,7 +28,7 @@ const Drawer = ({ isOpen, onClose }) => {
             )}
 
             <div
-                className={`fixed overflow-y-scroll left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-in-out ${
+                className={`fixed overflow-y-scroll left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-out ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
@@ -54,10 +55,12 @@ const Drawer = ({ isOpen, onClose }) => {
 
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Account</h2>
-                            <div className="flex items-center space-x-2">
-                                <Image src={"/profile.svg"} alt={"Profile"} width={24} height={24}/>
-                                <MenuItem label="Profile" hasChildren={false}/>
-                            </div>
+                            <Link className="flex items-center space-x-2" href="/login">
+                                <Image src={"/login.svg"} alt={"Login"} width={24} height={24}/>
+                                <MenuItem label="Login" hasChildren={false}/>
+                                {/*<Image src={"/profile.svg"} alt={"Profile"} width={24} height={24}/>*/}
+                                {/*<MenuItem label="Profile" hasChildren={false}/>*/}
+                            </Link>
                         </div>
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>

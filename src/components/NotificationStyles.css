@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    .notification-container {
+        @apply font-serif;
+        position: fixed;
+        top: 10px;
+        right: 50%;
+        transform: translateX(50%);
+        width: 300px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.notification {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+    font-size: 16px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInUp 0.5s forwards, fadeOut 0.5s 2.5s forwards; /* Add fadeOut animation */
+}
+
+.notification.success {
+    background-color: #4caf50;
+}
+
+.notification.error {
+    background-color: #f44336;
+}
+
+.notification.info {
+    background-color: #2196f3;
+}
+
+.notification.warning {
+    background-color: #ff9800;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

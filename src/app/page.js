@@ -9,6 +9,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
+import Login from "@/app/login/page";
 export default function Home() {
     return (
     <>
