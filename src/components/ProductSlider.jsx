@@ -48,7 +48,7 @@ const ProductSlider = () => {
                         <div key={product.id} className="flex flex-col justify-center items-center">
                             <div className="flex flex-col gap-4 justify-center items-center w-full">
                                 <div className="w-full h-[400px] relative">
-                                    <ScalingImage
+                                    <Image
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
@@ -70,7 +70,7 @@ const ProductSlider = () => {
                 </Slider>
                 <button
                     onClick={handleNext}
-                    className="absolute font-serif text-xl little-white bottom-[40%] right-12 px-2 py-2 border border-[#695C5C] rounded-[20px]"
+                    className="absolute font-serif text-xl little-white bottom-[40%] right-6 px-2 py-2 border border-[#695C5C] rounded-[20px]"
                 >
                     <span>Swap </span>
                     <Image src="/nextArrow.svg" alt="next" width={24} height={24} className="inline"/>
