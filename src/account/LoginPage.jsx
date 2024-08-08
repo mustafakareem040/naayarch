@@ -22,7 +22,7 @@ export default function LoginPage() {
 
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/user/login`,
+                "https://nay-backend.vercel.app/api/user/login",
                 {
                     email,
                     password,

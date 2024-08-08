@@ -23,7 +23,7 @@ export default function SignUpPage() {
 
         try {
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/user/signup`,
+                "https://nay-backend.vercel.app/api/user/signup",
                 {
                     name: fullName,
                     email: email,
