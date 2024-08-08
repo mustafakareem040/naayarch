@@ -4,7 +4,6 @@ import Slider from 'react-slick';
 import Image from 'next/image';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import ScalingImage from './ScalingImage';
 
 const ProductSlider = () => {
     const sliderRef = useRef(null);
@@ -48,7 +47,7 @@ const ProductSlider = () => {
                         <div key={product.id} className="flex flex-col justify-center items-center">
                             <div className="flex flex-col gap-4 justify-center items-center w-full">
                                 <div className="w-full h-[400px] relative">
-                                    <ScalingImage
+                                    <Image
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
