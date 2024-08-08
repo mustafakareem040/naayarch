@@ -27,7 +27,7 @@ const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flo
                     alt="Product Image"
                     width={200}
                     height={250}
-                    className="w-[60%] object-cover ssm3:w-1/2 sm:w-[40%] -mt-2 mb-12"
+                    className="w-[60%] rounded-lg object-cover ssm3:w-1/2 sm:w-[40%] -mt-2 mb-12"
                 />
             </div>
         </div>

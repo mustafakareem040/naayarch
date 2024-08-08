@@ -51,7 +51,7 @@ const ProductSlider = () => {
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
-                                        className="object-cover rounded-md"
+                                        className="object-cover rounded-lg"
                                     />
                                 </div>
                                 <div
