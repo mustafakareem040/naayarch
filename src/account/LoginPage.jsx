@@ -46,7 +46,8 @@ export default function LoginPage() {
                 router.push("/");
             }
         } catch (error) {
-            if (error.response) {
+            if (error.response && error.response.status === 401) {
+                console.log(error.response.data)
                 addNotification('error', error.response.data.message);
                 setHasError(true);
                 setDisabled(true)
