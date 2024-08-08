@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
+import axios from "axios";
 
 const MenuItem = ({ label, hasChildren }) => (
     <div className="py-2">
@@ -14,12 +15,19 @@ const MenuItem = ({ label, hasChildren }) => (
 );
 
 const Drawer = ({ isOpen, onClose }) => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token)
+            setIsLoggedIn(true)
+        else setIsLoggedIn(false)
         document.body.style.overflow = isOpen ? 'hidden' : 'unset';
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
+
 
     return (
         <>
@@ -55,13 +63,19 @@ const Drawer = ({ isOpen, onClose }) => {
 
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Account</h2>
-                            <Link className="flex items-center space-x-2" href="/login">
-                                <Image src={"/login.svg"} alt={"Login"} width={24} height={24}/>
-                                <MenuItem label="Login" hasChildren={false}/>
-                                {/*<Image src={"/profile.svg"} alt={"Profile"} width={24} height={24}/>*/}
-                                {/*<MenuItem label="Profile" hasChildren={false}/>*/}
-                            </Link>
+                            {isLoggedIn ? (
+                                <Link className="flex items-center space-x-2" href="/profile">
+                                    <Image src={"/profile.svg"} alt={"Profile"} width={24} height={24}/>
+                                    <MenuItem label="Profile" hasChildren={false}/>
+                                </Link>
+                            ) : (
+                                <Link className="flex items-center space-x-2" href="/login">
+                                    <Image src={"/login.svg"} alt={"Login"} width={24} height={24}/>
+                                    <MenuItem label="Login" hasChildren={false}/>
+                                </Link>
+                            )}
                         </div>
+
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>
                             <div className="flex items-center space-x-3 mb-6 ">

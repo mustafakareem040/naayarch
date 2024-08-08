@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import axios from 'axios';
 import { useNotification } from '@/components/NotificationContext';
-import '@/components/NotificationStyles.css'
+import '@/components/NotificationStyles.css';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -18,22 +19,54 @@ export default function LoginPage() {
     const onFinish = async (event) => {
         event.preventDefault();
         setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setLoading(false);
-        if (email === "admin@gmail.com" && password === "123") {
-            addNotification('success', "Successfully Logged in!");
-            setHasError(false);
-            setDisabled(true);
-            router.push("/home");
-        } else {
-            addNotification('error', 'An error occurred, please try again!');
-            setHasError(true);
+
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/user/login`,
+                {
+                    email,
+                    password,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                const { token, userId, name, rank } = response.data;
+
+                // Store the token and user details if necessary
+                localStorage.setItem('token', token);
+
+                addNotification('success', 'Successfully Logged in!');
+                setHasError(false);
+                setDisabled(true);
+                router.push("/");
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.log(error.response.data)
+                addNotification('error', error.response.data.message);
+                setHasError(true);
+                setDisabled(true)
+                setTimeout(function() {
+                    setDisabled(false);
+                }, 100)
+            }
+            else {
+                addNotification('error', 'An error occurred, please try again!');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleFieldChange = () => {
         if (hasError) {
             setHasError(false);
+
         }
     };
 

@@ -1,21 +1,61 @@
 'use client'
 import { useState } from 'react';
-import Link from "next/link";
+import Link from 'next/link';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useNotification } from '@/components/NotificationContext';
+import '@/components/NotificationStyles.css';
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
-    const [disabled, setDisabled] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
+    const router = useRouter();
+    const { addNotification } = useNotification(); // Use the context
 
     const onFinish = async (event) => {
         event.preventDefault();
         setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setLoading(false);
+        setHasError(false);
+
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/user/signup`,
+                {
+                    name: fullName,
+                    email: email,
+                    password: password,
+                    phone: phone,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 201) {
+                const {message, name, role, token, userId} = response.data
+                console.log(token)
+                localStorage.setItem('token', token);
+                addNotification('success', 'Successfully signed up!');
+                router.push('/');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                addNotification('error', 'Email already exists. Please use a different email.');
+            } else if (error.response && error.response.status === 400) {
+                addNotification('error', 'Please fill all the fields correctly.');
+            } else {
+                addNotification('error', 'An error occurred, please try again later.');
+            }
+            setHasError(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleFieldChange = () => {
@@ -29,7 +69,8 @@ export default function SignUpPage() {
             <div className="w-full font-serif space-y-6">
                 <div className="space-y-2">
                     <h3 className="text-3xl text-center font-sans">Create an account</h3>
-                    <p className="text-center text-[1rem]">Let&apos;s together make your skin glow.</p></div>
+                    <p className="text-center text-[1rem]">Let&apos;s together make your skin glow.</p>
+                </div>
                 <form onSubmit={onFinish} className="mt-2">
                     <div className="mb-4">
                         <label className="block text-[#695C5C] mb-2" htmlFor="fullName">Full Name</label>
@@ -76,14 +117,14 @@ export default function SignUpPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             onInput={handleFieldChange}
                             placeholder="Enter Your Password"
-                            className={`w-full borderblack40 p-3  ${hasError ? 'border-red-500' : ''}`}
+                            className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
                         />
                     </div>
                     <div className="mb-4">
                         <button
                             type="submit"
                             className="w-full py-3 font-semibold bg-[#44594A] text-white rounded-md hover:bg-[#374c3d] disabled:bg-gray-400"
-                            disabled={loading || disabled}
+                            disabled={loading}
                         >
                             {loading ? 'Loading...' : 'Sign Up'}
                         </button>
