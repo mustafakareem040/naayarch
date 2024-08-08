@@ -80,7 +80,7 @@ export default function SignUpPage() {
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             onInput={handleFieldChange}
-                            placeholder="Mustafa Kareem"
+                            placeholder="Full Name"
                             className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
                         />
                     </div>
