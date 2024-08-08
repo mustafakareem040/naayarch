@@ -6,7 +6,7 @@ import AnimatedImage from "@/components/useScrollState";
 
 const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flower, hideFlower }) => {
     return (
-        <div className="white p-4 mb-12">
+        <div className="white rounded-lg p-4 mb-12">
             <p className="text-center font-medium font-sans text-3xl ssm:text-[2.4rem] md:text-3xl lg:text-[3em]">{title}</p>
             {!hideFlower && flower && (
                 <div className="absolute left-[45%] sm:left-1/2 rounded-3xl transform -translate-x-1/2 z-10">
