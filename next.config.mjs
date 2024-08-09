@@ -3,8 +3,6 @@ const nextConfig = {
     experimental: {
         reactCompiler: true,
     },
-}
-module.exports = {
     async headers() {
         return [
             {
@@ -18,6 +16,7 @@ module.exports = {
             }
         ]
     }
-};
+}
+
 
 export default nextConfig;
