@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
+import Cookies from 'js-cookie';
 
 const MenuItem = ({ label, hasChildren, onClick }) => (
     <div className="py-2" onClick={onClick}>
@@ -37,8 +38,15 @@ const Drawer = ({ isOpen, onClose }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
+        const checkLoginStatus = () => {
+            const accessToken = Cookies.get('accessToken');
+            console.log(accessToken)
+            console.log(Cookies)
+            setIsLoggedIn(!!accessToken);
+        };
+
+        checkLoginStatus();
+
         document.body.style.overflow = isOpen ? 'hidden' : 'unset';
 
         if (!isOpen) {
@@ -116,7 +124,7 @@ const Drawer = ({ isOpen, onClose }) => {
                             <div className="flex items-center space-x-3">
                                 <Image src="/en.svg" alt="English" width={24} height={24}/>
                                 <span className="font-serif text-xl">English</span>
-                                <Image src="/checkmark.svg" alt="Selected" width={30} height={30} className="ml-auto"/>
+                                <Image src="/checkmark.svg" alt="Selected" width={20} height={20} className="ml-auto"/>
                             </div>
                         </div>
                     </div>

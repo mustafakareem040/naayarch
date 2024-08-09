@@ -13,6 +13,7 @@
     "axios": "^1.7.3",
     "babel-plugin-react-compiler": "^0.0.0-experimental-334f00b-20240725",
     "dotenv": "^16.4.5",
+    "js-cookie": "^3.0.5",
     "next": "15.0.0-rc.0",
     "nextjs-toploader": "^1.6.12",
     "npm": "^10.8.2",

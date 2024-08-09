@@ -5,6 +5,8 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
+import {useDispatch} from "react-redux";
+
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -14,49 +16,41 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
-    const { addNotification } = useNotification(); // Use the context
+    const { addNotification } = useNotification();
 
     const onFinish = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         try {
-            const response = await axios.post(
+            const response = await fetch(
                 "https://nay-backend.vercel.app/api/user/login",
                 {
-                    email,
-                    password,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, rememberMe }),
+                    credentials: 'include' // This is important for sending and receiving cookies
                 }
             );
 
-            if (response.status === 200) {
-                const { token, userId, name, rank } = response.data;
-
-                // Store the token and user details if necessary
-                localStorage.setItem('token', token);
-
+            if (response.ok) {
+                const data = await response.json();
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
                 router.push("/");
+            } else {
+                const errorData = await response.json();
+                addNotification('error', errorData.message || 'Login failed');
+                setHasError(true);
+                setDisabled(true);
+                setTimeout(() => setDisabled(false), 100);
             }
         } catch (error) {
-            if (error.response) {
-                addNotification('error', error.response.data.message);
-                setHasError(true);
-                setDisabled(true)
-                setTimeout(function() {
-                    setDisabled(false);
-                }, 100)
-            }
-            else {
-                addNotification('error', 'An error occurred, please try again!');
-            }
+            addNotification('error', 'An error occurred, please try again!');
+            setHasError(true);
+            setDisabled(true);
+            setTimeout(() => setDisabled(false), 100);
         } finally {
             setLoading(false);
         }

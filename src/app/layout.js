@@ -1,3 +1,4 @@
+// app/layout.js
 import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
@@ -28,23 +29,21 @@ export const metadata = {
     description: "An Iraqi store for makeups",
 };
 
-
-
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
         <body className={`m-2 ${nnFont.variable} ${figtree.variable}`}>
-        <NextTopLoader
-            color="#3B5345"
-            initialPosition={0.08}
-            crawlSpeed={200}
-            height={3}
-            crawl={true}
-            showSpinner={false}
-            speed={300}
-            shadow="0 0 10px #2299DD,0 0 5px #2299DD"
-        />
-        {children}
+            <NextTopLoader
+                color="#3B5345"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={true}
+                showSpinner={false}
+                speed={300}
+                shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+            />
+            {children}
         </body>
         </html>
     );
