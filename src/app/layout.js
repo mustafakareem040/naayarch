@@ -35,14 +35,14 @@ export default function RootLayout({ children }) {
         <html lang="en">
         <body className={`m-2 ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
-            color="#2299DD"
+            color="#3B5345"
             initialPosition={0.08}
             crawlSpeed={200}
             height={3}
             crawl={true}
             showSpinner={false}
             speed={300}
-            shadow="0 0 10px #2299DD,0 0 5px #3B5345"
+            shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
         {children}
         </body>
