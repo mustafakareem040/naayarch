@@ -5,7 +5,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
-import {useDispatch} from "react-redux";
+import Cookies from 'js-cookie';
 
 
 export default function LoginPage() {
@@ -35,6 +35,7 @@ export default function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
+                Cookies.set("token", data.token);
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
