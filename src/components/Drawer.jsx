@@ -39,9 +39,7 @@ const Drawer = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         const checkLoginStatus = () => {
-            const accessToken = Cookies.get('accessToken');
-            console.log(accessToken)
-            console.log(Cookies)
+            const accessToken = Cookies.get('token');
             setIsLoggedIn(!!accessToken);
         };
 

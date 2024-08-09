@@ -39,7 +39,6 @@ export default function SignUpPage() {
 
             if (response.status === 201) {
                 const {message, name, role, token, userId} = response.data
-                console.log(token)
                 localStorage.setItem('token', token);
                 addNotification('success', 'Successfully signed up!');
                 router.push('/');

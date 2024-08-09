@@ -35,7 +35,10 @@ export default function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                Cookies.set("token", data.token);
+                if (rememberMe)
+                    Cookies.set("token", data.token, {expires: 30});
+                else
+                    Cookies.set("token", data.token);
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
