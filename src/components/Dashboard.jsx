@@ -6,11 +6,12 @@ import CustomProduct from "@/components/CustomProduct";
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
 import AsyncNavBar from "@/components/AsyncNavBar";
+import {NavBar} from "@/components/NavBar";
 
 export default function Dashboard() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <AsyncNavBar />
+        <>
+            <NavBar />
             <Hero />
             <ProductWithSales />
             <ProductSlider />
@@ -30,6 +31,6 @@ export default function Dashboard() {
                 flower="/whiteflower.png"
             />
             <Footer />
-        </Suspense>
+        </>
     );
 }

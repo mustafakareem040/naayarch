@@ -13,7 +13,6 @@ const ImageButton = ({ src, alt, onClick, isClose = false }) => (
 );
 
 export function NavBar({categories}) {
-    console.log(categories)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const handleClick = (action) => {
