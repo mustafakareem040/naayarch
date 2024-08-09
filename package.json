@@ -9,13 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.3",
     "babel-plugin-react-compiler": "^0.0.0-experimental-334f00b-20240725",
     "dotenv": "^16.4.5",
     "next": "15.0.0-rc.0",
+    "nextjs-toploader": "^1.6.12",
     "npm": "^10.8.2",
     "react": "19.0.0-rc-65903583-20240805",
     "react-dom": "19.0.0-rc-65903583-20240805",
+    "react-redux": "^9.1.2",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1"
   },

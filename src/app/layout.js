@@ -1,10 +1,11 @@
-
 import "./globals.css";
 import localFont from "next/font/local";
-import {Figtree} from "next/font/google";
+import { Figtree } from "next/font/google";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-export const figtree = Figtree({subsets: ["latin"], variable: "--fig", display: "auto"})
+import NextTopLoader from 'nextjs-toploader';
+
+export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
 const nnFont = localFont({
     src: [
         {
@@ -23,16 +24,28 @@ const nnFont = localFont({
 });
 
 export const metadata = {
-  title: "Nay Store",
-  description: "An iraqi store for makeups",
+    title: "Nay Store",
+    description: "An Iraqi store for makeups",
 };
 
+
+
 export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body className={`m-4 ${nnFont.variable} ${figtree.variable}`}>
+    return (
+        <html lang="en">
+        <body className={`m-2 ${nnFont.variable} ${figtree.variable}`}>
+        <NextTopLoader
+            color="#2299DD"
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={3}
+            crawl={true}
+            showSpinner={true}
+            speed={300}
+            shadow="0 0 10px #2299DD,0 0 5px #3B5345"
+        />
         {children}
-      </body>
-    </html>
-  );
+        </body>
+        </html>
+    );
 }
