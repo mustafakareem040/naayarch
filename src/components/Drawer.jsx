@@ -116,7 +116,7 @@ const Drawer = ({ isOpen, onClose }) => {
                             <div className="flex items-center space-x-3">
                                 <Image src="/en.svg" alt="English" width={24} height={24}/>
                                 <span className="font-serif text-xl">English</span>
-                                <Image src="/checkmark.svg" alt="Selected" width={16} height={16} className="ml-auto"/>
+                                <Image src="/checkmark.svg" alt="Selected" width={30} height={30} className="ml-auto"/>
                             </div>
                         </div>
                     </div>
