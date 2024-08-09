@@ -23,31 +23,31 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await fetch(
+            const response = await axios.post(
                 "https://nay-backend.vercel.app/api/user/login",
+                { email, password, rememberMe },
                 {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, rememberMe }),
-                    credentials: 'include' // This is important for sending and receiving cookies
+                    withCredentials: true, // This is important for sending and receiving cookies
+                    headers: { 'Content-Type': 'application/json' }
                 }
             );
 
-            if (response.ok) {
-                const data = await response.json();
+            console.log('Login response:', response);
+
+            if (response.status === 200) {
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
                 router.push("/");
             } else {
-                const errorData = await response.json();
-                addNotification('error', errorData.message || 'Login failed');
+                addNotification('error', response.data.message || 'Login failed');
                 setHasError(true);
                 setDisabled(true);
                 setTimeout(() => setDisabled(false), 100);
             }
         } catch (error) {
-            addNotification('error', 'An error occurred, please try again!');
+            console.error('Login error:', error);
+            addNotification('error', error.response?.data?.message || 'An error occurred, please try again!');
             setHasError(true);
             setDisabled(true);
             setTimeout(() => setDisabled(false), 100);
