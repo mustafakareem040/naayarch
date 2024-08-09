@@ -27,7 +27,7 @@ export default function LoginPage() {
                 "https://nay-backend.vercel.app/api/user/login",
                 { email, password, rememberMe },
                 {
-                    withCredentials: true, // This is important for sending and receiving cookies
+                    withCredentials: false, // This is important for sending and receiving cookies
                     headers: { 'Content-Type': 'application/json' }
                 }
             );
