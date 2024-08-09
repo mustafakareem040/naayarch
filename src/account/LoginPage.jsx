@@ -29,7 +29,7 @@ export default function LoginPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, rememberMe }),
-                    credentials: 'include' // This is important for sending and receiving cookies
+                    credentials: 'omit' // This is important for sending and receiving cookies
                 }
             );
 
