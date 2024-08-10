@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
 import Cookies from 'js-cookie';
@@ -35,10 +34,12 @@ export default function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                if (rememberMe)
-                    Cookies.set("token", data.token, {expires: 30});
-                else
-                    Cookies.set("token", data.token);
+                Cookies.set("token", data.token, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'strict',
+                    expires: rememberMe ? 30 : undefined
+                });
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
