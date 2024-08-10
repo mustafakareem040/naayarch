@@ -5,7 +5,6 @@ import ProductSlider from "@/components/ProductSlider";
 import CustomProduct from "@/components/CustomProduct";
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
-import AsyncNavBar from "@/components/AsyncNavBar";
 import {NavBar} from "@/components/NavBar";
 
 export default function Dashboard() {

@@ -13,6 +13,22 @@ export async function login(email, password, rememberMe) {
         }
     );
 }
+
+export async function logout() {
+    const x = await fetch(
+        "https://nay-backend.vercel.app/api/user/logout",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }
+    );
+    Cookies.remove("token");
+    return x;
+}
+
+
 export default function setCookies(data, rememberMe)
 {
     Cookies.set("token", data.token, {

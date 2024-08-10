@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
 import Cookies from 'js-cookie';
-import setCookies, {login} from "@/components/setCookie";
+import setCookies, {login} from "@/components/loginAPIs";
 
 
 export default function LoginPage() {
