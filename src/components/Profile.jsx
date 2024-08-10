@@ -1,10 +1,15 @@
 'use client'
 import Image from "next/image";
 import {logout} from "@/components/loginAPIs";
-import {useRouter} from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
+import {getToken} from "@/components/Token";
+import Link from "next/link";
 
 export function Profile() {
     const router = useRouter();
+    // if (getToken() === undefined) {
+    //     redirect("/login")
+    // }
     return (
         <div className="my-28">
             <ProfileItem
@@ -18,9 +23,7 @@ export function Profile() {
                 title="My Orders"
                 hasNavigate={true}
                 alt="My Orders"
-                onClick={function () {
-                    router.push("/profile/orders");
-                }}
+                href={"/profile/orders"}
             />
             <ProfileItem
                 src="/profile/addresses.svg"
@@ -39,27 +42,24 @@ export function Profile() {
                 title="Logout"
                 hasNavigate={false}
                 alt="Logout"
-                onClick={function() {
-                    logout().then(function() {
-                        router.push("/");
-                    });
-                }}
+                onClick={logout}
+                href={"/"}
             />
         </div>
     );
 }
 
-function ProfileItem({src, title, hasNavigate, alt, onClick}) {
+function ProfileItem({src, title, hasNavigate, alt, onClick, href="/"}) {
     return (
-        <button
+        <Link
             className="flex mb-6 justify-between border border-[#3b534580] border-solid rounded-lg py-3 px-4 items-center w-full"
             onClick={onClick}
-        >
+         href={href}>
             <div className="flex items-center space-x-5">
                 <Image src={src} width={26} height={26} alt={alt} />
                 <p className="font-serif text-black text-xl">{title}</p>
             </div>
             {hasNavigate && <Image src="leftAlt.svg" alt="Navigate" width={10} height={18} />}
-        </button>
+        </Link>
     );
 }
