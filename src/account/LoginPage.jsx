@@ -25,14 +25,14 @@ export default function LoginPage() {
         try {
             const response = await login(email, password, rememberMe)
             if (response.ok) {
-                const data = response.json();
+                const data = await response.json();
                 setCookies(data, true)
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
                 router.push("/");
             } else {
-                const errorData = response.json();
+                const errorData = await response.json();
                 addNotification('error', errorData.message || 'Login failed');
                 setHasError(true);
                 setDisabled(true);
