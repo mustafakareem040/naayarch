@@ -33,7 +33,6 @@ export async function login(email, password, rememberMe) {
 export default function setCookies(data, rememberMe)
 {
     Cookies.set("token", data.token, {
-        httpOnly: true,
         secure: true,
         sameSite: 'strict',
         expires: rememberMe ? 30 : undefined
