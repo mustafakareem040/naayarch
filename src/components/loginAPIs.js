@@ -13,6 +13,19 @@ export async function login(email, password, rememberMe) {
         }
     );
 }
+export async function signUp(name, email, password, phone) {
+    return await fetch(
+        "https://nay-backend.vercel.app/api/user/signup",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({name, email, password, phone})
+        }
+    );
+}
 
 export async function logout() {
     const x = await fetch(
@@ -29,11 +42,11 @@ export async function logout() {
 }
 
 
-export default function setCookies(data, rememberMe)
+export default function setCookies(data, rememberMe=false, signup=false)
 {
     Cookies.set("token", data.token, {
         secure: true,
         sameSite: 'strict',
-        expires: rememberMe ? 30 : undefined
+        expires:signup ? 7 : rememberMe ? 30 : undefined
     });
 }

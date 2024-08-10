@@ -1,10 +1,10 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
+import setCookies, {signUp} from "@/components/loginAPIs";
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
@@ -22,36 +22,23 @@ export default function SignUpPage() {
         setHasError(false);
 
         try {
-            const response = await axios.post(
-                "https://nay-backend.vercel.app/api/user/signup",
-                {
-                    name: fullName,
-                    email: email,
-                    password: password,
-                    phone: phone,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const response = await signUp(fullName, email, password, phone);
 
-            if (response.status === 201) {
-                const {message, name, role, token, userId} = response.data
-                localStorage.setItem('token', token);
+            if (response.ok) {
+                setCookies(await response.json(), false, true)
                 addNotification('success', 'Successfully signed up!');
                 router.push('/');
             }
-        } catch (error) {
-            if (error.response && error.response.status === 409) {
-                addNotification('error', 'Email already exists. Please use a different email.');
-            } else if (error.response && error.response.status === 400) {
-                addNotification('error', 'Please fill all the fields correctly.');
-            } else {
-                addNotification('error', 'An error occurred, please try again later.');
+            else {
+                const errorData = await response.json();
+                addNotification('error', errorData.message)
+                setHasError(true)
             }
-            setHasError(true);
+        } catch (error) {
+            if (error.response) {
+                addNotification('error', error.response.message);
+                setHasError(true);
+            }
         } finally {
             setLoading(false);
         }
