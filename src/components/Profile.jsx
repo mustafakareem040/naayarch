@@ -18,6 +18,9 @@ export function Profile() {
                 title="My Orders"
                 hasNavigate={true}
                 alt="My Orders"
+                onClick={function () {
+                    router.push("/profile/orders");
+                }}
             />
             <ProfileItem
                 src="/profile/addresses.svg"
