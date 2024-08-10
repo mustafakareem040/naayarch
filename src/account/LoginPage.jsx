@@ -26,7 +26,7 @@ export default function LoginPage() {
             const response = await login(email, password, rememberMe)
             if (response.ok) {
                 const data = await response.json();
-                setCookies(data, true)
+                setCookies(data, rememberMe)
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
