@@ -6,7 +6,9 @@ export default async function login(email, password, rememberMe) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Origin': 'https://store2-umber.vercel.app'
+                    'Origin': 'https://store2-umber.vercel.app',
+                    'Access-Control-Allow-Origin': 'https://store2-umber.vercel.app',
+                    'Access-Control-Allow-Credentials': true
                 },
                 body: JSON.stringify({email, password, rememberMe}),
                 credentials: 'include'
