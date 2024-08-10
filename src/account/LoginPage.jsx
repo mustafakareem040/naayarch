@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
 import Cookies from 'js-cookie';
+import setCookies from "@/components/setCookie";
+import login from "@/components/setCookie";
 
 
 export default function LoginPage() {
@@ -22,24 +24,11 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await fetch(
-                "https://nay-backend.vercel.app/api/user/login",
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, rememberMe }),
-                    credentials: 'omit' // This is important for sending and receiving cookies
-                }
-            );
+            const response = login(email, password, rememberMe);
 
             if (response.ok) {
                 const data = await response.json();
-                Cookies.set("token", data.token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
-                    expires: rememberMe ? 30 : undefined
-                });
+                // setCookies(data, true)
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
