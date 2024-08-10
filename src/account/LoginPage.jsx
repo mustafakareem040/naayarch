@@ -24,11 +24,11 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = login(email, password, rememberMe);
+            const response = login(email, password, rememberMe)
 
             if (response.ok) {
                 const data = await response.json();
-                // setCookies(data, true)
+                setCookies(data, true)
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);

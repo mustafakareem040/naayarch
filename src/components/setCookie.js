@@ -1,4 +1,6 @@
-export default async function login(email, password, rememberMe) {
+import Cookies from "js-cookie";
+
+export async function login(email, password, rememberMe) {
     try {
         const response = await fetch(
             "https://nay-backend.vercel.app/api/user/login",
@@ -7,11 +9,9 @@ export default async function login(email, password, rememberMe) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Origin': 'https://store2-umber.vercel.app',
-                    'Access-Control-Allow-Origin': 'https://store2-umber.vercel.app',
-                    'Access-Control-Allow-Credentials': true
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify({email, password, rememberMe}),
-                credentials: 'include'
+                body: JSON.stringify({email, password, rememberMe})
             }
         );
 
@@ -20,7 +20,7 @@ export default async function login(email, password, rememberMe) {
             throw new Error(errorData.message || 'Login failed');
         }
 
-        return await response.json();
+        return await response;
     } catch (error) {
         console.error('Login error:', error);
         if (error.message === 'Failed to fetch') {
@@ -28,4 +28,14 @@ export default async function login(email, password, rememberMe) {
         }
         throw error;
     }
+}
+
+export default function setCookies(data, rememberMe)
+{
+    Cookies.set("token", data.token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        expires: rememberMe ? 30 : undefined
+    });
 }
