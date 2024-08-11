@@ -7,8 +7,10 @@ export default function ProfilePage() {
     return (
         <>
             <NavBar />
-            <Profile />
+            <div className="h-screen flex flex-col justify-between">
+                <Profile />
             <Footer />
+            </div>
         </>
     );
 }

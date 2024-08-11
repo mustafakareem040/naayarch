@@ -52,12 +52,12 @@ const MyOrders = () => {
     ];
     const router = useRouter();
     return (
-        <div className="mx-auto mt-24">
+        <div className="mt-2">
             <div className="flex items-center mb-6">
-                <button className="mr-4 relative z-10" onClick={router.back}>
-                    <Image src={"/arrow-left.svg"} width={40} height={40} alt={"left"} />
+                <button onClick={router.back}>
+                    <Image src={"/arrow-left.svg"} width={40} height={40} alt={"left"}/>
                 </button>
-                <h1 className="text-3xl text-[#181717] w-full absolute font-sans text-center font-bold">My Orders</h1>
+                <h1 className="text-3xl -z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-bold">My Orders</h1>
             </div>
             <div className="space-y-4">
                 {orders.map((order) => (

@@ -30,12 +30,14 @@ export function Profile() {
                 title="My Addresses"
                 hasNavigate={true}
                 alt="My Addresses"
+                href={"/address"}
             />
             <ProfileItem
                 src="/profile/coupons.svg"
                 title="My Coupons"
                 hasNavigate={true}
                 alt="My Coupons"
+                href={"/coupons"}
             />
             <ProfileItem
                 src="/profile/logout.svg"

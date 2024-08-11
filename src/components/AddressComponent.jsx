@@ -1,5 +1,7 @@
+'use client'
 import React from 'react';
 import Image from 'next/image';
+import {useRouter} from "next/navigation";
 
 const AddressItem = ({ type, location, phone }) => {
     return (
@@ -25,14 +27,15 @@ const ManageAddress = () => {
         { id: 1, type: 'Home', location: 'Baghdad-alshaab', phone: '0770000000' },
         { id: 2, type: 'Work', location: 'Baghdad-alarasat', phone: '0770000000' },
     ];
-
+    const router = useRouter()
     return (
-        <>
-            <div className="flex mt-2 items-center mb-24">
-                <button>
-                    <Image src="/arrow-left.svg" alt="Back" width={40} height={40} />
+        <div>
+            <div className="flex items-center mb-24">
+                <button onClick={router.back}>
+                    <Image src={"/arrow-left.svg"} width={40} height={40} alt={"left"}/>
                 </button>
-                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 -z-10 text-center font-medium font-sans">Manage Address</h1>
+                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 -z-10 text-center font-medium font-sans">Manage
+                    Address</h1>
             </div>
             <div className="w-full my-20 text-center">
             <button className="py-4 px-14 rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl">
@@ -50,7 +53,7 @@ const ManageAddress = () => {
                     />
                 ))}
             </div>
-        </>
+        </div>
     );
 };
 export default ManageAddress;
