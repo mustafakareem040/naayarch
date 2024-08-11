@@ -32,7 +32,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-        <body className={`m-2 ${nnFont.variable} ${figtree.variable}`}>
+        <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
             <NextTopLoader
                 color="#3B5345"
                 initialPosition={0.08}

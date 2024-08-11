@@ -7,9 +7,9 @@ import Link from "next/link";
 
 export function Profile() {
     const router = useRouter();
-    // if (getToken() === undefined) {
-    //     redirect("/login")
-    // }
+    if (getToken() === undefined) {
+        redirect("/login")
+    }
     return (
         <div className="my-28">
             <ProfileItem
@@ -52,7 +52,7 @@ export function Profile() {
 function ProfileItem({src, title, hasNavigate, alt, onClick, href="/"}) {
     return (
         <Link
-            className="flex mb-6 justify-between border border-[#3b534580] border-solid rounded-lg py-3 px-4 items-center w-full"
+            className="flex mx-2 mb-6 justify-between border border-[#3b534580] border-solid rounded-lg py-3 px-4 items-center"
             onClick={onClick}
          href={href}>
             <div className="flex items-center space-x-5">
