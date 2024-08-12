@@ -6,11 +6,12 @@ import CustomProduct from "@/components/CustomProduct";
 import ProductCategorySlider from "@/components/ProductCategorySlider";
 import Footer from "@/components/Footer";
 import {NavBar} from "@/components/NavBar";
+import AsyncNavBar from "@/components/AsyncNavBar";
 
 export default function Dashboard() {
     return (
-        <>
-            <NavBar />
+        <div className="overflow-x-hidden">
+            <AsyncNavBar />
             <Hero />
             <ProductWithSales />
             <ProductSlider />
@@ -30,6 +31,6 @@ export default function Dashboard() {
                 flower="/whiteflower.png"
             />
             <Footer />
-        </>
+        </div>
     );
 }

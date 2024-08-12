@@ -12,7 +12,7 @@ const ImageButton = ({ src, alt, onClick, isClose = false }) => (
     </button>
 );
 
-export function NavBar({categories}) {
+export function NavBar({ categories, subCategories }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const handleClick = (action) => {
@@ -41,7 +41,7 @@ export function NavBar({categories}) {
                     <ImageButton src="/shop.svg" alt="Cart" onClick={() => handleClick('Cart')} />
                 </div>
             </nav>
-            <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+            <Drawer categories={categories} subcategories={subCategories} isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
         </>
     );
 }

@@ -18,6 +18,7 @@
     "npm": "^10.8.2",
     "react": "19.0.0-rc-65903583-20240805",
     "react-dom": "19.0.0-rc-65903583-20240805",
+    "react-loading-skeleton": "^3.4.0",
     "react-redux": "^9.1.2",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1"

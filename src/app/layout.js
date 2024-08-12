@@ -24,6 +24,15 @@ const nnFont = localFont({
     display: "auto"
 });
 
+async function getSubcategories() {
+    const res = await fetch('https://nay-backend.vercel.app/api/subcategories', { cache: 'no-store' });
+    if (!res.ok) {
+        throw new Error('Failed to fetch subcategories');
+    }
+    return res.json();
+}
+
+
 export const metadata = {
     title: "Nay Store",
     description: "An Iraqi store for makeups",

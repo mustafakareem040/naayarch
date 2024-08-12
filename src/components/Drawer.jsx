@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
@@ -14,7 +13,7 @@ const MenuItem = ({ label, hasChildren, onClick }) => (
     </div>
 );
 
-const SubcategoryView = ({ category, onBack, isVisible }) => (
+const SubcategoryView = ({ category, subcategories, onBack, isVisible }) => (
     <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center mb-6">
             <button onClick={onBack} className="mr-4">
@@ -23,16 +22,16 @@ const SubcategoryView = ({ category, onBack, isVisible }) => (
             <h2 className="font-sans font-medium text-[1.775rem]">{category}</h2>
         </div>
         <div className="grid grid-cols-2 justify-center text-center items-center gap-4">
-            {['Shampoos', 'Conditioners', 'Dry Shampoos', 'Hair Oils', 'Masks', 'Hair Mist', 'Hair Brush', 'Hair Styling', 'Hair Treatments', 'Message Tools'].map((item) => (
-                <div key={item} className="border border-[#3B5345] rounded-lg py-4">
-                    <span className="font-serif text-[#545454] text-base">{item}</span>
+            {subcategories.map((item) => (
+                <div key={item.id} className="border border-[#3B5345] rounded-lg py-4">
+                    <span className="font-serif text-[#545454] text-base">{item.name}</span>
                 </div>
             ))}
         </div>
     </div>
 );
 
-const Drawer = ({ isOpen, onClose }) => {
+const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentView, setCurrentView] = useState('main');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -48,7 +47,6 @@ const Drawer = ({ isOpen, onClose }) => {
         document.body.style.overflow = isOpen ? 'hidden' : 'unset';
 
         if (!isOpen) {
-            // Reset to main view when drawer is closed
             setCurrentView('main');
         }
 
@@ -66,6 +64,9 @@ const Drawer = ({ isOpen, onClose }) => {
         setCurrentView('main');
     };
 
+    const productCategories = categories.filter(category => !category.is_brand);
+    const brandCategories = categories.filter(category => category.is_brand);
+
     return (
         <>
             {isOpen && (
@@ -81,21 +82,26 @@ const Drawer = ({ isOpen, onClose }) => {
                     <div className="space-y-4">
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Product</h2>
-                            <MenuItem label="Face Care" hasChildren onClick={() => handleCategoryClick('Face Care')}/>
-                            <MenuItem label="Body Care" hasChildren onClick={() => handleCategoryClick('Body Care')}/>
-                            <MenuItem label="Hair Care" hasChildren onClick={() => handleCategoryClick('Hair Care')}/>
-                            <MenuItem label="Eye Care" hasChildren onClick={() => handleCategoryClick('Eye Care')}/>
-                            <MenuItem label="Lip Care" hasChildren onClick={() => handleCategoryClick('Lip Care')}/>
-                            <MenuItem label="Hand Care" hasChildren onClick={() => handleCategoryClick('Hand Care')}/>
-                            <MenuItem label="Makeup" hasChildren onClick={() => handleCategoryClick('Makeup')}/>
-                            <MenuItem label="Perfume" hasChildren onClick={() => handleCategoryClick('Perfume')}/>
-                            <MenuItem label="Kit" hasChildren onClick={() => handleCategoryClick('Kit')}/>
+                            {productCategories.map(category => (
+                                <MenuItem
+                                    key={category.id}
+                                    label={category.name}
+                                    hasChildren
+                                    onClick={() => handleCategoryClick(category.name)}
+                                />
+                            ))}
                         </div>
 
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Brand</h2>
-                            <MenuItem label="Korean Brand" hasChildren onClick={() => handleCategoryClick('Korean Brand')}/>
-                            <MenuItem label="Global Brand" hasChildren onClick={() => handleCategoryClick('Global Brand')}/>
+                            {brandCategories.map(category => (
+                                <MenuItem
+                                    key={category.id}
+                                    label={category.name}
+                                    hasChildren
+                                    onClick={() => handleCategoryClick(category.name)}
+                                />
+                            ))}
                         </div>
 
                         <div>
@@ -129,6 +135,7 @@ const Drawer = ({ isOpen, onClose }) => {
 
                     <SubcategoryView
                         category={selectedCategory}
+                        subcategories={subcategories.filter(sub => sub.category_name === selectedCategory)}
                         onBack={handleBackClick}
                         isVisible={currentView === 'subcategory'}
                     />
