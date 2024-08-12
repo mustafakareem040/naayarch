@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Footer = () => {
     return (
-        <footer className="flex flex-col justify-end items-center px-4 sm:px-8 pt-16 pb-8 w-full mx-auto bg-[#F6F3F1] rounded-lg">
+        <footer className="flex mt-36 flex-col justify-end items-center px-4 sm:px-8 pt-16 pb-8 w-full mx-auto bg-[#F6F3F1] rounded-lg">
             <div className="mb-8">
                 <Image
                     src="/logo_with_backgorund.svg"
