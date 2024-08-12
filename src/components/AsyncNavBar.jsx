@@ -23,7 +23,7 @@ function NavBarSkeleton() {
     return (
         <nav className="flex items-center justify-between p-5 bg-white absolute top-0 left-0 right-0 z-50">
             <Skeleton circle width={32} height={32} />
-            <Skeleton width={53} height={37} />
+            <Skeleton className="rounded-full" width={53} height={37} />
             <div className="flex items-center space-x-2">
                 <Skeleton circle width={32} height={32} />
                 <Skeleton circle width={32} height={32} />
