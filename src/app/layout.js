@@ -22,7 +22,7 @@ const nnFont = localFont({
 });
 
 async function getSubcategories() {
-    const res = await fetch('https://nay-backend.vercel.app/api/subcategories', { cache: 'no-store' });
+    const res = await fetch('https://api.naayiq.com/subcategories', { cache: 'no-store' });
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }
