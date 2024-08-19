@@ -3,7 +3,6 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
-export const runtime = "edge";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
 const nnFont = localFont({
     src: [

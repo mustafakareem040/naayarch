@@ -3,7 +3,6 @@ import {NavBar} from "@/components/NavBar";
 import NextTopLoader from "nextjs-toploader";
 import MyCoupons from "@/components/Coupon";
 import Footer from "@/components/Footer";
-export const runtime = "edge";
 
 export default function CouponPage() {
     return (
