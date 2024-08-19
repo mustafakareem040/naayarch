@@ -7,9 +7,9 @@ import Link from "next/link";
 
 export function Profile() {
     const router = useRouter();
-    if (getToken() === undefined) {
-        redirect("/login")
-    }
+    // if (getToken() === undefined) {
+    //     redirect("/login")
+    // }
     return (
         <div className="my-28">
             <ProfileItem
@@ -17,6 +17,7 @@ export function Profile() {
                 title="My Account"
                 hasNavigate={true}
                 alt="My Account"
+                href={"/profile/account"}
             />
             <ProfileItem
                 src="/profile/orders.svg"
@@ -30,14 +31,14 @@ export function Profile() {
                 title="My Addresses"
                 hasNavigate={true}
                 alt="My Addresses"
-                href={"/address"}
+                href={"/profile/address"}
             />
             <ProfileItem
                 src="/profile/coupons.svg"
                 title="My Coupons"
                 hasNavigate={true}
                 alt="My Coupons"
-                href={"/coupons"}
+                href={"/profile/coupons"}
             />
             <ProfileItem
                 src="/profile/logout.svg"

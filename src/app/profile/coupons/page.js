@@ -1,6 +1,3 @@
-import MyOrders from "@/components/MyOrders";
-import {NavBar} from "@/components/NavBar";
-import NextTopLoader from "nextjs-toploader";
 import MyCoupons from "@/components/Coupon";
 import Footer from "@/components/Footer";
 

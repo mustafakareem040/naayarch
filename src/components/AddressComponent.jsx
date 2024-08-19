@@ -30,15 +30,18 @@ const ManageAddress = () => {
     const router = useRouter()
     return (
         <div>
-            <div className="flex items-center mb-24">
-                <button onClick={router.back}>
+            <header className="flex items-center mb-24">
+                <button className="relative z-20" onClick={router.back}>
                     <Image src={"/arrow-left.svg"} width={40} height={40} alt={"left"}/>
                 </button>
-                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 -z-10 text-center font-medium font-sans">Manage
+                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Manage
                     Address</h1>
-            </div>
+            </header>
             <div className="w-full my-20 text-center">
-            <button className="py-4 px-14 rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl">
+            <button className="py-4 px-14 rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
+            onClick={function () {
+                router.push("/profile/address/add")
+            }}>
                 Add a new address
             </button>
             </div>

@@ -1,50 +1,63 @@
 'use client'
 import React, { useState } from 'react';
-import Image from 'next/image';
+import { ChevronLeft } from 'lucide-react';
+import Image from "next/image";
 import {useRouter} from "next/navigation";
 
-const MyCoupons = () => {
+const coupons = [
+    { type: 'Mother Day Coupons', code: 'M-Day25', validTill: 'Valid Till-22 Mar 2025', image: '/mom.png', bgColor: 'bg-pink-50', buttonColor: 'bg-[#FF81AE]/5 border-[#FF81AE]' },
+    { type: 'Free Delivery Coupons', code: 'Free40', validTill: 'Valid Till-Today 12 am', image: '/car.png', bgColor: 'bg-blue-50', buttonColor: 'bg-[#90CAF9]/5 border-[#90CAF9]' },
+    // { type: 'Valentine Coupons', code: 'VA-Day', validTill: 'Valid Till-Today 12 am', image: '/valentine.png', bgColor: 'bg-red-50', buttonColor: 'text-red-500 border-red-500' },
+    // { type: 'Black Friday Coupons', code: 'B-Day', validTill: 'Valid Till-Today 12 am', image: '/black-friday.png', bgColor: 'bg-gray-100', buttonColor: 'text-gray-700 border-gray-700' },
+    // { type: 'Birthday Coupons', code: 'B-Day', validTill: 'Valid Till-Today 12 am', image: '/birthday.png', bgColor: 'bg-yellow-50', buttonColor: 'text-yellow-600 border-yellow-600' },
+    // { type: 'Christmas Coupons', code: 'CH-Day', validTill: 'Valid Till-Today 12 am', image: '/christmas.png', bgColor: 'bg-green-50', buttonColor: 'text-green-600 border-green-600' },
+    // { type: 'Discount Coupons', code: 'DI34', validTill: 'Valid Till-Today 12 am', image: '/discount.png', bgColor: 'bg-purple-50', buttonColor: 'text-purple-600 border-purple-600' },
+    // { type: 'Eid Coupons', code: 'EI34', validTill: 'Valid Till-Today 12 am', image: '/eid.png', bgColor: 'bg-indigo-50', buttonColor: 'text-indigo-600 border-indigo-600' },
+];
+
+const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
     const [copied, setCopied] = useState(false);
     const router = useRouter()
+
     const handleCopy = () => {
-        navigator.clipboard.writeText('Free-2024');
+        navigator.clipboard.writeText(code);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), 700);
     };
 
     return (
-        <div className="p-2">
-            <div className="flex mt-2 items-center mb-10">
-                <button onClick={router.back}>
-                    <Image src={"/arrow-left.svg"} width={40} height={40} alt={"left"}/>
+        <div className={`flex font-serif font-medium items-center p-6 mb-4 bg-[#F6F3F1]/30 shadow-md rounded-lg`}>
+            <div className="flex-1">
+                <p className="text-sm text-[#695C5C]">{type}</p>
+                <h3 className="text-black font-sans text-2xl">{code}</h3>
+                <p className="text-xs text-[#695C5C]">{validTill}</p>
+                <button
+                    onClick={handleCopy}
+                    className={`mt-2 font-semibold px-7 py-1 text-sm ${buttonColor} border border-dashed rounded-lg transition-all duration-300 ease-in-out`}
+                >
+                    {copied ? 'Copied!' : 'Copy Code'}
                 </button>
-                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 -z-10 text-center font-medium font-sans">My
-                    Coupons</h1>
             </div>
+            <div className="w-24 h-24 ml-4">
+                <img src={image} alt={type} className="w-full h-full object-cover rounded-lg" />
+            </div>
+        </div>
+    );
+};
 
-            <div className="font-serif bg-[#F6F3F1] rounded-lg mt-8 relative">
-                <div
-                    className="absolute -left-6 top-1/2 w-14 h-14 bg-white rounded-[100%] transform -translate-y-1/2"></div>
-                <div
-                    className="absolute -right-6 top-1/2 w-14 h-14 bg-white rounded-[100%] transform -translate-y-1/2"></div>
-                <div className="py-6 text-center">
-                    <h2 className="text-lg font-semibold mb-4">Free Delivery Code</h2>
-                    <div className="border-t border-dashed border-black mt-5 mb-12"></div>
-                    <p className="text-[#695C5C] text-[0.875rem] font-medium mb-2">Coupon Code</p>
-                    <p className="text-3xl font-sans font-bold mb-4">Free-2024</p>
-                    <button
-                        onClick={handleCopy}
-                        className="bg-[#3B5345]/10 text-[#3B5345] mt-4 py-4 px-20 font-bold rounded-lg mb-4 relative overflow-hidden"
-                    >
-            <span className={`absolute inset-0 flex items-center justify-center transition-opacity duration-150 ${copied ? 'opacity-100' : 'opacity-0'}`}>
-              Copied!
-            </span>
-                        <span className={`transition-opacity duration-300 ${copied ? 'opacity-0' : 'opacity-100'}`}>
-              Copy Code
-            </span>
-                    </button>
-                    <p className="mb-6 text-[#695C5C] font-medium font-serif text-center">Valid Till-30 Jan 2025</p>
-                </div>
+const MyCoupons = () => {
+    return (
+        <div className="bg-white min-h-screen p-6">
+            <header className="flex items-center mb-6">
+                <button className="relative z-20" onClick={router.back}>
+                    <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
+                </button>
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-bold">My Coupons</h1>
+            </header>
+            <div className="space-y-4">
+                {coupons.map((coupon, index) => (
+                    <CouponCard key={index} {...coupon} />
+                ))}
             </div>
         </div>
     );
