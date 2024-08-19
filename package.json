@@ -25,7 +25,8 @@
     "react-dom": "19.0.0-rc-1eaccd82-20240816",
     "react-loading-skeleton": "^3.4.0",
     "react-slick": "^0.30.2",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "vercel": "^35.2.4"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.2",
