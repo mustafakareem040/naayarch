@@ -5,7 +5,7 @@ import { Figtree } from "next/font/google";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import NextTopLoader from 'nextjs-toploader';
-
+export const runtime = "edge";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
 const nnFont = localFont({
     src: [
