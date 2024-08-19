@@ -17,7 +17,6 @@ const coupons = [
 
 const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
     const [copied, setCopied] = useState(false);
-    const router = useRouter()
 
     const handleCopy = () => {
         navigator.clipboard.writeText(code);
@@ -46,6 +45,7 @@ const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
 };
 
 const MyCoupons = () => {
+    const router = useRouter()
     return (
         <div className="bg-white min-h-screen p-6">
             <header className="flex items-center mb-6">
