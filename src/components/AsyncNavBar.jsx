@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+export const experimental_ppr = true
 export async function fetchCategories() {
     const res = await fetch('https://api.naayiq.com/categories');
     if (!res.ok) {

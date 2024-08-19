@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import { OpenStreetMapProvider, SearchControl } from 'leaflet-geosearch';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
-import {ChevronLeft, MapPin, Crosshair, HomeIcon, CakeIcon, PlusCircleIcon} from 'lucide-react';
+import { Crosshair, HomeIcon, PlusCircleIcon} from 'lucide-react';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
