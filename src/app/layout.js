@@ -2,8 +2,6 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import NextTopLoader from 'nextjs-toploader';
 export const runtime = "edge";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
@@ -41,16 +39,30 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
+        <head>
+            <link
+                rel="stylesheet"
+                type="text/css"
+                charSet="UTF-8"
+                href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css"
+            />
+            <link
+                rel="stylesheet"
+                type="text/css"
+                href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"
+            />
+            <title>Nay Store</title>
+        </head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
-            <NextTopLoader
-                color="#3B5345"
-                initialPosition={0.08}
-                crawlSpeed={200}
-                height={3}
-                crawl={true}
-                showSpinner={false}
-                speed={300}
-                shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+        <NextTopLoader
+            color="#3B5345"
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={3}
+            crawl={true}
+            showSpinner={false}
+            speed={300}
+            shadow="0 0 10px #2299DD,0 0 5px #2299DD"
             />
             {children}
         </body>

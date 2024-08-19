@@ -4,7 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 export async function fetchCategories() {
-    const res = await fetch('https://nay-backend.vercel.app/api/categories');
+    const res = await fetch('https://nay-backend.onrender.com/api/categories');
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
     }
@@ -12,7 +12,7 @@ export async function fetchCategories() {
 }
 
 export async function fetchSubcategories() {
-    const res = await fetch('https://nay-backend.vercel.app/api/subcategories');
+    const res = await fetch('https://nay-backend.onrender.com/api/subcategories');
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }

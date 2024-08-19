@@ -2,8 +2,6 @@
 import React, { useRef } from 'react';
 import Slider from 'react-slick';
 import Image from 'next/image';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 
 const ProductCategorySlider = () => {
     const sliderRef = useRef(null);
