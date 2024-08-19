@@ -4,6 +4,7 @@ import Image from "next/image";
 import {useRouter} from "next/navigation";
 
 import { MapPin, Search, Copy, X, Check } from 'lucide-react';
+import Link from "next/link";
 
 const OrderCard = ({ id, status, productImages, price, quantity, orderDate, location }) => {
     const [copied, setCopied] = useState(false);
@@ -25,7 +26,7 @@ const OrderCard = ({ id, status, productImages, price, quantity, orderDate, loca
     };
 
     return (
-        <div className="bg-white font-sans rounded-lg font-medium shadow-md p-4 max-w-sm">
+        <Link href={"/profile/orders/detail"} className="bg-white font-sans rounded-lg font-medium shadow-md p-4 max-w-sm">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-baseline gap-3">
                     <h2 className="text-lg">Order ID</h2>
@@ -40,11 +41,13 @@ const OrderCard = ({ id, status, productImages, price, quantity, orderDate, loca
             </div>
             <div className="flex mb-4 -space-x-4">
                 {productImages.map((image, index) => (
-                    <img
+                    <Image
                         key={index}
                         src={image}
+                        width={80}
+                        height={80}
                         alt={`Product ${index + 1}`}
-                        className="w-20 h-20 rounded-full object-cover border-2 border-white"
+                        className="rounded-full object-cover border-2 border-white"
                         style={{ zIndex: productImages.length - index }}
                     />
                 ))}
@@ -60,7 +63,7 @@ const OrderCard = ({ id, status, productImages, price, quantity, orderDate, loca
                 </div>
                 <span className="text-[#695C5C] font-medium text-sm">{formatDate(orderDate)}</span>
             </div>
-        </div>
+        </Link>
     );
 };
 
