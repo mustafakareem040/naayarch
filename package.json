@@ -12,8 +12,13 @@
     "node": ">= 20"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.19.3",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-1f3db3d-20240818",
     "dotenv": "^16.4.5",
     "js-cookie": "^3.0.5",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.0.0",
+    "lucide-react": "^0.427.0",
     "next": "15.0.0-rc.0",
     "nextjs-toploader": "^1.6.12",
     "npm": "^10.8.2",
