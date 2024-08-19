@@ -6,10 +6,7 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "preview": "npm run pages:build && wrangler pages dev",
-    "deploy": "npm run pages:build && wrangler pages deploy"
+    "lint": "next lint"
   },
   "engines": {
     "node": ">= 20"
@@ -24,11 +21,9 @@
     "react-dom": "19.0.0-rc-1eaccd82-20240816",
     "react-loading-skeleton": "^3.4.0",
     "react-slick": "^0.30.2",
-    "vercel": "^36.0.0",
-    "wrangler": "^3.72.0"
+    "vercel": "^36.0.0"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.2",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.0.0-rc.0",
     "eslint-plugin-next-on-pages": "^1.13.2",
