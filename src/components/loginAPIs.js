@@ -8,7 +8,7 @@ export async function login(email, password, rememberMe) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: "same-origin",
+            credentials: "include",
             body: JSON.stringify({email, password, rememberMe})
         }
     );
@@ -21,7 +21,7 @@ export async function signUp(name, email, password, phone) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: "same-origin",
+            credentials: "include",
             body: JSON.stringify({name, email, password, phone})
         }
     );
