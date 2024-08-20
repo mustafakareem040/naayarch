@@ -2,6 +2,7 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
 const nnFont = localFont({
@@ -63,6 +64,7 @@ export default function RootLayout({ children }) {
             speed={300}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
             />
+        <SpeedInsights />
             {children}
         </body>
         </html>
