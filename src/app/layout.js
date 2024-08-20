@@ -19,7 +19,7 @@ const nnFont = localFont({
         },
     ],
     variable: "--nn-font",
-    display: "auto"
+    display: "swap"
 });
 
 async function getSubcategories() {
