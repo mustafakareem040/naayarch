@@ -7,12 +7,6 @@ import ProductDetail from "@/components/ProductDetail";
 
 export default function Home() {
     return (
-        <>
-        {/*<SpeedInsights />*/}
-            <AsyncProducts />
-        {/*<ProductDetail images={["https://storage.naayiq.com/resources/1018.webp", "https://storage.naayiq.com/resources/1018.webp"]}*/}
-        {/*               title={"All Products"}*/}
-        {/*colors={["Red", "Green"]} description={"Test Description"} price={"25.00"} sizes={["sm", "md", "xl"]}/>*/}
-            </>
+        <Dashboard />
   );
 }
