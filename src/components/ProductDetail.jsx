@@ -1,9 +1,8 @@
 'use client'
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { Heart, ArrowLeft, ShoppingBag, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
-
+import {Image} from 'antd';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -34,14 +33,12 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
                 </div>
                 <Slider {...sliderSettings} className="w-full mb-4">
                     {images.map((image, index) => (
-                        <div key={index} className="w-full aspect-square">
+                        <div key={index} className="w-full">
                             <Image
                                 src={image}
                                 alt={`Product image ${index + 1}`}
-                                layout="responsive"
-                                width={430}
-                                height={437}
-                                objectFit="cover"
+                                fetchPriority={"high"}
+                                className="w-full h-full"
                             />
                         </div>
                     ))}

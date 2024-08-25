@@ -26,11 +26,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <div className="flex flex-row justify-center items-center gap-1 sssm:gap-2 ssm2:gap-3 ssm4:gap-4 w-full mt-6 overflow-x-auto py-2">
+        <div className="flex font-serif flex-row justify-center items-center gap-1 sssm:gap-2 ssm2:gap-3 ssm4:gap-4 w-full mt-6 overflow-x-auto py-2">
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-1 sssm:px-2 ssm:px-3 ssm3:px-4 py-1 sssm:py-1.5 ssm2:py-2 bg-gray-100 rounded-md text-xs sssm:text-sm ssm3:text-base font-sans text-black disabled:opacity-50 whitespace-nowrap"
+                className="px-1 sssm:px-2 ssm3:px-4 py-1 sssm:py-1.5 ssm2:py-2 bg-gray-100 rounded-md text-xs sssm:text-sm ssm3:text-base font-serif text-black disabled:opacity-50 whitespace-nowrap"
             >
                 Previous
             </button>
@@ -38,7 +38,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 {getPageNumbers().map((number, index) => (
                     <React.Fragment key={index}>
                         {number === '...' ? (
-                            <span className="w-4 sssm:w-5 ssm:w-6 ssm3:w-8 text-center">...</span>
+                            <span className="w-4 text-gray-600 sssm:w-5 ssm:w-6 ssm3:w-8 text-center">...</span>
                         ) : (
                             <button
                                 onClick={() => onPageChange(number)}
@@ -57,7 +57,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-1 sssm:px-2 ssm:px-3 ssm3:px-4 py-1 sssm:py-1.5 ssm2:py-2 bg-gray-100 rounded-md text-xs sssm:text-sm ssm3:text-base font-sans text-black disabled:opacity-50 whitespace-nowrap"
+                className="px-1 sssm:px-2 ssm3:px-4 py-1 sssm:py-1.5 ssm2:py-2 bg-gray-100 rounded-md text-xs sssm:text-sm ssm3:text-base font-serif text-black disabled:opacity-50 whitespace-nowrap"
             >
                 Next
             </button>
