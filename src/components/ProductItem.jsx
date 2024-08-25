@@ -16,7 +16,7 @@ const ProductItem = ({ title, price, imageUrl }) => {
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             </button>
-            <div className="absolute min-h-[70px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
+            <div className="absolute min-h-[96px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
                 <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
                     {title}
                 </h3>

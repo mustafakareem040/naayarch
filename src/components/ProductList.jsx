@@ -7,8 +7,15 @@ const ProductsList = ({ products }) => {
         const prices = product.sizes
             .map(size => size.price)
             .filter(price => price !== null && price !== undefined && price !== '')
-            .map(price => parseInt(price.replace(/\D/g, '')))
-            .filter(price => !isNaN(price));
+            .map(price => {
+                const cleaned = price.replace(/[^\d.]/g, '');
+                const parts = cleaned.split('.');
+                if (parts.length > 2) {
+                    return parseFloat(parts[0] + '.' + parts.slice(1).join(''));
+                }
+                return parseFloat(cleaned);
+            })
+            .filter(price => !isNaN(price) && isFinite(price));
         return prices.length > 0 ? Math.min(...prices) : null;
     };
 
