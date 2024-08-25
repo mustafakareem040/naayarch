@@ -5,7 +5,7 @@ const ProductItem = ({ title, price, imageUrl }) => {
     return (
         <div className="bg-white aspect-[3/4] relative flex flex-col w-full drop-shadow overflow-hidden group">
             <button className="absolute left-1 top-4 z-10">
-                <Image src="/white-heart.svg" alt="heart" width={30} height={30} />
+                <Image src="/white-heart.svg" alt="heart" unoptimized={true} width={30} height={30} className="hover:bg-red-900 fill-red-700 rounded-full" />
             </button>
             <button className="relative w-full h-full overflow-hidden">
                 <Image
@@ -13,10 +13,14 @@ const ProductItem = ({ title, price, imageUrl }) => {
                 alt={title}
                 fill={true}
                 unoptimized={true}
+                onError={(event) => {
+                    event.target.id = "/noimage.png";
+                    event.target.srcset = "/noimage.png";
+                }}
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             </button>
-            <div className="absolute min-h-[96px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
+            <div className="absolute min-h-[70px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg px-2 pb-1 flex flex-col justify-end">
                 <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
                     {title}
                 </h3>

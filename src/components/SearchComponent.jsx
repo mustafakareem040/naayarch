@@ -1,20 +1,40 @@
 'use client'
-import React, {useCallback} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Image from "next/image";
 
-const SearchComponent = ({ query, setQuery }) => {
-    const handleInputChange = useCallback(function(e) {
-        setQuery(e.target.value);
-    }, []);
+const SearchComponent = ({ onSearch }) => {
+    const [localQuery, setLocalQuery] = useState('');
+
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
+    };
+
+    const debouncedSearch = useCallback(
+        debounce((value) => {
+            onSearch(value);
+        }, 300),
+        [onSearch]
+    );
+
+    const handleInputChange = useCallback((e) => {
+        const value = e.target.value;
+        setLocalQuery(value);
+        debouncedSearch(value);
+    }, [debouncedSearch]);
+
     return (
         <div className="flex mb-4 items-center space-x-2">
-            <div className="relative mr-4 flex-grow">
+            <div className="relative font-sans mr-4 flex-grow">
                 <input
                     type="text"
                     placeholder="Search for product"
-                    value={query}
+                    value={localQuery}
                     onChange={handleInputChange}
-                    className="w-full text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
+                    className="w-full font-sans text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
                 />
                 <Image
                     src="/search.svg"
@@ -39,3 +59,4 @@ const SearchComponent = ({ query, setQuery }) => {
 };
 
 export default SearchComponent;
+

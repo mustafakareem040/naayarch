@@ -1,6 +1,6 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
-import React, { Suspense, useState, useEffect } from "react";
+import React, {Suspense, useState, useEffect, useCallback} from "react";
 import ProductsList from "@/components/ProductList";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import Image from "next/image";
@@ -15,6 +15,11 @@ export default function AsyncProducts() {
     const [products, setProducts] = useState([]);
     const [query, setQuery] = useState("");
     const [error, setError] = useState(null);
+
+    const handleSearch = useCallback((searchQuery) => {
+        setQuery(searchQuery);
+        setCurrentPage(1); // Reset to first page when searching
+    }, []);
 
     useEffect(() => {
         fetchProducts(currentPage, query);
@@ -58,10 +63,6 @@ export default function AsyncProducts() {
         setCurrentPage(pageNumber);
     };
 
-    const handleSearch = (searchQuery) => {
-        setQuery(searchQuery);
-        setCurrentPage(1); // Reset to first page when searching
-    };
 
     return (
         <>
@@ -71,7 +72,7 @@ export default function AsyncProducts() {
                 </button>
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
-            <SearchComponent query={query} setQuery={handleSearch}/>
+            <SearchComponent onSearch={handleSearch}/>
             <Suspense fallback={<ProductsLoadingSkeleton />}>
                 {isLoading ? (
                     <ProductsLoadingSkeleton />
