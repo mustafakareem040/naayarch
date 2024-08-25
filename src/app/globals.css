@@ -16,6 +16,9 @@ body {
 .bg-skintone {
     background: rgba(246, 243, 241, 0.3);
 }
+.bg-gradient-custom {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, #F6F3F1 55.5%);
+}
 @keyframes slideUp {
     from {
         transform: translateY(100%);

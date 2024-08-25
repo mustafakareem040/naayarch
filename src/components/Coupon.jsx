@@ -52,7 +52,7 @@ const MyCoupons = () => {
                 <button className="relative z-20" onClick={router.back}>
                     <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
                 </button>
-                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-bold">My Coupons</h1>
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">My Coupons</h1>
             </header>
             <div className="space-y-4">
                 {coupons.map((coupon, index) => (

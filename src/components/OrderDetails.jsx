@@ -59,7 +59,7 @@ export default function OrderDetails({orderID}) {
                     <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
                 </button>
                 <h1
-                    className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-bold">
+                    className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                     Order Details
                 </h1>
             </header>
