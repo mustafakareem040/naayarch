@@ -23,7 +23,7 @@ const ProductItem = memo(({ title, price, imageUrl }) => {
                     src={imageUrl}
                     alt={title}
                     fill={true}
-                    unoptimized={true}
+                    unoptimized={false}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     onError={(event) => {
                         event.target.src = "/noimage.png";
