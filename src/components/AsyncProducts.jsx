@@ -1,10 +1,10 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
-import React, {Suspense, useState, useEffect, useCallback, lazy} from "react";
-import {useRouter} from "next/navigation";
-import Pagination from "@/components/Pagination";
+import React, { Suspense, useState, useEffect, useCallback, lazy } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
+const Pagination = lazy(() => import("@/components/Pagination"));
 const ProductsList = lazy(() => import("@/components/ProductList"));
 
 export default function AsyncProducts() {
@@ -18,31 +18,20 @@ export default function AsyncProducts() {
 
     const handleSearch = useCallback((searchQuery) => {
         setQuery(searchQuery);
-        setCurrentPage(1); // Reset to first page when searching
+        setCurrentPage(1);
     }, []);
 
-    useEffect(() => {
-        fetchProducts(currentPage, query);
-    }, [currentPage, query]);
-
-    const fetchProducts = async (page, search) => {
+    const fetchProducts = useCallback(async (page, search) => {
         setIsLoading(true);
         setError(null);
         try {
             const response = await fetch(`https://api.naayiq.com/products?page=${page}&search=${encodeURIComponent(search)}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
-            }
+            if (!response.ok) throw new Error('Failed to fetch products');
             const data = await response.json();
-            if (data && data.products) {
+            if (data?.products) {
                 setProducts(data.products);
-                if (data.pagination) {
-                    setTotalPages(data.pagination?.totalPages || 1);
-                    setCurrentPage(data.pagination?.currentPage || 1);
-                } else {
-                    setTotalPages(1);
-                    setCurrentPage(1);
-                }
+                setTotalPages(data.pagination?.totalPages || 1);
+                setCurrentPage(data.pagination?.currentPage || 1);
             } else {
                 setProducts([]);
                 setTotalPages(1);
@@ -57,12 +46,15 @@ export default function AsyncProducts() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const handlePageChange = (pageNumber) => {
+    useEffect(() => {
+        fetchProducts(currentPage, query);
+    }, [currentPage, query, fetchProducts]);
+
+    const handlePageChange = useCallback((pageNumber) => {
         setCurrentPage(pageNumber);
-    };
-
+    }, []);
 
     return (
         <>
@@ -95,12 +87,12 @@ export default function AsyncProducts() {
     );
 }
 
-function ProductsLoadingSkeleton() {
-    return (
-        <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {Array.from({length: 10}).map((_, index) => (
-                <ProductSkeleton key={index}/>
-            ))}
-        </div>
-    );
-}
+const ProductsLoadingSkeleton = React.memo(() => (
+    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {Array.from({length: 10}).map((_, index) => (
+            <ProductSkeleton key={index}/>
+        ))}
+    </div>
+));
+
+ProductsLoadingSkeleton.displayName = 'ProductsLoadingSkeleton';

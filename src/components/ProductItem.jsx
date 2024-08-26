@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
 
-const ProductItem = memo(({ title, price, imageUrl }) => {
-    return (
+const ProductItem = memo(({ name, price, imageUrl }) => (
         <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
             <button className="absolute left-1 top-4 z-10">
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,19 +20,17 @@ const ProductItem = memo(({ title, price, imageUrl }) => {
             <div className="relative w-full h-full overflow-hidden">
                 <Image
                     src={imageUrl}
-                    alt={title}
-                    fill={true}
-                    unoptimized={true}
+                    alt={name}
+                    fill
+                    unoptimized
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    onError={(event) => {
-                        event.target.src = "/noimage.png";
-                    }}
+                    onError={(e) => { e.target.src = "/noimage.png"; }}
                     className="object-cover transition-transform duration-300 group-hover:scale-110"
                 />
             </div>
             <div className="absolute min-h-[84px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
                 <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
-                    {title}
+                    {name}
                 </h3>
                 <div className="flex justify-between items-center mt-2">
                     <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-[#181717]">
@@ -45,9 +42,7 @@ const ProductItem = memo(({ title, price, imageUrl }) => {
                 </div>
             </div>
         </div>
-    );
-});
+    ));
 
-ProductItem.displayName = 'ProductItem';
-
-export default ProductItem;
+    ProductItem.displayName = 'ProductItem';
+    export default ProductItem;
