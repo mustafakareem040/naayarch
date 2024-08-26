@@ -12,10 +12,14 @@
     "node": ">= 20"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.0.0-rc.0",
     "@vercel/speed-insights": "^1.0.12",
     "antd": "^5.20.2",
     "babel-plugin-react-compiler": "^0.0.0-experimental-48eb8f4-20240822",
     "dotenv": "^16.4.5",
+    "framer-motion": "^11.3.30",
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.0.0",
@@ -29,6 +33,7 @@
     "react-leaflet": "^4.2.1",
     "react-loading-skeleton": "^3.4.0",
     "react-slick": "^0.30.2",
+    "react-slider": "^2.0.6",
     "slick-carousel": "^1.8.1",
     "vercel": "^37.1.1"
   },

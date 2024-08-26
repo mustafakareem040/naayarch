@@ -3,12 +3,34 @@ import ProductItem from "@/components/ProductItem";
 
 const ProductsList = ({ products }) => {
     const getCheapestPrice = (product) => {
-        if (!product.sizes) return null;
-        const prices = product.sizes
-            .map(size => size.price)
-            .filter(price => price !== null && price !== undefined && price !== '')
+        let prices = [];
+
+        // Check product price
+        if (product.price) {
+            prices.push(product.price);
+        }
+
+        // Check sizes prices
+        if (product.sizes) {
+            prices = prices.concat(product.sizes.map(size => size.price).filter(Boolean));
+        }
+
+        // Check colors prices
+        if (product.colors) {
+            prices = prices.concat(product.colors.map(color => color.price).filter(Boolean));
+
+            // Check color-sizes prices
+            product.colors.forEach(color => {
+                if (color.sizes) {
+                    prices = prices.concat(color.sizes.map(size => size.price).filter(Boolean));
+                }
+            });
+        }
+
+        // Clean and parse prices
+        const validPrices = prices
             .map(price => {
-                const cleaned = price.replace(/[^\d.]/g, '');
+                const cleaned = price.toString().replace(/[^\d.]/g, '');
                 const parts = cleaned.split('.');
                 if (parts.length > 2) {
                     return parseFloat(parts[0] + '.' + parts.slice(1).join(''));
@@ -16,7 +38,14 @@ const ProductsList = ({ products }) => {
                 return parseFloat(cleaned);
             })
             .filter(price => !isNaN(price) && isFinite(price));
-        return prices.length > 0 ? Math.min(...prices) : null;
+
+        return validPrices.length > 0 ? Math.min(...validPrices) : null;
+    };
+
+    const formatPrice = (price) => {
+        if (price === null || price === undefined) return 'N/A';
+        const formattedPrice = price >= 10000 ? price.toLocaleString() : price;
+        return `${formattedPrice} IQD`;
     };
 
     return (
@@ -27,7 +56,7 @@ const ProductsList = ({ products }) => {
                     <ProductItem
                         key={product.id}
                         title={product.name}
-                        price={cheapestPrice ? `${cheapestPrice} IQD` : 'N/A'}
+                        price={formatPrice(cheapestPrice)}
                         imageUrl={`https://storage.naayiq.com/resources/${product.images[0]?.url}` || "/placeholder.png"}
                     />
                 );
