@@ -17,7 +17,7 @@ export default function Hero() {
                     Welcome To<br />Nay Iraq
                 </h1>
                 <Link
-                    href="/shop"
+                    href="/products"
                     className="px-8 text-sm sssm:text-[1em] ssm:text-xl py-[0.535rem] border-white border-[1px] border-solid bg-white bg-opacity-50 black rounded-[20px] backdrop-blur-sm hover:bg-opacity-30 transition-colors"
                 >
                     Shop Now

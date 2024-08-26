@@ -7,8 +7,8 @@ import ProductDetail from "@/components/ProductDetail";
 
 export default function Home() {
     return (
-        <Dashboard />
-        // <ProductDetail title={"Test"} sizes={["lg", "xl", "2xl"]} colors={["red", "green", "blue"]}
-        //                price={"25000"} description={"test"} images={["/face.png", "/car.png", "/cream.png"]} />
+        // <Dashboard />
+        <ProductDetail title={"Test"} sizes={["lg", "xl", "2xl"]} colors={["red", "green", "blue"]}
+                       price={"25000"} description={"test"} images={["/face.png", "/car.png", "/cream.png"]} />
   );
 }

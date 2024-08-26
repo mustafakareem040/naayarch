@@ -17,7 +17,6 @@ const ProductItem = memo(({ name, price, imageUrl }) => (
                     </defs>
                 </svg>
             </button>
-            <div className="relative w-full h-full overflow-hidden">
                 <Image
                     src={imageUrl}
                     alt={name}
@@ -25,9 +24,8 @@ const ProductItem = memo(({ name, price, imageUrl }) => (
                     unoptimized
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     onError={(e) => { e.target.src = "/noimage.png"; }}
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
                 />
-            </div>
             <div className="absolute min-h-[84px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
                 <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
                     {name}
