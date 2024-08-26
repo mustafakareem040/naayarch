@@ -39,7 +39,6 @@ export default function ProductDetail({
                         background: i === this.currentSlide ? '#695C5C' : '#D9D9D9',
                         borderRadius: '50%',
                         padding: 0,
-                        display: 'inline-flex',
                         margin: '0 4px'
                     }}
                 />
@@ -70,7 +69,7 @@ export default function ProductDetail({
                 className="w-10 h-10 absolute top-4 right-4 z-10 text-transparent stroke-1 stroke-[#3B5345] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
 
             <div
-                className="flex-grow bg-white rounded-t-2xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-6 relative z-30">
+                className="flex-grow bg-white rounded-t-2xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
                 <h1 className="text-2xl mb-1">{title}</h1>
 
