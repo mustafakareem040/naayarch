@@ -5,11 +5,23 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
-export default function ProductDetail({ images, sizes, colors, title, description, price }) {
-    const [selectedSize, setSelectedSize] = useState(sizes && sizes.length > 0 ? sizes[0] : null);
-    const [selectedColor, setSelectedColor] = useState(colors && colors.length > 0 ? colors[0] : null);
+export default function ProductDetail({
+                                          images,
+                                          sizeNames,
+                                          sizePrices,
+                                          sizeQuantities,
+                                          colorNames,
+                                          colorPrices,
+                                          colorQuantities,
+                                          colorImages,
+                                          title,
+                                          description,
+                                          price
+                                      }) {
+    const [selectedSize, setSelectedSize] = useState(sizeNames && sizeNames.length > 0 ? sizeNames[0] : null);
+    const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);
     const [quantity, setQuantity] = useState(1);
     const router = useRouter()
     const sliderSettings = {
@@ -45,7 +57,6 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
-                            sizes={'40vw'}
                             className="object-cover max-h-[40vh]"
                             priority={index === 0}
                         />
@@ -55,7 +66,6 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
             <button className="absolute top-4 left-4 z-10" onClick={router.back}>
                 <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
             </button>
-            {/*<ArrowLeft className="w-6 h-6  text-[#3B5345]" />*/}
             <Heart
                 className="w-10 h-10 absolute top-4 right-4 z-10 text-transparent stroke-1 stroke-[#3B5345] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
 
@@ -64,12 +74,12 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
                 <h1 className="text-2xl mb-1">{title}</h1>
 
-                {sizes && sizes.length > 0 && (
+                {sizeNames && sizeNames.length > 0 && (
                     <div className="mb-6 font-serif">
-                        {sizes.length === 1 ? (
+                        {sizeNames.length === 1 ? (
                             <div
                                 className="w-32 p-2 border border-[#E5E7EB] rounded-lg bg-white">
-                                Size: {sizes[0]}
+                                Size: {sizeNames[0]}
                             </div>
                         ) : (
                             <select
@@ -77,9 +87,9 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
                                 onChange={(e) => setSelectedSize(e.target.value)}
                                 className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
                             >
-                                {sizes.map((size) => (
+                                {sizeNames.map((size, index) => (
                                     <option className="text-xs" key={size} value={size}>
-                                        Size: {size}
+                                        Size: {size} - {sizePrices[index]} IQD
                                     </option>
                                 ))}
                             </select>
@@ -87,27 +97,27 @@ export default function ProductDetail({ images, sizes, colors, title, descriptio
                     </div>
                 )}
 
-                {colors && colors.length > 0 && (
+                {colorNames && colorNames.length > 0 && (
                     <div className="mb-10">
                         <h2 className="text-2xl font-medium mb-2">Color</h2>
                         <div className="flex space-x-4 overflow-x-auto pb-2">
-                            {colors.map((color, index) => (
+                            {colorNames.map((color, index) => (
                                 <div key={index} className="flex flex-col items-center">
                                     <button
                                         className={`w-20 h-20 rounded-full border-2 ${selectedColor === color ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden`}
                                         onClick={() => setSelectedColor(color)}
                                     >
-                                        {color.image && (
+                                        {colorImages[index] && (
                                             <Image
-                                                src={color.image}
-                                                alt={color.name}
+                                                src={colorImages[index]}
+                                                alt={color}
                                                 width={80}
                                                 height={80}
                                                 className="object-cover"
                                             />
                                         )}
                                     </button>
-                                    <span className="text-sm">{color.name}</span>
+                                    <span className="text-sm">{color}</span>
                                 </div>
                             ))}
                         </div>
