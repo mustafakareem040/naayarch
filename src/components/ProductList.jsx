@@ -4,11 +4,11 @@ import ProductItem from "@/components/ProductItem";
 const ProductsList = React.memo(({ products }) => {
     const getCheapestPrice = (product) => {
         const prices = [
-            product.price,
+            product.price !== "0.00" ? product.price : Math.infinity,
             ...(product.sizes?.map(size => size.price) || []),
             ...(product.colors?.flatMap(color => [
                 color.price,
-                ...(color.sizes?.map(size => size.price) || [])
+                ...(color.sizes?.map(size => (size.price !== 0 && size.price)) || [])
             ]) || [])
         ].filter(Boolean).map(price => parseFloat(price.toString().replace(/[^\d.]/g, '')));
 
