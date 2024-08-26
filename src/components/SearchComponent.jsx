@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import Image from "next/image";
 import FilterComponent from "@/components/FilterComponent";
