@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
-const ProductItem = memo(({ name, price, imageUrl }) => (
+const ProductItem = memo(({ id, name, price, imageUrl }) => (
+    <Link href={`/products/${id}`} className="block">
         <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
-            <button className="absolute left-1 top-4 z-10">
+            <button className="absolute left-1 top-4 z-10" onClick={(e) => e.preventDefault()}>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="30" height="30" rx="15" fill="url(#paint0_linear_733_2359)"/>
                     <path
@@ -17,15 +19,15 @@ const ProductItem = memo(({ name, price, imageUrl }) => (
                     </defs>
                 </svg>
             </button>
-                <Image
-                    src={imageUrl}
-                    alt={name}
-                    fill
-                    unoptimized
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    onError={(e) => { e.target.src = "/noimage.png"; }}
-                    className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
-                />
+            <Image
+                src={imageUrl}
+                alt={name}
+                fill
+                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                onError={(e) => { e.target.src = "/noimage.png"; }}
+                className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
+            />
             <div className="absolute min-h-[84px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
                 <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
                     {name}
@@ -34,13 +36,14 @@ const ProductItem = memo(({ name, price, imageUrl }) => (
                     <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-[#181717]">
                         {price}
                     </p>
-                    <button className="w-8 h-8 bg-[#3B5345] rounded-full flex items-center justify-center">
+                    <button className="w-8 h-8 bg-[#3B5345] rounded-full flex items-center justify-center" onClick={(e) => e.preventDefault()}>
                         <Image src="/shop.svg" alt="shop" width={20} height={20} />
                     </button>
                 </div>
             </div>
         </div>
-    ));
+    </Link>
+));
 
-    ProductItem.displayName = 'ProductItem';
-    export default ProductItem;
+ProductItem.displayName = 'ProductItem';
+export default ProductItem;
