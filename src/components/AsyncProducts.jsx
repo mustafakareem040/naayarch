@@ -1,11 +1,11 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
-import React, {Suspense, useState, useEffect, useCallback} from "react";
-import ProductsList from "@/components/ProductList";
-import ProductSkeleton from "@/components/ProductSkeleton";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import React, {Suspense, useState, useEffect, useCallback, lazy} from "react";
+import {useRouter} from "next/navigation";
 import Pagination from "@/components/Pagination";
+import Image from "next/image"
+import ProductSkeleton from "@/components/ProductSkeleton";
+const ProductsList = lazy(() => import("@/components/ProductList"));
 
 export default function AsyncProducts() {
     const router = useRouter();

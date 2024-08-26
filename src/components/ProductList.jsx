@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import ProductItem from "@/components/ProductItem";
+import { FixedSizeGrid as Grid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const ProductsList = ({ products }) => {
     const getCheapestPrice = (product) => {
@@ -41,16 +43,72 @@ const ProductsList = ({ products }) => {
         };
     }), [products]);
 
-    return (
-        <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {memoizedProducts.map((product) => (
+    const getGridParams = (width) => {
+        const GAP = 16; // Gap size in pixels
+        let columns;
+        if (width < 640) columns = 2; // For small screens
+        else if (width < 768) columns = 3; // For medium screens
+        else if (width < 1024) columns = 4; // For large screens
+        else columns = 5; // For extra large screens
+
+        const columnWidth = Math.floor((width - (columns - 1) * GAP) / columns);
+        const rowHeight = Math.floor(columnWidth * (275 / 186)) + GAP; // Maintain aspect ratio + gap
+
+        return { columns, columnWidth, rowHeight, GAP };
+    };
+
+    const Cell = ({ columnIndex, rowIndex, style, data }) => {
+        const { items, columns, columnWidth, rowHeight, GAP } = data;
+        const index = rowIndex * columns + columnIndex;
+        if (index >= items.length) return null;
+        const product = items[index];
+
+        const cellStyle = {
+            ...style,
+            left: style.left + (columnIndex * GAP),
+            top: style.top + (rowIndex * GAP),
+            width: columnWidth,
+            height: rowHeight - GAP,
+        };
+
+        return (
+            <div style={cellStyle}>
                 <ProductItem
                     key={product.id}
                     title={product.name}
                     price={product.price}
                     imageUrl={product.imageUrl}
                 />
-            ))}
+            </div>
+        );
+    };
+
+    return (
+        <div style={{ height: '100vh', width: '100%' }}>
+            <AutoSizer disableWidth={null}>
+                {({ height, width }) => {
+                    const { columns, columnWidth, rowHeight, GAP } = getGridParams(width);
+                    return (
+                        <Grid
+                            columnCount={columns}
+                            columnWidth={columnWidth}
+                            height={height}
+                            rowCount={Math.ceil(memoizedProducts.length / columns)}
+                            rowHeight={rowHeight}
+                            width={width}
+                            itemData={{
+                                items: memoizedProducts,
+                                columns,
+                                columnWidth,
+                                rowHeight,
+                                GAP
+                            }}
+                        >
+                            {Cell}
+                        </Grid>
+                    );
+                }}
+            </AutoSizer>
         </div>
     );
 };

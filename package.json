@@ -34,6 +34,8 @@
     "react-loading-skeleton": "^3.4.0",
     "react-slick": "^0.30.2",
     "react-slider": "^2.0.6",
+    "react-virtualized-auto-sizer": "^1.0.24",
+    "react-window": "^1.8.10",
     "slick-carousel": "^1.8.1",
     "vercel": "^37.1.1"
   },
