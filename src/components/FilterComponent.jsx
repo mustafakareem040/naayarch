@@ -1,3 +1,4 @@
+'use client'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { Slider, ThemeProvider, createTheme } from '@mui/material';
 
