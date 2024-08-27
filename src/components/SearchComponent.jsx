@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import Image from "next/image";
 import FilterComponent from "@/components/FilterComponent";
+import { AnimatePresence, motion } from "framer-motion";
 
 const SearchComponent = ({ onSearch }) => {
     const [localQuery, setLocalQuery] = useState('');
@@ -70,27 +71,27 @@ const SearchComponent = ({ onSearch }) => {
                     <span className="text-sm">Filter</span>
                 </button>
             </div>
-            {/*<AnimatePresence>*/}
-            {/*    {filter && (*/}
-            {/*        <motion.div*/}
-            {/*            initial={{ opacity: 0 }}*/}
-            {/*            animate={{ opacity: 1 }}*/}
-            {/*            exit={{ opacity: 0 }}*/}
-            {/*            className="fixed inset-0 bg-black bg-opacity-30 w-full overflow-y-auto overflow-x-hidden z-50 flex items-end"*/}
-            {/*        >*/}
-            {/*            <motion.div*/}
-            {/*                ref={modalRef}*/}
-            {/*                initial={{ y: "100%" }}*/}
-            {/*                animate={{ y: 0 }}*/}
-            {/*                exit={{ y: "100%" }}*/}
-            {/*                transition={{ type: "spring", damping: 25, stiffness: 500 }}*/}
-            {/*                className="bg-white overflow-y-auto rounded-t-xl max-h-[80%] w-full p-6"*/}
-            {/*            >*/}
-            {/*                {MemoizedFilterComponent}*/}
-            {/*            </motion.div>*/}
-            {/*        </motion.div>*/}
-            {/*    )}*/}
-            {/*</AnimatePresence>*/}
+            <AnimatePresence>
+                {filter && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-30 w-full overflow-y-auto overflow-x-hidden z-50 flex items-end"
+                    >
+                        <motion.div
+                            ref={modalRef}
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 500 }}
+                            className="bg-white overflow-y-auto rounded-t-xl max-h-[80%] w-full p-6"
+                        >
+                            {MemoizedFilterComponent}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };
