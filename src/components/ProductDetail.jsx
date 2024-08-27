@@ -97,7 +97,7 @@ export default function ProductDetail({
                 )}
 
                 {colorNames && colorNames.length > 0 && (
-                    <div className="mb-10">
+                    <div className="mb-10 mt-6">
                         <h2 className="text-2xl font-medium mb-2">Color</h2>
                         <div className="flex space-x-4 overflow-x-auto pb-2">
                             {colorNames.map((color, index) => (
