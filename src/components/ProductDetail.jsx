@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -23,7 +23,16 @@ export default function ProductDetail({
     const [selectedSize, setSelectedSize] = useState(sizeNames && sizeNames.length > 0 ? sizeNames[0] : null);
     const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);
     const [quantity, setQuantity] = useState(1);
+    const [currentPrice, setCurrentPrice] = useState(price);
     const router = useRouter()
+
+    useEffect(() => {
+        if (selectedSize) {
+            const sizeIndex = sizeNames.indexOf(selectedSize);
+            setCurrentPrice(sizePrices[sizeIndex]);
+        }
+    }, [selectedSize, sizeNames, sizePrices]);
+
     const sliderSettings = {
         dots: true,
         infinite: false,
@@ -88,7 +97,7 @@ export default function ProductDetail({
                             >
                                 {sizeNames.map((size, index) => (
                                     <option className="text-xs" key={size} value={size}>
-                                        Size: {size} - {sizePrices[index]} IQD
+                                        Size: {size}
                                     </option>
                                 ))}
                             </select>
@@ -125,11 +134,15 @@ export default function ProductDetail({
 
                 <div className="mb-6 border-b border-[#695C5C]/30 pb-4">
                     <h2 className="text-2xl font-medium mb-2">Description</h2>
-                    <p className="text-xl font-normal font-serif">{description}</p>
+                    <p
+                        style={{direction: "rtl"}}
+                        className="text-xl font-normal text-left font-serif"
+                        dangerouslySetInnerHTML={{__html: description}}
+                    />
                 </div>
 
                 <div className="flex justify-between items-center mb-6">
-                    <span className="text-xl font-serif font-medium">{price} IQD</span>
+                    <span className="text-xl font-serif font-medium">{currentPrice} IQD</span>
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -155,7 +168,6 @@ export default function ProductDetail({
                         <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-
                     Add To Cart
                 </button>
             </div>

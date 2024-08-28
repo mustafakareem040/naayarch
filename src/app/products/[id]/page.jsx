@@ -23,7 +23,7 @@ async function ProductContent({ id }) {
             colorQuantities={product.colors?.map((color) => color.qty)}
             colorImages={product.colors?.map((color) => color.images[0] ? `https://storage.naayiq.com/resources/${color.images[0]}` : null)}
             title={product.name}
-            description={product.description}
+            description={product.description.replace(/\n/g, '<br />')}
             price={product.price ?? product.sizes[0]?.price ?? "N/A"}
         />
     );

@@ -3,15 +3,25 @@ import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 export async function fetchCategories() {
-    const res = await fetch('https://api.naayiq.com/categories');
+    const timestamp = Date.parse(new Date().toString());
+    const res = await fetch('https://api.naayiq.com/categories',
+        {
+            body: JSON.stringify({timestamp})
+        });
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
     }
     return res.json();
 }
 
+
+
 export async function fetchSubcategories() {
-    const res = await fetch('https://api.naayiq.com/subcategories');
+    const timestamp = Date.parse(new Date().toString());
+    const res = await fetch('https://api.naayiq.com/subcategories',
+        {
+            body: JSON.stringify({timestamp})
+        });
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }
