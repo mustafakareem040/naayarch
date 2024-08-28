@@ -4,10 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 export async function fetchCategories() {
     const timestamp = Date.parse(new Date().toString());
-    const res = await fetch('https://api.naayiq.com/categories',
-        {
-            body: JSON.stringify({timestamp})
-        });
+    const res = await fetch(`https://api.naayiq.com/categories?${timestamp}`);
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
     }
@@ -18,10 +15,7 @@ export async function fetchCategories() {
 
 export async function fetchSubcategories() {
     const timestamp = Date.parse(new Date().toString());
-    const res = await fetch('https://api.naayiq.com/subcategories',
-        {
-            body: JSON.stringify({timestamp})
-        });
+    const res = await fetch(`https://api.naayiq.com/subcategories?${timestamp}`);
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }
