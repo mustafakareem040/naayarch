@@ -3,8 +3,7 @@ import EmptyCart from "@/components/EmptyCart";
 
 export default function Home() {
     return (
-        // <Dashboard />
-        <EmptyCart />
+        <Dashboard />
   );
 
 }
