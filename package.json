@@ -17,7 +17,7 @@
     "@mui/material": "^6.0.0-rc.0",
     "@vercel/speed-insights": "^1.0.12",
     "antd": "^5.20.2",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-48eb8f4-20240822",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-9e9694c-20240827",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.3.30",
     "js-cookie": "^3.0.5",
@@ -25,11 +25,11 @@
     "leaflet-geosearch": "^4.0.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.435.0",
-    "next": "15.0.0-rc.0",
+    "next": "15.0.0-canary.132",
     "nextjs-toploader": "^1.6.12",
     "npm": "^10.8.2",
-    "react": "19.0.0-rc-b57d2823-20240822",
-    "react-dom": "19.0.0-rc-b57d2823-20240822",
+    "react": "19.0.0-rc-f90a6bcc-20240827",
+    "react-dom": "19.0.0-rc-f90a6bcc-20240827",
     "react-leaflet": "^4.2.1",
     "react-loading-skeleton": "^3.4.0",
     "react-slick": "^0.30.2",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.0.0-rc.0",
+    "eslint-config-next": "15.0.0-canary.132",
     "postcss": "^8.4.40",
     "tailwindcss": "^3.4.10"
   }

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic"
 export async function fetchCategories() {
     const timestamp = Date.parse(new Date().toString());
     const res = await fetch(`https://api.naayiq.com/categories?tid=${timestamp}`,
-        { cache: 'no-cache', next: { revalidate: 0 }});
+        { cache: 'no-cache'});
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
     }
