@@ -19,7 +19,7 @@ export async function fetchCategories() {
 export async function fetchSubcategories() {
     const timestamp = Date.parse(new Date().toString());
     const res = await fetch(`https://api.naayiq.com/subcategories?tid=${timestamp}`,
-        { cache: 'no-cache', next: { revalidate: 0 }});
+        { cache: 'no-cache'});
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }
