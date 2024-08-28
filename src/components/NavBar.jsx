@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Drawer from './Drawer';
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 
-const ImageButton = ({ src, alt, onClick, isClose = false }) => (
-    <button
-        onClick={onClick}
+const ImageButton = ({ src, alt, dest, isClose = false }) => (
+    <Link
+        href={dest}
         className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
         <Image src={src} alt={alt} width={32} height={32} />
-    </button>
+    </Link>
 );
 
 export function NavBar({ categories, subCategories }) {
@@ -22,7 +23,7 @@ export function NavBar({ categories, subCategories }) {
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
-
+    const router = useRouter()
     return (
         <>
             <nav className="flex items-center justify-between p-5 bg-white absolute top-0 left-0 right-0 z-50">
@@ -36,9 +37,9 @@ export function NavBar({ categories, subCategories }) {
                     <Image src="/logo.svg" alt="Nay Logo" width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
-                    <ImageButton src="/search.svg" alt="Search" onClick={() => handleClick('Search')} />
-                    <ImageButton src="/heart.svg" alt="Favorites" onClick={() => handleClick('Favorites')} />
-                    <ImageButton src="/shop.svg" alt="Cart" onClick={() => handleClick('Cart')} />
+                    <ImageButton src="/search.svg" alt="Search" dest={"/"} />
+                    <ImageButton src="/heart.svg" alt="Favorites" dest={"/"} />
+                    <ImageButton src="/shop.svg" alt="Cart"  dest={"/cart"}/>
                 </div>
             </nav>
             <Drawer categories={categories} subcategories={subCategories} isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
