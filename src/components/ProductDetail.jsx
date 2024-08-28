@@ -142,7 +142,7 @@ export default function ProductDetail({
                 </div>
 
                 <div className="flex justify-between items-center mb-6">
-                    <span className="text-xl font-serif font-medium">{currentPrice} IQD</span>
+                    <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
