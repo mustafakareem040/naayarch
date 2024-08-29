@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import ProductItem from "@/components/ProductItem";
+import {useSearchParams} from "next/navigation";
 
 const ProductsList = React.memo(({ products }) => {
     const getCheapestPrice = (product) => {

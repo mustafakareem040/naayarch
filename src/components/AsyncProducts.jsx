@@ -1,36 +1,41 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
 import React, { Suspense, useState, useEffect, useCallback, lazy } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
 const Pagination = lazy(() => import("@/components/Pagination"));
 const ProductsList = lazy(() => import("@/components/ProductList"));
 
-export default function AsyncProducts({ c, sc }) {
+export default function AsyncProducts() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const [query, setQuery] = useState("");
     const [error, setError] = useState(null);
+    const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
 
     const handleSearch = useCallback((searchQuery) => {
         setQuery(searchQuery);
         setCurrentPage(1);
     }, []);
 
-    const fetchProducts = useCallback(async (page, search) => {
+    const fetchProducts = useCallback(async (page, search, c, sc) => {
         setIsLoading(true);
         setError(null);
+
         try {
-            let url = `https://api.naayiq.com/products?page=${page}&search=${encodeURIComponent(search)}`;
+            const url = new URL('https://api.naayiq.com/products');
+            url.searchParams.append('page', page);
+            url.searchParams.append('search', search);
+            if (c) url.searchParams.append('c', c);
+            if (sc) url.searchParams.append('sc', sc);
 
-            if (c) url += `&c=${encodeURIComponent(c)}`;
-            if (sc) url += `&sc=${encodeURIComponent(sc)}`;
-
-            const response = await fetch(url);
+            const response = await fetch(url.toString());
             if (!response.ok) throw new Error('Failed to fetch products');
             const data = await response.json();
             if (data?.products) {
@@ -51,11 +56,15 @@ export default function AsyncProducts({ c, sc }) {
         } finally {
             setIsLoading(false);
         }
-    }, [c, sc]);
+    }, []);
 
     useEffect(() => {
-        fetchProducts(currentPage, query);
-    }, [currentPage, query, fetchProducts]);
+        const c = searchParams.get('c') || '';
+        const sc = searchParams.get('sc') || '';
+        setCategory(c);
+        setSubCategory(sc);
+        fetchProducts(currentPage, query, c, sc);
+    }, [currentPage, query, fetchProducts, searchParams]);
 
     const handlePageChange = useCallback((pageNumber) => {
         setCurrentPage(pageNumber);
@@ -63,24 +72,24 @@ export default function AsyncProducts({ c, sc }) {
 
     return (
         <>
+        <SearchComponent onSearch={handleSearch}/>
+        <Suspense fallback={<ProductsLoadingSkeleton />}>
             <header className="flex items-center mb-6">
                 <button className="relative z-20" onClick={router.back}>
                     <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
                 </button>
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
-            <SearchComponent onSearch={handleSearch}/>
-            <Suspense fallback={<ProductsLoadingSkeleton />}>
-                {isLoading ? (
-                    <ProductsLoadingSkeleton />
-                ) : error ? (
-                    <div className="text-red-500 text-center">{error}</div>
-                ) : products.length > 0 ? (
-                    <ProductsList products={products} />
-                ) : (
-                    <div className="text-center font-sans text-2xl">No products found!</div>
-                )}
-            </Suspense>
+            {isLoading ? (
+                <ProductsLoadingSkeleton />
+            ) : error ? (
+                <div className="text-red-500 text-center">{error}</div>
+            ) : products.length > 0 ? (
+                <ProductsList products={products} />
+            ) : (
+                <div className="text-center">No products found.</div>
+            )}
+        </Suspense>
             {!isLoading && !error && products.length > 0 && (
                 <Pagination
                     currentPage={currentPage}
@@ -88,7 +97,7 @@ export default function AsyncProducts({ c, sc }) {
                     onPageChange={handlePageChange}
                 />
             )}
-        </>
+            </>
     );
 }
 
