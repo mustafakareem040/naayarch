@@ -1,7 +1,7 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
 import React, { Suspense, useState, useEffect, useCallback, lazy } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
 const Pagination = lazy(() => import("@/components/Pagination"));
@@ -9,6 +9,7 @@ const ProductsList = lazy(() => import("@/components/ProductList"));
 
 export default function AsyncProducts() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +26,14 @@ export default function AsyncProducts() {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch(`https://api.naayiq.com/products?page=${page}&search=${encodeURIComponent(search)}`);
+            const c = searchParams.get('c');
+            const sc = searchParams.get('sc');
+            let url = `https://api.naayiq.com/products?page=${page}&search=${encodeURIComponent(search)}`;
+
+            if (c) url += `&c=${encodeURIComponent(c)}`;
+            if (sc) url += `&sc=${encodeURIComponent(sc)}`;
+
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Failed to fetch products');
             const data = await response.json();
             if (data?.products) {
@@ -46,7 +54,7 @@ export default function AsyncProducts() {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [searchParams]);
 
     useEffect(() => {
         fetchProducts(currentPage, query);

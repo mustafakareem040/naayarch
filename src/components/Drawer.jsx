@@ -23,9 +23,9 @@ const SubcategoryView = ({ category, subcategories, onBack, isVisible }) => (
         </div>
         <div className="grid grid-cols-2 justify-center text-center items-center gap-4">
             {subcategories.map((item) => (
-                <div key={item.id} className="border border-[#3B5345] rounded-lg py-4">
+                <Link key={item.id} className="border border-[#3B5345] rounded-lg py-4" href={`/products?c=${item.id}`}>
                     <span className="font-serif text-[#545454] text-base">{item.name}</span>
-                </div>
+                </Link>
             ))}
         </div>
     </div>
@@ -83,24 +83,28 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Product</h2>
                             {productCategories.map(category => (
-                                <MenuItem
-                                    key={category.id}
-                                    label={category.name}
-                                    hasChildren
-                                    onClick={() => handleCategoryClick(category.name)}
-                                />
+                                <div key={category.id} className="py-2">
+                                    <div className="flex justify-between items-center">
+                                        <Link className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
+                                        {!category.is_brand &&
+                                            <Image onClick={() => handleCategoryClick(category.name)}
+                                                   src="/navigate.svg" alt="Expand" width={24} height={24}/>}
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Brand</h2>
                             {brandCategories.map(category => (
-                                <MenuItem
-                                    key={category.id}
-                                    label={category.name}
-                                    hasChildren
-                                    onClick={() => handleCategoryClick(category.name)}
-                                />
+                                <div key={category.id} className="py-2">
+                                    <div className="flex justify-between items-center">
+                                        <Link className="font-serif text-xl"
+                                              href={`/products?c=${category.id}`}>{category.name}</Link>
+                                        <Image onClick={() => handleCategoryClick(category.name)}
+                                                   src="/navigate.svg" alt="Expand" width={24} height={24}/>
+                                    </div>
+                                </div>
                             ))}
                         </div>
 
