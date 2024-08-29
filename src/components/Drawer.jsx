@@ -23,7 +23,7 @@ const SubcategoryView = ({ category, subcategories, onBack, isVisible }) => (
         </div>
         <div className="grid grid-cols-2 justify-center text-center items-center gap-4">
             {subcategories.map((item) => (
-                <Link key={item.id} className="border border-[#3B5345] rounded-lg py-4" href={`/products?c=${item.id}`}>
+                <Link key={item.id} className="border border-[#3B5345] rounded-lg py-4" href={`/products?sc=${item.id}`}>
                     <span className="font-serif text-[#545454] text-base">{item.name}</span>
                 </Link>
             ))}
