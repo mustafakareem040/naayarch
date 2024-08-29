@@ -1,15 +1,15 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
 import React, { Suspense, useState, useEffect, useCallback, lazy } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
+import SearchParamsHandler from "@/components/SearchParamsHandler";
 const Pagination = lazy(() => import("@/components/Pagination"));
 const ProductsList = lazy(() => import("@/components/ProductList"));
 
 export default function AsyncProducts() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +18,7 @@ export default function AsyncProducts() {
     const [error, setError] = useState(null);
     const [category, setCategory] = useState("");
     const [subCategory, setSubCategory] = useState("");
+    const [params, setParams] = useState(false)
 
     const handleSearch = useCallback((searchQuery) => {
         setQuery(searchQuery);
@@ -34,6 +35,7 @@ export default function AsyncProducts() {
             url.searchParams.append('search', search);
             if (c) url.searchParams.append('c', c);
             if (sc) url.searchParams.append('sc', sc);
+
             const response = await fetch(url.toString());
             if (!response.ok) throw new Error('Failed to fetch products');
             const data = await response.json();
@@ -58,15 +60,17 @@ export default function AsyncProducts() {
     }, []);
 
     useEffect(() => {
-        const c = searchParams.get('c') || '';
-        const sc = searchParams.get('sc') || '';
-        setCategory(c);
-        setSubCategory(sc);
-        fetchProducts(currentPage, query, c, sc);
-    }, [currentPage, query, searchParams, fetchProducts]);
+        if (params)
+        fetchProducts(currentPage, query, category, subCategory);
+    }, [currentPage, query, category, subCategory, fetchProducts]);
 
     const handlePageChange = useCallback((pageNumber) => {
         setCurrentPage(pageNumber);
+    }, []);
+
+    const handleParamsChange = useCallback((c, sc) => {
+        setCategory(c);
+        setSubCategory(sc);
     }, []);
 
     return (
@@ -78,8 +82,11 @@ export default function AsyncProducts() {
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
             <SearchComponent onSearch={handleSearch}/>
+            <Suspense fallback={<></>}>
+                <SearchParamsHandler params={params} setParams={setParams} onParamsChange={handleParamsChange}/>
+            </Suspense>
             <Suspense fallback={<ProductsLoadingSkeleton/>}>
-                {isLoading ? (
+                {isLoading || !params ? (
                     <ProductsLoadingSkeleton/>
                 ) : error ? (
                     <div className="text-red-500 text-center">{error}</div>
@@ -102,7 +109,8 @@ export default function AsyncProducts() {
 }
 
 const ProductsLoadingSkeleton = React.memo(() => (
-    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+    <div
+        className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {Array.from({length: 10}).map((_, index) => (
             <ProductSkeleton key={index}/>
         ))}
