@@ -27,10 +27,11 @@ export default function AsyncProducts() {
     const fetchProducts = useCallback(async (page, search, c, sc) => {
         setIsLoading(true);
         setError(null);
+
         try {
             const url = new URL('https://api.naayiq.com/products');
             url.searchParams.append('page', page);
-            if (search) url.searchParams.append('search', search);
+            url.searchParams.append('search', search);
             if (c) url.searchParams.append('c', c);
             if (sc) url.searchParams.append('sc', sc);
             const response = await fetch(url.toString());
