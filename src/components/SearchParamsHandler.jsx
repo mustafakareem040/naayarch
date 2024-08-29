@@ -10,6 +10,7 @@ function SearchParamsHandler({ onParamsChange, params, setParams }) {
         const sc = searchParams.get('sc') || '';
         onParamsChange(c, sc);
         setParams(true)
+        console.log(params)
     }, [searchParams, onParamsChange, setParams]);
 
     return null;
