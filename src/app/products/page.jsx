@@ -17,6 +17,8 @@ export default function ProductsPage() {
         setIsLoading(false)
     }, [searchParams]);
     return (
-        isLoading ? <></> : <AsyncProducts c={c} sc={sc} />
+        <Suspense fallback={<></>}>
+            {isLoading ? <></> : <AsyncProducts c={c} sc={sc} />}
+        </Suspense>
     )
 }
