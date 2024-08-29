@@ -1,12 +1,13 @@
 'use client'
 import SearchComponent from "@/components/SearchComponent";
 import React, { Suspense, useState, useEffect, useCallback, lazy } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
 const Pagination = lazy(() => import("@/components/Pagination"));
 const ProductsList = lazy(() => import("@/components/ProductList"));
-export default function AsyncProducts() {
+
+const ProductsWithSearchParams = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
@@ -14,23 +15,29 @@ export default function AsyncProducts() {
     const [isLoading, setIsLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const [query, setQuery] = useState("");
+    const [category, setCategory] = useState("");
+    const [subcategory, setSubcategory] = useState("");
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const categoryParam = searchParams.get('c');
+        const subcategoryParam = searchParams.get('sc');
+        if (categoryParam) setCategory(categoryParam);
+        if (subcategoryParam) setSubcategory(subcategoryParam);
+    }, [searchParams]);
 
     const handleSearch = useCallback((searchQuery) => {
         setQuery(searchQuery);
         setCurrentPage(1);
     }, []);
 
-    const fetchProducts = useCallback(async (page, search) => {
+    const fetchProducts = useCallback(async (page, search, cat, subcat) => {
         setIsLoading(true);
         setError(null);
         try {
-            const c = searchParams.get('c');
-            const sc = searchParams.get('sc');
             let url = `https://api.naayiq.com/products?page=${page}&search=${encodeURIComponent(search)}`;
-
-            if (c) url += `&c=${encodeURIComponent(c)}`;
-            if (sc) url += `&sc=${encodeURIComponent(sc)}`;
+            if (cat) url += `&c=${encodeURIComponent(cat)}`;
+            if (subcat) url += `&sc=${encodeURIComponent(subcat)}`;
 
             const response = await fetch(url);
             if (!response.ok) throw new Error('Failed to fetch products');
@@ -53,11 +60,11 @@ export default function AsyncProducts() {
         } finally {
             setIsLoading(false);
         }
-    }, [searchParams]);
+    }, []);
 
     useEffect(() => {
-        fetchProducts(currentPage, query);
-    }, [currentPage, query, fetchProducts]);
+        fetchProducts(currentPage, query, category, subcategory);
+    }, [currentPage, query, category, subcategory, fetchProducts]);
 
     const handlePageChange = useCallback((pageNumber) => {
         setCurrentPage(pageNumber);
@@ -74,13 +81,13 @@ export default function AsyncProducts() {
             <SearchComponent onSearch={handleSearch}/>
             <Suspense fallback={<ProductsLoadingSkeleton />}>
                 {isLoading ? (
-                    <ProductsLoadingSkeleton />
+                    <></>
                 ) : error ? (
                     <div className="text-red-500 text-center">{error}</div>
                 ) : products.length > 0 ? (
                     <ProductsList products={products} />
                 ) : (
-                    <div className="text-center font-serif font-medium text-red-600 text-2xl">No products found!</div>
+                    <div className="text-center">No products found.</div>
                 )}
             </Suspense>
             {!isLoading && !error && products.length > 0 && (
@@ -91,6 +98,15 @@ export default function AsyncProducts() {
                 />
             )}
         </>
+    );
+};
+
+// Main component wrapped in Suspense
+export default function AsyncProducts() {
+    return (
+        <Suspense fallback={<ProductsLoadingSkeleton />}>
+            <ProductsWithSearchParams />
+        </Suspense>
     );
 }
 
