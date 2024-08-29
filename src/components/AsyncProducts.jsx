@@ -18,6 +18,7 @@ export default function AsyncProducts() {
     const [error, setError] = useState(null);
     const [category, setCategory] = useState("");
     const [subCategory, setSubCategory] = useState("");
+    const [params, setParams] = useState(false)
 
     const handleSearch = useCallback((searchQuery) => {
         setQuery(searchQuery);
@@ -59,6 +60,7 @@ export default function AsyncProducts() {
     }, []);
 
     useEffect(() => {
+        if (params)
         fetchProducts(currentPage, query, category, subCategory);
     }, [currentPage, query, category, subCategory, fetchProducts]);
 
@@ -80,19 +82,18 @@ export default function AsyncProducts() {
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
             <SearchComponent onSearch={handleSearch}/>
-            <Suspense fallback={<div>Loading search params...</div>}>
-                <SearchParamsHandler onParamsChange={handleParamsChange}/>
+            <Suspense fallback={<></>}>
+                <SearchParamsHandler params={params} setParams={setParams} onParamsChange={handleParamsChange}/>
             </Suspense>
             <Suspense fallback={<ProductsLoadingSkeleton/>}>
-
-                {isLoading ? (
+                {isLoading || !params ? (
                     <ProductsLoadingSkeleton/>
                 ) : error ? (
                     <div className="text-red-500 text-center">{error}</div>
                 ) : products.length > 0 ? (
                     <ProductsList products={products}/>
                 ) : (
-                    <div className="text-center">No products found.</div>
+                    <div className="text-center font-serif text-red-700">No products found.</div>
                 )}
             </Suspense>
 

@@ -3,14 +3,14 @@
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
-function SearchParamsHandler({ onParamsChange }) {
+function SearchParamsHandler({ onParamsChange, params, setParams }) {
     const searchParams = useSearchParams();
-
     React.useEffect(() => {
         const c = searchParams.get('c') || '';
         const sc = searchParams.get('sc') || '';
         onParamsChange(c, sc);
-    }, [searchParams, onParamsChange]);
+        setParams(true)
+    }, [searchParams, onParamsChange, setParams]);
 
     return null;
 }
