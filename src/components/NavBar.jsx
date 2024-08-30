@@ -21,7 +21,7 @@ const ImageCloseButton = ({ src, alt, onClick, isClose = false }) => (
     </button>
 );
 
-export function NavBar({ categories, subCategories }) {
+export function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const handleClick = (action) => {
@@ -34,7 +34,7 @@ export function NavBar({ categories, subCategories }) {
     const router = useRouter()
     return (
         <>
-            <nav className="flex items-center justify-between p-5 bg-white absolute top-0 left-0 right-0 z-50">
+            <nav className={`flex items-center justify-between p-5 bg-[${bg}] absolute top-0 left-0 right-0 z-50`}>
                 <ImageCloseButton
                     src={isDrawerOpen ? "/close.svg" : "/menu.svg"}
                     alt={isDrawerOpen ? "Close Menu" : "Open Menu"}

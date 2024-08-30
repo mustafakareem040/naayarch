@@ -39,16 +39,17 @@ function NavBarSkeleton() {
     );
 }
 
-export default function AsyncNavBar() {
+export default function AsyncNavBar({bg}) {
     return (
         <Suspense fallback={<NavBarSkeleton />}>
-            <AsyncNavBarContent />
+            <AsyncNavBarContent bg={bg}/>
         </Suspense>
     );
 }
 
-async function AsyncNavBarContent() {
+async function AsyncNavBarContent({bg}) {
     const categories = await fetchCategories();
     const subCategories = await fetchSubcategories();
-    return <NavBar categories={categories} subCategories={subCategories} />;
+    const background = bg !== undefined ? bg : "#FFFFFF"
+    return <NavBar bg={background} categories={categories} subCategories={subCategories} />;
 }
