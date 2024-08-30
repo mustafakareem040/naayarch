@@ -4,8 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 export const dynamic = "force-dynamic"
 export async function fetchCategories() {
-    const timestamp = Date.parse(new Date().toString());
-    const res = await fetch(`https://api.naayiq.com/categories?tid=${timestamp}`,
+    const res = await fetch(`https://api.naayiq.com/categories`,
         { next: {revalidate: 600}});
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
@@ -16,9 +15,8 @@ export async function fetchCategories() {
 
 
 export async function fetchSubcategories() {
-    const timestamp = Date.parse(new Date().toString());
-    const res = await fetch(`https://api.naayiq.com/subcategories?tid=${timestamp}`,
-        { cache: 'no-cache'});
+    const res = await fetch(`https://api.naayiq.com/subcategories`,
+        { next: {revalidate: 600}});
     if (!res.ok) {
         throw new Error('Failed to fetch subcategories');
     }
