@@ -60,7 +60,6 @@ export default function AsyncProducts() {
     }, []);
 
     useEffect(() => {
-        if (params)
         fetchProducts(currentPage, query, category, subCategory);
     }, [currentPage, query, category, subCategory, fetchProducts]);
 
