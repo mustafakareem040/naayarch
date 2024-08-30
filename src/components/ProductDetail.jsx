@@ -153,7 +153,7 @@ export default function ProductDetail({
                         <span className="text-lg font-medium">{quantity}</span>
                         <button
                             onClick={() => setQuantity(quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                            className="w-7 h-6 flex items-center justify-center border border-[#E5E7EB] rounded-full"
                         >
                             <Plus className="w-4 h-4 text-[#3B5345]"/>
                         </button>
