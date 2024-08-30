@@ -19,6 +19,9 @@ body {
 .bg-gradient-custom {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, #F6F3F1 55.5%);
 }
+.bg-white-gradient {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(251, 251, 251, 0.8) 45%, rgba(248, 248, 248, 0.8) 72%, rgba(245, 245, 245, 0.8) 100%);
+}
 @keyframes slideUp {
     from {
         transform: translateY(100%);
