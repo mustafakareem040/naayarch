@@ -134,7 +134,7 @@ export default function ProductDetail({
                     </div>
                 )}
 
-                <div className="mb-6 border-b border-[#695C5C]/30 pb-4">
+                <div className="mb-6 border-b border-[#695C5C]/30 pb-32">
                     <h2 className="text-xl font-medium mb-2">Description</h2>
                     <p
                         style={{direction: "rtl"}}
@@ -142,7 +142,7 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer className="fixed bottom-0 bg-white p-4 right-0 left-0 z-50">
+                <footer className="fixed mt-12 bottom-0 bg-white p-4 right-0 left-0 z-50">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
                     <div className="flex items-center space-x-4">
