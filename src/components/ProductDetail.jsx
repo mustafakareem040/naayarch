@@ -82,7 +82,7 @@ export default function ProductDetail({
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
-                <h1 className="text-xl mb-1">{title}</h1>
+                <h1 className="text-xl mb-1 capitalize">{title}</h1>
 
                 {sizeNames && sizeNames.length > 0 && (
                     <div className="mb-6 font-serif">
@@ -142,7 +142,7 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-
+                <footer className="fixed bottom-5 bg-white p-4 right-0 left-0 z-50">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
                     <div className="flex items-center space-x-4">
@@ -155,7 +155,7 @@ export default function ProductDetail({
                         <span className="text-lg font-medium">{quantity}</span>
                         <button
                             onClick={() => setQuantity(quantity + 1)}
-                            className="w-7 h-6 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                            className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
                         >
                             <Plus className="w-4 h-4 text-[#3B5345]"/>
                         </button>
@@ -172,6 +172,7 @@ export default function ProductDetail({
                     </svg>
                     Add To Cart
                 </button>
+                </footer>
             </div>
         </div>
     );

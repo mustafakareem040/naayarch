@@ -29,7 +29,7 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => (
                 className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute min-h-[84px] bottom-0 left-0 right-0 bg-gradient-custom rounded-t-lg p-2 flex flex-col justify-end">
-                <h3 className="font-serif line-clamp-2 overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
+                <h3 className="font-serif line-clamp-2 capitalize overflow-ellipsis font-medium text-xs sm:text-sm leading-tight tracking-tight text-[#181717] mb-auto">
                     {name}
                 </h3>
                 <div className="flex justify-between items-center mt-2">
