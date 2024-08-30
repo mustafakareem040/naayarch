@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Heart, Minus, Plus } from 'lucide-react';
+import {ArrowLeft, Heart, Minus, Plus} from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -71,13 +71,13 @@ export default function ProductDetail({
                     </div>
                 ))}
             </Slider>
-            <button className="absolute top-4 left-4 z-10" onClick={router.back}>
-                <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
+            <button className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10" onClick={router.back}>
+                <ArrowLeft width={30} height={30} strokeWidth={1}/>
             </button>
-            <div className="h-12 w-12 bg-white-gradient flex justify-center items-center">
+            <button className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center">
             <Heart
-                className="w-7 h-7 absolute top-4 right-4 z-10 text-transparent stroke-1 stroke-[#3B5345] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
-            </div>
+                className="w-[1.85rem] h-[1.85rem] z-10 text-transparent stroke-1 stroke-[#C91C1C] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
+            </button>
 
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
