@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
 import AsyncNavBar from "@/components/AsyncNavBar";
-
+export const experimental_ppr = true
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, { next: { revalidate: 3600 } });
     if (!response.ok) {
