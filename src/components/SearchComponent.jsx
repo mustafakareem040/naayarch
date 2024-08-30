@@ -1,13 +1,20 @@
 'use client'
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import Image from "next/image";
 import FilterComponent from "@/components/FilterComponent";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter, useSearchParams } from 'next/navigation';
 
-const SearchComponent = ({ onSearch }) => {
-    const [localQuery, setLocalQuery] = useState('');
+const SearchComponent = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [localQuery, setLocalQuery] = useState(searchParams.get('search') || '');
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
+
+    useEffect(() => {
+        setLocalQuery(searchParams.get('search') || '');
+    }, [searchParams]);
 
     const debounce = useCallback((func, delay) => {
         let timeoutId;
@@ -19,9 +26,12 @@ const SearchComponent = ({ onSearch }) => {
 
     const debouncedSearch = useCallback(
         debounce((value) => {
-            onSearch(value);
+            const params = new URLSearchParams(searchParams);
+            params.set('search', value);
+            params.set('page', '1');
+            router.push(`/products?${params.toString()}`);
         }, 300),
-        [onSearch, debounce]
+        [router, searchParams, debounce]
     );
 
     const handleInputChange = useCallback((e) => {
@@ -41,13 +51,13 @@ const SearchComponent = ({ onSearch }) => {
     return (
         <>
             <div className="flex mb-4 items-center space-x-2">
-                <div className="relative font-sans mr-4 flex-grow">
+                <div className="relative font-serif mr-4 flex-grow">
                     <input
                         type="text"
                         placeholder="Search for product"
                         value={localQuery}
                         onChange={handleInputChange}
-                        className="w-full font-sans text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
+                        className="w-full font-serif text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
                     />
                     <Image
                         src="/search.svg"
