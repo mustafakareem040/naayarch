@@ -24,13 +24,13 @@ const SearchComponent = () => {
         };
     }, []);
 
-    const debouncedSearch = useCallback(
-        debounce((value) => {
-            const params = new URLSearchParams(searchParams);
-            params.set('search', value);
-            params.set('page', '1');
-            router.push(`/products?${params.toString()}`);
-        }, 300),
+    const debouncedSearch = useMemo(() =>
+            debounce((value) => {
+                const params = new URLSearchParams(searchParams);
+                params.set('search', value);
+                params.set('page', '1');
+                router.push(`/products?${params.toString()}`);
+            }, 300),
         [router, searchParams, debounce]
     );
 
@@ -62,6 +62,7 @@ const SearchComponent = () => {
                     <Image
                         src="/search.svg"
                         width={20}
+                        unoptimized
                         height={20}
                         alt="search"
                         className="absolute opacity-50 left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -76,6 +77,7 @@ const SearchComponent = () => {
                         width={20}
                         height={20}
                         alt="filter"
+                        unoptimized
                         className="fill-white"
                     />
                     <span className="text-sm">Filter</span>

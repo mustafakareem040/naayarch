@@ -26,7 +26,7 @@ const ProductFilterComponent = ({onFilter, modalRef, filter, setFilter}) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
             handleFilterClose();
         }
-    }, [handleFilterClose]);
+    }, [handleFilterClose, modalRef]);
 
     const handleApplyFilter = () => {
         onFilter({ priceRange, inStock, sortBy });
