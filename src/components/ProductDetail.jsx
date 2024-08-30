@@ -142,7 +142,7 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer className="fixed bottom-5 bg-white p-4 right-0 left-0 z-50">
+                <footer className="fixed bottom-5 bg-white px-4 pt-4 right-0 left-0 z-50">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
                     <div className="flex items-center space-x-4">
