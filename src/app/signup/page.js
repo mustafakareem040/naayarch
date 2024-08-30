@@ -4,6 +4,7 @@ import {NavBar} from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import {NotificationProvider} from "@/components/NotificationContext";
 import AsyncNavBar from "@/components/AsyncNavBar";
+export const experimental_ppr = true
 
 export default function SignUp() {
     return (
