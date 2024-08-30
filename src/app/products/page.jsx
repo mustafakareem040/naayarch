@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 import ProductList from '@/components/ProductList';
 import SearchComponent from '@/components/SearchComponent';
 import Pagination from '@/components/Pagination';
@@ -6,6 +6,7 @@ import { fetchProducts } from '@/lib/api';
 import ProductSkeleton from "@/components/ProductSkeleton";
 import Link from "next/link";
 import Image from "next/image";
+import AsyncNavBar from "@/components/AsyncNavBar";
 
 export const dynamic = 'force-dynamic';
 export const experimental_ppr = true
@@ -19,6 +20,7 @@ async function ProductsPage({ searchParams }) {
 
     return (
         <>
+            <AsyncNavBar />
             <header className="flex items-center mb-6">
                 <Link className="relative z-20" href={"/"}>
                     <Image src="/arrow-left.svg" unoptimized={true} width={40} height={40} alt="left" />

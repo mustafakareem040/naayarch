@@ -1,6 +1,7 @@
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
+import AsyncNavBar from "@/components/AsyncNavBar";
 
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, { next: { revalidate: 3600 } });
@@ -32,8 +33,11 @@ async function ProductContent({ id }) {
 
 export default function ProductDetailsPage({ params }) {
     return (
-        <Suspense fallback={<Loading />}>
-            <ProductContent id={params.id} />
-        </Suspense>
+        <>
+        <AsyncNavBar />
+            <Suspense fallback={<Loading />}>
+                <ProductContent id={params.id} />
+            </Suspense>
+        </>
     );
 }

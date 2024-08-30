@@ -3,7 +3,7 @@ import {NavBar} from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import {Profile} from "@/components/Profile";
 import AsyncNavBar from "@/components/AsyncNavBar";
-
+export const experimental_ppr = true
 export default function ProfilePage() {
     return (
         <>

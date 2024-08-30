@@ -2,12 +2,11 @@ import { Suspense } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-export const fetchCache = 'force-no-store';
 export const dynamic = "force-dynamic"
 export async function fetchCategories() {
     const timestamp = Date.parse(new Date().toString());
     const res = await fetch(`https://api.naayiq.com/categories?tid=${timestamp}`,
-        { cache: 'no-cache'});
+        { next: {revalidate: 600}});
     if (!res.ok) {
         throw new Error('Failed to fetch categories');
     }
