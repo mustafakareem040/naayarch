@@ -22,9 +22,8 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => (
             <Image
                 src={imageUrl}
                 alt={name}
-                fill
-                unoptimized
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                fill={true}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"
                 onError={(e) => { e.target.src = "/noimage.png"; }}
                 className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
             />
