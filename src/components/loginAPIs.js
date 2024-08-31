@@ -13,6 +13,33 @@ export async function login(email, password, rememberMe) {
         }
     );
 }
+
+export async function logout() {
+    const response = await fetch(
+        "https://api.naayiq.com/user/logout",
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+        }
+    );
+    if (response.ok) {
+        Cookies.remove('accessToken');
+    }
+    return response;
+}
+
+export async function checkAuth() {
+    return await fetch(
+        "https://api.naayiq.com/user/check-auth",
+        {
+            method: 'GET',
+            credentials: "include",
+        }
+    );
+}
 export async function signUp(name, email, password, phone) {
     return await fetch(
         "https://api.naayiq.com/user/signup",
@@ -27,19 +54,7 @@ export async function signUp(name, email, password, phone) {
     );
 }
 
-export async function logout() {
-    const x = await fetch(
-        "https://api.naayiq.com/user/logout",
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        }
-    );
-    Cookies.remove("token");
-    return x;
-}
+
 
 
 export default function setCookies(data, rememberMe=false, signup=false)
