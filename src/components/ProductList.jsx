@@ -31,7 +31,7 @@ export default function ProductList({ initialProducts }) {
                     id={product.id}
                     name={product.name}
                     price={formatPrice(getCheapestPrice(product))}
-                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]?.url}` || "/placeholder.png"}
+                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
                 />
             ))}
         </div>
