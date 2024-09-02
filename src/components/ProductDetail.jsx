@@ -1,11 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import {ArrowLeft, Heart, Minus, Plus} from 'lucide-react';
+import { ArrowLeft, Heart, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 export default function ProductDetail({
                                           images,
@@ -24,6 +26,8 @@ export default function ProductDetail({
     const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);
     const [quantity, setQuantity] = useState(1);
     const [currentPrice, setCurrentPrice] = useState(price);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
     const router = useRouter()
 
     useEffect(() => {
@@ -34,7 +38,7 @@ export default function ProductDetail({
     }, [selectedSize, sizeNames, sizePrices]);
 
     const sliderSettings = {
-        dots: true,
+        dots: images.length > 1,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
@@ -55,22 +59,31 @@ export default function ProductDetail({
         },
     };
 
+    const lightboxSlides = images.map(src => ({ src }));
+
     return (
-        <div className="flex overflow-x-hidden font-serif font-medium flex-col  -mt-5 -mx-4 bg-white">
+        <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
             <Slider {...sliderSettings} className="w-full h-[55vh]">
                 {images.map((image, index) => (
-                    <div key={index} className="relative w-full h-[60vh]">
+                    <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
                             src={image || '/noimage.png'}
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
-                            className="w-full object-cover"
+                            className="w-full object-cover cursor-pointer"
                             priority={index === 0}
                         />
                     </div>
                 ))}
             </Slider>
+
+            <Lightbox
+                open={lightboxOpen}
+                close={() => setLightboxOpen(false)}
+                index={lightboxIndex}
+                slides={lightboxSlides}
+            />
             <button
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
                 onClick={router.back}>
