@@ -65,7 +65,7 @@ export default function ProductDetail({
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
-                            className="object-scale-down"
+                            className="w-full h-[50vh]"
                             priority={index === 0}
                         />
                     </div>
