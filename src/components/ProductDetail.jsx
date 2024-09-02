@@ -85,7 +85,7 @@ export default function ProductDetail({
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
-                <h1 className="text-xl mb-1 capitalize">{title}</h1>
+                <h1 className="text-xl font-semibold mb-1 capitalize">{title}</h1>
 
                 {sizeNames && sizeNames.length > 0 && (
                     <div className="mb-6 font-serif">
@@ -138,7 +138,7 @@ export default function ProductDetail({
                 )}
 
                 <div className="mb-6 pb-28">
-                    <h2 className="text-xl font-medium mb-2">Description</h2>
+                    <h2 className="text-xl font-semibold mb-2">Description</h2>
                     <p
                         style={{direction: "rtl"}}
                         className="text-xl font-normal text-left font-serif"
