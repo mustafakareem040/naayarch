@@ -56,10 +56,10 @@ export default function ProductDetail({
     };
 
     return (
-        <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
-            <Slider {...sliderSettings} className="w-full mb-4">
+        <div className="flex overflow-x-hidden font-serif font-medium flex-col  -mt-5 -mx-4 bg-white">
+            <Slider {...sliderSettings} className="w-full h-[55vh]">
                 {images.map((image, index) => (
-                    <div key={index} className="relative w-full h-[50vh]">
+                    <div key={index} className="relative w-full h-[60vh]">
                         <Image
                             src={image || '/noimage.png'}
                             alt={`Product image ${index + 1}`}
