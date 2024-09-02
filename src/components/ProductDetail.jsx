@@ -145,9 +145,9 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-xl bottom-0 bg-white p-4 right-0 left-0 z-50">
-                <div className="flex justify-between items-center mb-6">
-                    <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
+                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
+                    <div className="flex justify-between items-center mb-6">
+                        <span className="text-xl font-serif font-medium">{currentPrice * quantity} IQD</span>
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
