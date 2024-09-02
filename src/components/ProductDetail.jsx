@@ -7,6 +7,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
 
 export default function ProductDetail({
@@ -83,7 +85,23 @@ export default function ProductDetail({
                 close={() => setLightboxOpen(false)}
                 index={lightboxIndex}
                 slides={lightboxSlides}
-            />
+                plugins={[Zoom, Fullscreen]}
+                carousel={{
+                    finite: images.length <= 1,
+                    navigationDisabled: images.length <= 1
+                }}
+                animation={{ zoom: 500 }}
+                zoom={{
+                    maxZoomPixelRatio: 5,
+                    zoomInMultiplier: 2,
+                    doubleTapDelay: 300,
+                    doubleClickDelay: 300,
+                    doubleClickMaxStops: 2,
+                    keyboardMoveDistance: 50,
+                    wheelZoomDistanceFactor: 100,
+                    pinchZoomDistanceFactor: 100,
+                    scrollToZoom: true,
+                }} />
             <button
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
                 onClick={router.back}>
