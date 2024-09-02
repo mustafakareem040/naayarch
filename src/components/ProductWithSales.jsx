@@ -7,6 +7,7 @@ export function ProductWithSales() {
     return (
         <div className="bg-[#F6F3F17F] mb-8">
             <Image src="/star.svg" alt={"star"} width={50} height={50}
+                   unoptimized={true}
             className="absolute scale-75 ssm2:left-10 ssm3:left-16 ssm5:left-[20%] ssm:scale-100" />
             <CustomProduct
                 title="Special Offer"

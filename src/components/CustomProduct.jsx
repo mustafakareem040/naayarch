@@ -10,7 +10,7 @@ const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flo
             <p className="text-center font-medium font-sans text-3xl md:text-3xl lg:text-[3em]">{title}</p>
             {!hideFlower && flower && (
                 <div className="absolute left-[45%] sm:left-1/2 rounded-3xl transform -translate-x-1/2 z-10">
-                    <Image src={flower} className="rounded-3xl" alt="Flower" width={96} height={96}/>
+                    <Image unoptimized={true} src={flower} className="rounded-3xl" alt="Flower" width={96} height={96}/>
                 </div>
             )}
             <div
