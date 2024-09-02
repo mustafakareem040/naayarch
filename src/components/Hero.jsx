@@ -9,6 +9,7 @@ export default function Hero() {
                 alt="Ice texture"
                 fill
                 sizes="(max-width: 768px) 100vw, 768px"
+                unoptimized={true}
                 priority
                 className="object-cover"
             />

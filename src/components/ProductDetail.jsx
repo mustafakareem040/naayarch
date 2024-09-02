@@ -56,25 +56,28 @@ export default function ProductDetail({
     };
 
     return (
-        <div className="flex overflow-x-hidden font-sans font-medium flex-col -mt-5 -mx-4 bg-white">
+        <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
             <Slider {...sliderSettings} className="w-full h-[35vh] mb-4">
                 {images.map((image, index) => (
-                    <div key={index} className="relative max-h-[40vh] aspect-[430/437] w-full">
+                    <div key={index} className="relative w-full" style={{aspectRatio: '1/1'}}>
                         <Image
                             src={image || '/noimage.png'}
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
-                            className="object-cover max-h-[40vh]"
+                            className="object-contain"
                             priority={index === 0}
                         />
                     </div>
                 ))}
             </Slider>
-            <button className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10" onClick={router.back}>
+            <button
+                className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
+                onClick={router.back}>
                 <ArrowLeft width={30} height={30} strokeWidth={1}/>
             </button>
-            <button className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center">
+            <button
+                className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center">
             <Heart
                 className="w-[1.85rem] h-[1.85rem] z-10 text-transparent stroke-1 stroke-[#C91C1C] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
             </button>
@@ -142,7 +145,7 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer className="fixed mt-12 border-[#695C5C]/30 border-t bottom-0 bg-white p-4 right-0 left-0 z-50">
+                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-lg bg-white p-4 right-0 left-0 z-50">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-xl font-serif font-medium">{currentPrice*quantity} IQD</span>
                     <div className="flex items-center space-x-4">

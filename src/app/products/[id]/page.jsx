@@ -34,7 +34,6 @@ async function ProductContent({ id }) {
 export default function ProductDetailsPage({ params }) {
     return (
         <>
-        <AsyncNavBar />
             <Suspense fallback={<Loading />}>
                 <ProductContent id={params.id} />
             </Suspense>
