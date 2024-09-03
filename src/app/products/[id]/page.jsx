@@ -1,9 +1,11 @@
+'use client'
 import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
-import AsyncNavBar from "@/components/AsyncNavBar";
-import {NotificationProvider} from "@/components/NotificationContext";
-export const experimental_ppr = true
+import { NotificationProvider } from "@/components/NotificationContext";
+
+export const experimental_ppr = true;
+
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, { next: { revalidate: 3600 } });
     if (!response.ok) {
@@ -12,11 +14,8 @@ async function fetchProduct(id) {
     return response.json();
 }
 
-async function ProductContent({ id }) {
-    const { product } = await fetchProduct(id);
-
+function ProductContent({ product }) {
     return (
-        <NotificationProvider>
         <ProductDetail
             images={product.images?.map((image) => `https://storage.naayiq.com/resources/${image.url}`)}
             sizeNames={product.sizes?.map((size) => size.name)}
@@ -30,16 +29,27 @@ async function ProductContent({ id }) {
             description={product.description.replace(/\n/g, '<br />')}
             price={product.price ?? product.sizes[0]?.price ?? "N/A"}
         />
-        </NotificationProvider>
     );
 }
 
 export default function ProductDetailsPage({ params }) {
     return (
-        <>
+        <NotificationProvider>
             <Suspense fallback={<Loading />}>
-                <ProductContent id={params.id} />
+                <ProductContentWrapper id={params.id} />
             </Suspense>
-        </>
+        </NotificationProvider>
     );
+}
+
+function ProductContentWrapper({ id }) {
+    const [product, setProduct] = React.useState(null);
+
+    React.useEffect(() => {
+        fetchProduct(id).then(({ product }) => setProduct(product));
+    }, [id]);
+
+    if (!product) return null;
+
+    return <ProductContent product={product} />;
 }
