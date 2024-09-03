@@ -10,6 +10,7 @@ import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
+import {useNotification} from "@/components/NotificationContext";
 
 export default function ProductDetail({
                                           images,
@@ -30,7 +31,10 @@ export default function ProductDetail({
     const [currentPrice, setCurrentPrice] = useState(price);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
+    const { addNotification } = useNotification();
+    const [isAddedToCart, setIsAddedToCart] = useState(false);
     const router = useRouter()
+
 
     useEffect(() => {
         if (selectedSize) {
@@ -38,7 +42,34 @@ export default function ProductDetail({
             setCurrentPrice(sizePrices[sizeIndex]);
         }
     }, [selectedSize, sizeNames, sizePrices]);
+    const handleAddToCart = async () => {
+        try {
+            const response = await fetch('https://naayiq.com/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    selectedSize,
+                    selectedColor,
+                    quantity,
+                    price: currentPrice
+                }),
+            });
 
+            if (response.ok) {
+                setIsAddedToCart(true);
+                addNotification('success', 'Product Added To Cart');
+            } else {
+                console.log('called')
+                addNotification('error', 'Failed to add product to cart');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            addNotification('error', 'Failed to add product to cart');
+        }
+    };
     const sliderSettings = {
         dots: images.length > 1,
         infinite: false,
@@ -196,16 +227,40 @@ export default function ProductDetail({
                     </div>
                 </div>
 
-                <button
-                    className="w-full font-serif bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center">
-                    <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    Add To Cart
-                </button>
+                    <button
+                        onClick={handleAddToCart}
+                        className={`w-full font-serif ${isAddedToCart ? 'bg-[#4CAF50] hover:bg-[#45a049]' : 'bg-[#3B5345] hover:bg-[#2E4035]'} text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300`}
+                    >
+                        {isAddedToCart ? (
+                            <>
+                                <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 7L9 18L4 13" stroke="white" strokeWidth="2" strokeLinecap="round"
+                                          strokeLinejoin="round"/>
+                                </svg>
+                                Buy Now
+                            </>
+                        ) : (
+                            <>
+                                <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
+                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path
+                                        d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
+                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Add To Cart
+                            </>
+                        )}
+                    </button>
                 </footer>
             </div>
         </div>

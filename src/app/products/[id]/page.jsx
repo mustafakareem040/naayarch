@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
 import AsyncNavBar from "@/components/AsyncNavBar";
+import {NotificationProvider} from "@/components/NotificationContext";
 export const experimental_ppr = true
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, { next: { revalidate: 3600 } });
@@ -15,6 +16,7 @@ async function ProductContent({ id }) {
     const { product } = await fetchProduct(id);
 
     return (
+        <NotificationProvider>
         <ProductDetail
             images={product.images?.map((image) => `https://storage.naayiq.com/resources/${image.url}`)}
             sizeNames={product.sizes?.map((size) => size.name)}
@@ -28,6 +30,7 @@ async function ProductContent({ id }) {
             description={product.description.replace(/\n/g, '<br />')}
             price={product.price ?? product.sizes[0]?.price ?? "N/A"}
         />
+        </NotificationProvider>
     );
 }
 
