@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Heart, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
+import '@/components/NotificationStyles.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -62,7 +63,6 @@ export default function ProductDetail({
                 setIsAddedToCart(true);
                 addNotification('success', 'Product Added To Cart');
             } else {
-                console.log('called')
                 addNotification('error', 'Failed to add product to cart');
             }
         } catch (error) {
