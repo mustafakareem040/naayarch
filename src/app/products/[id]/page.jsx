@@ -1,4 +1,3 @@
-'use client'
 import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
@@ -14,7 +13,9 @@ async function fetchProduct(id) {
     return response.json();
 }
 
-function ProductContent({ product }) {
+async function ProductContent({ id }) {
+    const { product } = await fetchProduct(id);
+
     return (
         <ProductDetail
             images={product.images?.map((image) => `https://storage.naayiq.com/resources/${image.url}`)}
@@ -36,20 +37,8 @@ export default function ProductDetailsPage({ params }) {
     return (
         <NotificationProvider>
             <Suspense fallback={<Loading />}>
-                <ProductContentWrapper id={params.id} />
+                <ProductContent id={params.id} />
             </Suspense>
         </NotificationProvider>
     );
-}
-
-function ProductContentWrapper({ id }) {
-    const [product, setProduct] = React.useState(null);
-
-    React.useEffect(() => {
-        fetchProduct(id).then(({ product }) => setProduct(product));
-    }, [id]);
-
-    if (!product) return null;
-
-    return <ProductContent product={product} />;
 }
