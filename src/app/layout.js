@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
-export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "auto" });
+export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [
         {
