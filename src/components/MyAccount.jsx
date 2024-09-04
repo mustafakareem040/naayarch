@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, Mail, Phone, Lock } from 'lucide-react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,11 +12,7 @@ const MyAccount = () => {
     const [dateOfBirth, setDateOfBirth] = useState({ month: '', day: '', year: '' });
     const router = useRouter();
 
-    useEffect(() => {
-        fetchUserInfo();
-    }, [fetchUserInfo]);
-
-    const fetchUserInfo = async () => {
+    const fetchUserInfo = useCallback(async () => {
         try {
             const response = await fetch('https://api.naayiq.com/user/check-auth',
                 {credentials: "include"});
@@ -33,8 +29,13 @@ const MyAccount = () => {
             }
         } catch (error) {
             console.error('Error fetching user info:', error);
+            router.push("/login")
         }
-    };
+    }, [router]);
+
+    useEffect(() => {
+        fetchUserInfo();
+    }, [fetchUserInfo]);
 
     const handleDateChange = (field, value) => {
         setDateOfBirth(prev => ({ ...prev, [field]: value }));
@@ -77,14 +78,13 @@ const MyAccount = () => {
     return (
         <div className="bg-white min-h-screen p-6 flex flex-col">
             <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={router.back}>
+                <button className="relative z-20" onClick={() => router.back()}>
                     <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
                 </button>
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                     My Account
                 </h1>
             </header>
-
             <form className="flex-1 font-serif flex flex-col" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
