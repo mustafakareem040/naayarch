@@ -1,22 +1,22 @@
 import React, { Suspense } from 'react';
 import ProductList from '@/components/ProductList';
 import SearchComponent from '@/components/SearchComponent';
-import Pagination from '@/components/Pagination';
-import { fetchProducts } from '@/lib/api';
 import ProductSkeleton from "@/components/ProductSkeleton";
 import Link from "next/link";
 import Image from "next/image";
 import AsyncNavBar from "@/components/AsyncNavBar";
+import {fetchInitialProducts} from "@/lib/api";
 
 export const dynamic = 'force-dynamic';
-export const experimental_ppr = true
+export const experimental_ppr = true;
+
 async function ProductsPage({ searchParams }) {
-    const page = parseInt(searchParams.page) || 1;
+    const page = 1;
     const search = searchParams.search || '';
     const category = searchParams.c || '';
     const subCategory = searchParams.sc || '';
 
-    const { products, pagination } = await fetchProducts(page, search, category, subCategory);
+    const initialProducts = await fetchInitialProducts(page, search, category, subCategory);
 
     return (
         <>
@@ -33,15 +33,8 @@ async function ProductsPage({ searchParams }) {
             </Suspense>
 
             <Suspense fallback={<ProductSkeleton />}>
-                <ProductList initialProducts={products} />
+                <ProductList initialProducts={initialProducts} />
             </Suspense>
-
-            {pagination.totalPages > 1 && (
-                <Pagination
-                    currentPage={pagination.currentPage}
-                    totalPages={pagination.totalPages}
-                />
-            )}
         </>
     );
 }
