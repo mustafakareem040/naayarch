@@ -47,6 +47,15 @@ const MyAccount = () => {
             alert("Passwords don't match");
             return;
         }
+
+        // Validate and format the date of birth
+        let formattedDOB = null;
+        if (dateOfBirth.year && dateOfBirth.month && dateOfBirth.day) {
+            const month = dateOfBirth.month.padStart(2, '0');
+            const day = dateOfBirth.day.padStart(2, '0');
+            formattedDOB = `${dateOfBirth.year}-${month}-${day}`;
+        }
+
         try {
             const response = await fetch(`https://api.naayiq.com/user/${user.userId}`, {
                 method: 'PUT',
@@ -57,15 +66,17 @@ const MyAccount = () => {
                     name: `${e.target.firstName.value} ${e.target.lastName.value}`,
                     email: e.target.email.value,
                     phone: e.target.phone.value,
-                    dob: `${dateOfBirth.year}-${dateOfBirth.month}-${dateOfBirth.day}`,
+                    dob: formattedDOB, // Use formatted DOB or null if incomplete
                     password: newPassword || undefined,
                 }),
                 credentials: "include"
             });
             if (response.ok) {
                 alert('Information updated successfully');
+                fetchUserInfo(); // Refresh user data after successful update
             } else {
-                alert('Failed to update information');
+                const errorData = await response.json();
+                alert(`Failed to update information: ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error updating user info:', error);
