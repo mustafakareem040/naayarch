@@ -8,7 +8,9 @@ import { Profile } from "@/components/Profile";
 import Image from "next/image";
 
 async function getUserData() {
-    const response = await fetch('https://api.naayiq.com/user/check-auth');
+    const response = await fetch('https://api.naayiq.com/user/check-auth', {
+        credentials: true,
+    });
     if (!response.ok) {
         throw new Error('Failed to fetch user data');
     }
