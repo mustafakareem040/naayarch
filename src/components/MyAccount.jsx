@@ -59,6 +59,7 @@ const MyAccount = () => {
                     dob: `${dateOfBirth.year}-${dateOfBirth.month}-${dateOfBirth.day}`,
                     password: newPassword || undefined,
                 }),
+                credentials: "include"
             });
             if (response.ok) {
                 alert('Information updated successfully');
