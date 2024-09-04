@@ -47,7 +47,6 @@ export default function ProfileClient() {
 
         return (
             <>
-                <AsyncNavBar bg={"#F6F3F1"}/>
                 <div className="relative left-0 -translate-y-[10%] -m-4 right-0 min-h-[100vw] top-0 w-[100vw]">
                     <div className="font-sans absolute top-1/2 z-10 left-0 right-0 text-center text-3xl">
                         <p>Hi {userData.name}!</p>

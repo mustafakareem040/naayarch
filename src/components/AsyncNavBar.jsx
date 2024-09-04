@@ -2,26 +2,24 @@ import { Suspense } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-export const dynamic = "force-dynamic"
-export async function fetchCategories() {
-    const res = await fetch(`https://api.naayiq.com/categories`,
-        { next: {revalidate: 600}});
+import { cache } from 'react';
+
+export const dynamic = "force-dynamic";
+
+const fetchWithRevalidate = cache(async (url) => {
+    const res = await fetch(url, {
+        next: {
+            revalidate: 60
+        }
+    });
     if (!res.ok) {
-        throw new Error('Failed to fetch categories');
+        throw new Error(`Failed to fetch data from ${url}`);
     }
     return res.json();
-}
+});
 
-
-
-export async function fetchSubcategories() {
-    const res = await fetch(`https://api.naayiq.com/subcategories`,
-        { next: {revalidate: 600}});
-    if (!res.ok) {
-        throw new Error('Failed to fetch subcategories');
-    }
-    return res.json();
-}
+const fetchCategories = () => fetchWithRevalidate('https://api.naayiq.com/categories');
+const fetchSubcategories = () => fetchWithRevalidate('https://api.naayiq.com/subcategories');
 
 function NavBarSkeleton() {
     return (
@@ -39,17 +37,19 @@ function NavBarSkeleton() {
     );
 }
 
-export default function AsyncNavBar({bg}) {
+export default function AsyncNavBar({ bg }) {
     return (
         <Suspense fallback={<NavBarSkeleton />}>
-            <AsyncNavBarContent bg={bg}/>
+            <AsyncNavBarContent bg={bg} />
         </Suspense>
     );
 }
 
-async function AsyncNavBarContent({bg}) {
-    const categories = await fetchCategories();
-    const subCategories = await fetchSubcategories();
-    const background = bg !== undefined ? bg : "#FFFFFF"
+async function AsyncNavBarContent({ bg }) {
+    const [categories, subCategories] = await Promise.all([
+        fetchCategories(),
+        fetchSubcategories()
+    ]);
+    const background = bg !== undefined ? bg : "#FFFFFF";
     return <NavBar bg={background} categories={categories} subCategories={subCategories} />;
 }
