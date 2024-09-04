@@ -7,7 +7,6 @@ export default function NoProductsFound() {
                 <Image src="/no-product-found.gif"
                        alt="No Products Found"
                        className="object-contain"
-                       quality={100}
                        fill={true}
                        priority={true}
                 />
