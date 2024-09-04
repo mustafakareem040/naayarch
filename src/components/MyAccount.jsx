@@ -21,10 +21,15 @@ const MyAccount = () => {
                 setUser(data);
                 if (data.dob) {
                     const [year, month, day] = data.dob.split('-');
-                    setDateOfBirth({ year, month, day });
+                    setDateOfBirth({
+                        year,
+                        month: month.replace(/^0/, ''), // Remove leading zero
+                        day: day.replace(/^0/, '')      // Remove leading zero
+                    });
+                } else {
+                    setDateOfBirth({ year: '', month: '', day: '' });
                 }
-            }
-            else {
+            } else {
                 router.push("/login");
             }
         } catch (error) {
@@ -38,7 +43,7 @@ const MyAccount = () => {
     }, [fetchUserInfo]);
 
     const handleDateChange = (field, value) => {
-        setDateOfBirth(prev => ({ ...prev, [field]: value }));
+        setDateOfBirth(prev => ({ ...prev, [field]: value.replace(/^0/, '') }));
     };
 
     const handleSubmit = async (e) => {
@@ -56,9 +61,10 @@ const MyAccount = () => {
         };
 
         // Only include DOB if all fields are filled
+        // In the handleSubmit function:
         if (dateOfBirth.year && dateOfBirth.month && dateOfBirth.day) {
-            const month = dateOfBirth.month.padStart(2, '0');
-            const day = dateOfBirth.day.padStart(2, '0');
+            const month = dateOfBirth.month.toString().padStart(2, '0');
+            const day = dateOfBirth.day.toString().padStart(2, '0');
             updateData.dob = `${dateOfBirth.year}-${month}-${day}`;
         }
 
