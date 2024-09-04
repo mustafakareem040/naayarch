@@ -9,7 +9,7 @@ import Image from "next/image";
 
 async function getUserData() {
     const response = await fetch('https://api.naayiq.com/user/check-auth', {
-        credentials: true,
+        credentials: "include",
     });
     if (!response.ok) {
         throw new Error('Failed to fetch user data');
