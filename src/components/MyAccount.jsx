@@ -48,12 +48,23 @@ const MyAccount = () => {
             return;
         }
 
-        // Validate and format the date of birth
-        let formattedDOB = null;
+        // Prepare the update data
+        const updateData = {
+            name: `${e.target.firstName.value} ${e.target.lastName.value}`,
+            email: e.target.email.value,
+            phone: e.target.phone.value,
+        };
+
+        // Only include DOB if all fields are filled
         if (dateOfBirth.year && dateOfBirth.month && dateOfBirth.day) {
             const month = dateOfBirth.month.padStart(2, '0');
             const day = dateOfBirth.day.padStart(2, '0');
-            formattedDOB = `${dateOfBirth.year}-${month}-${day}`;
+            updateData.dob = `${dateOfBirth.year}-${month}-${day}`;
+        }
+
+        // Only include password if a new one is set
+        if (newPassword) {
+            updateData.password = newPassword;
         }
 
         try {
@@ -62,21 +73,21 @@ const MyAccount = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    name: `${e.target.firstName.value} ${e.target.lastName.value}`,
-                    email: e.target.email.value,
-                    phone: e.target.phone.value,
-                    dob: formattedDOB, // Use formatted DOB or null if incomplete
-                    password: newPassword || undefined,
-                }),
+                body: JSON.stringify(updateData),
                 credentials: "include"
             });
+
             if (response.ok) {
                 alert('Information updated successfully');
                 fetchUserInfo(); // Refresh user data after successful update
             } else {
                 const errorData = await response.json();
-                alert(`Failed to update information: ${errorData.message || 'Unknown error'}`);
+                if (errorData.errors && errorData.errors.length > 0) {
+                    const errorMessages = errorData.errors.map(err => `${err.path}: ${err.msg}`).join('\n');
+                    alert(`Failed to update information:\n${errorMessages}`);
+                } else {
+                    alert('Failed to update information: Unknown error');
+                }
             }
         } catch (error) {
             console.error('Error updating user info:', error);
