@@ -1,10 +1,11 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ProductItem from './ProductItem';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import {fetchMoreProducts} from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
+import NoProductsFound from "@/components/NoProductsFound";
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
@@ -59,7 +60,7 @@ export default function ProductList({ initialProducts }) {
     }, [searchParams, initialProducts]);
 
     if (products.length === 0) {
-        return <div className="text-center font-serif text-red-700">No products found.</div>;
+        return <NoProductsFound />
     }
 
     return (

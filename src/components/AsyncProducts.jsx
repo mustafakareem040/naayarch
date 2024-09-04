@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image"
 import ProductSkeleton from "@/components/ProductSkeleton";
 import SearchParamsHandler from "@/components/SearchParamsHandler";
+import NoProductsFound from "@/components/NoProductsFound";
 const Pagination = lazy(() => import("@/components/Pagination"));
 const ProductsList = lazy(() => import("@/components/ProductList"));
 
@@ -92,7 +93,7 @@ export default function AsyncProducts() {
                 ) : products.length > 0 ? (
                     <ProductsList products={products}/>
                 ) : (
-                    <div className="text-center font-serif text-red-700">No products found.</div>
+                    <NoProductsFound />
                 )}
             </Suspense>
 
