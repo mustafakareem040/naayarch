@@ -4,6 +4,7 @@ import ProductItem from './ProductItem';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import {fetchMoreProducts} from "@/lib/api";
+import ProductLoading from "@/components/ProductLoading";
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
@@ -74,7 +75,7 @@ export default function ProductList({ initialProducts }) {
                     />
                 ))}
             </div>
-            {loading && <div className="text-center mt-4">Loading more products...</div>}
+            {loading && <ProductLoading />}
             <div ref={ref} style={{ height: '20px' }} />
         </>
     );

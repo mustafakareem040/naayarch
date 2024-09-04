@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import AsyncNavBar from "@/components/AsyncNavBar";
 import {fetchInitialProducts} from "@/lib/api";
+import ProductLoading from "@/components/ProductLoading";
 
 export const dynamic = 'force-dynamic';
 export const experimental_ppr = true;
@@ -28,7 +29,7 @@ async function ProductsPage({ searchParams }) {
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
 
-            <Suspense fallback={<div>Loading search...</div>}>
+            <Suspense fallback={<ProductLoading />}>
                 <SearchComponent />
             </Suspense>
 
