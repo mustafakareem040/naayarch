@@ -8,8 +8,8 @@ export async function fetchInitialProducts(page, search, category, subCategory) 
         page: page.toString(),
         limit: PRODUCTS_PER_PAGE.toString(),
         search: search || '',
-        category: category || '',
-        subCategory: subCategory || '',
+        c: category || '',
+        sc: subCategory || '',
     });
 
     try {
