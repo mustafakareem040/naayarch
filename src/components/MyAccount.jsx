@@ -1,39 +1,97 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Mail, Phone, Lock } from 'lucide-react';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
 
 const MyAccount = () => {
+    const [user, setUser] = useState(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState({ month: '', day: '', year: '' });
+    const router = useRouter();
+
+    useEffect(() => {
+        fetchUserInfo();
+    }, [fetchUserInfo]);
+
+    const fetchUserInfo = async () => {
+        try {
+            const response = await fetch('https://api.naayiq.com/user/check-auth');
+            const data = await response.json();
+            if (data.isAuthenticated) {
+                setUser(data);
+                if (data.dob) {
+                    const [year, month, day] = data.dob.split('-');
+                    setDateOfBirth({ year, month, day });
+                }
+            }
+            else {
+                router.push("/login");
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+        }
+    };
 
     const handleDateChange = (field, value) => {
         setDateOfBirth(prev => ({ ...prev, [field]: value }));
     };
-    const router = useRouter()
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (newPassword !== repeatPassword) {
+            alert("Passwords don't match");
+            return;
+        }
+        try {
+            const response = await fetch(`https://api.naayiq.com/user/${user.userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: `${e.target.firstName.value} ${e.target.lastName.value}`,
+                    email: e.target.email.value,
+                    phone: e.target.phone.value,
+                    dob: `${dateOfBirth.year}-${dateOfBirth.month}-${dateOfBirth.day}`,
+                    password: newPassword || undefined,
+                }),
+            });
+            if (response.ok) {
+                alert('Information updated successfully');
+            } else {
+                alert('Failed to update information');
+            }
+        } catch (error) {
+            console.error('Error updating user info:', error);
+            alert('An error occurred while updating information');
+        }
+    };
+
+    if (!user) return <Loading />;
+
     return (
         <div className="bg-white min-h-screen p-6 flex flex-col">
             <header className="flex items-center mb-6">
                 <button className="relative z-20" onClick={router.back}>
                     <Image src="/arrow-left.svg" width={40} height={40} alt="left"/>
                 </button>
-                <h1
-                    className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                     My Account
                 </h1>
             </header>
 
-            <form className="flex-1 font-serif flex flex-col">
+            <form className="flex-1 font-serif flex flex-col" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-600 mb-1">First
-                            Name</label>
-                        <input type="text" id="firstName" className="w-full p-3 border border-gray-300 rounded-lg"
-                               placeholder="Duaa"/>
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-600 mb-1">First Name</label>
+                        <input type="text" id="firstName" className="w-full p-3 border border-gray-300 rounded-lg" defaultValue={user.name.split(' ')[0]}/>
                     </div>
                     <div>
                         <label htmlFor="lastName" className="block text-sm font-medium text-gray-600 mb-1">Last Name</label>
-                        <input type="text" id="lastName" className="w-full p-3 border border-gray-300 rounded-lg" placeholder="Kareem" />
+                        <input type="text" id="lastName" className="w-full p-3 border border-gray-300 rounded-lg" defaultValue={user.name.split(' ')[1] || ''}/>
                     </div>
                 </div>
 
@@ -41,7 +99,7 @@ const MyAccount = () => {
                     <label htmlFor="email" className="block text-sm font-medium text-gray-600 mb-1">Email</label>
                     <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input type="email" id="email" className="w-full pl-10 p-3 border border-gray-300 rounded-lg" placeholder="Duaakareem97@Gmail.com" />
+                        <input type="email" id="email" className="w-full pl-10 p-3 border border-gray-300 rounded-lg" defaultValue={user.email} />
                     </div>
                 </div>
 
@@ -49,7 +107,7 @@ const MyAccount = () => {
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
                     <div className="relative">
                         <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input type="tel" id="phone" className="w-full pl-10 p-3 border border-gray-300 rounded-lg" placeholder="07700000000" />
+                        <input type="tel" id="phone" className="w-full pl-10 p-3 border border-gray-300 rounded-lg" defaultValue={user.phone} />
                     </div>
                 </div>
 
@@ -94,9 +152,33 @@ const MyAccount = () => {
                     <label htmlFor="newPassword" className="block text-sm font-medium text-gray-600 mb-1">New Password</label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                        <input type="password" id="newPassword" className="w-full pl-10 p-3 border border-gray-300 rounded-lg" placeholder="••••••••" />
+                        <input
+                            type="password"
+                            id="newPassword"
+                            className="w-full pl-10 p-3 border border-gray-300 rounded-lg"
+                            placeholder="••••••••"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
                     </div>
                 </div>
+
+                {newPassword && (
+                    <div className="mb-4">
+                        <label htmlFor="repeatPassword" className="block text-sm font-medium text-gray-600 mb-1">Repeat the New Password</label>
+                        <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="password"
+                                id="repeatPassword"
+                                className="w-full pl-10 p-3 border border-gray-300 rounded-lg"
+                                placeholder="••••••••"
+                                value={repeatPassword}
+                                onChange={(e) => setRepeatPassword(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 <button type="submit" className="mt-auto bg-[#3B5345] text-white py-4 rounded-md text-lg font-bold">
                     Save
