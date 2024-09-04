@@ -22,13 +22,7 @@ const nnFont = localFont({
     display: "swap"
 });
 
-async function getSubcategories() {
-    const res = await fetch('https://api.naayiq.com/subcategories', { cache: 'no-store' });
-    if (!res.ok) {
-        throw new Error('Failed to fetch subcategories');
-    }
-    return res.json();
-}
+
 
 
 export const metadata = {
