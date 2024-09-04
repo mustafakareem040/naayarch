@@ -12,7 +12,7 @@ export default function NoProductsFound() {
                        priority={true}
                 />
             </div>
-            <header className="font-semibold font-serif text-center">
+            <header className="font-semibold -translate-y-full font-serif text-center">
                 <p className="text-2xl">No Products Found</p>
                 <p className="text-base text-black/50 leading-none">So let me play in peace</p>
             </header>
