@@ -59,5 +59,5 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => (
         </div>
     </Link>
 ));
-
+ProductItem.displayName = "ProductItem"
 export default ProductItem;
