@@ -66,10 +66,8 @@ export default function ProductList() {
     }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
     useEffect(() => {
-        if (paramsLoaded) {
-            loadMoreProducts();
-        }
-    }, [paramsLoaded]);
+        loadMoreProducts()
+    }, [paramsLoaded, query]);
 
     useEffect(() => {
         if (inView && paramsLoaded) {
