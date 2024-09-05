@@ -53,7 +53,7 @@ export default function ProductList() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [query, hasMore]);
 
     const resetSearch = useCallback(() => {
         setProducts([]);
