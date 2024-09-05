@@ -3,86 +3,105 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import ProductItem from './ProductItem';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import { fetchMoreProducts } from "@/lib/api";
+import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
+import dynamic from "next/dynamic";
+import NoProductsFound from "@/components/NoProductsFound";
+
+const SearchComponent = dynamic(() => import('@/components/SearchComponent'),
+    {ssr: false})
 
 const ITEMS_PER_PAGE = 10;
 
-export default function ProductList({ initialProducts }) {
-    const [products, setProducts] = useState(initialProducts);
-    const [page, setPage] = useState(1);
+export default function ProductList() {
+    const [products, setProducts] = useState([]);
+    const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
-    const prevSearchRef = useRef('');
-
+    const [query, setQuery] = useState("")
+    const [c, setC] = useState("")
+    const [sc, setSc] = useState("")
+    const prevSearch = useRef("")
     const { ref, inView } = useInView({
         threshold: 0,
     });
+    const [paramsLoaded, setParamsLoaded] = useState(false);
+
+    useEffect(() => {
+        setC(searchParams.get("c") || "");
+        setSc(searchParams.get("sc") || "");
+        setParamsLoaded(true);
+    }, [searchParams]);
 
     const loadMoreProducts = useCallback(async () => {
+        if (!paramsLoaded) return;
+
+        let resetProducts = false;
+        if (prevSearch.current !== query) {
+            setPage(0);
+            resetProducts = true;
+            setHasMore(true);
+            prevSearch.current = query;
+        }
+
         if (loading || !hasMore) return;
 
+        console.log('Fetching products...');
         setLoading(true);
-        const nextPage = page + 1;
-        const search = searchParams.get('search') || '';
-        const category = searchParams.get('c') || '';
-        const subCategory = searchParams.get('sc') || '';
+        const nextPage = resetProducts ? 1 : page + 1;
 
         try {
-            const newProducts = await fetchMoreProducts(nextPage, search, category, subCategory);
+            const newProducts = await fetchProducts(nextPage, query, c, sc);
             if (newProducts.length < ITEMS_PER_PAGE) {
                 setHasMore(false);
             }
-            setProducts(prevProducts => [...prevProducts, ...newProducts]);
+            setProducts(resetProducts ? newProducts : prevProducts => [...prevProducts, ...newProducts]);
             setPage(nextPage);
         } catch (error) {
-            console.error('Error fetching more products:', error);
+            console.error('Error fetching products:', error);
         } finally {
             setLoading(false);
         }
-    }, [loading, hasMore, page, searchParams]);
+    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
     useEffect(() => {
-        if (inView) {
+        if (paramsLoaded) {
+            loadMoreProducts();
+        }
+    }, [paramsLoaded]);
+
+    useEffect(() => {
+        if (inView && paramsLoaded) {
             loadMoreProducts();
         }
     }, [inView, loadMoreProducts]);
-
-    useEffect(() => {
-        const currentSearch = searchParams.get('search') || '';
-        if (currentSearch !== prevSearchRef.current) {
-            setProducts(initialProducts);
-            setPage(1);
-            setHasMore(true);
-            prevSearchRef.current = currentSearch;
-        }
-    }, [searchParams, initialProducts]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
     })), [products]);
 
-    if (memoizedProducts.length === 0) {
-        return <div className="text-center font-serif text-red-700">No products found.</div>;
-    }
-
     return (
         <>
-            <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {memoizedProducts.map((product) => (
-                    <ProductItem
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        price={formatPrice(product.cheapestPrice)}
-                        imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                    />
-                ))}
-            </div>
-            {loading && <ProductLoading />}
-            <div ref={ref} style={{ height: '20px' }} />
+            <SearchComponent query={query} setQuery={setQuery} />
+            {loading && products.length === 0 ? <ProductLoading /> :
+                memoizedProducts.length > 0 ? (
+                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {memoizedProducts.map((product) => (
+                            <ProductItem
+                                key={product.id}
+                                id={product.id}
+                                name={product.name}
+                                price={formatPrice(product.cheapestPrice)}
+                                imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                            />
+                        ))}
+                    </div>
+                ) : <NoProductsFound />
+            }
+            {loading && products.length > 0 && <ProductLoading />}
+            <div ref={ref}></div>
         </>
     );
 }

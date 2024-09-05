@@ -1,31 +1,28 @@
 'use client'
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import Image from "next/image";
-import FilterComponent from "@/components/FilterComponent";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter, useSearchParams } from 'next/navigation';
 import { debounce } from 'lodash';
+import dynamic from "next/dynamic";
 
-const SearchComponent = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [localQuery, setLocalQuery] = useState(searchParams.get('search') || '');
+const FilterComponent = dynamic(() => import('@/components/FilterComponent'), {
+    ssr: false
+})
+
+const SearchComponent = ({ query, setQuery }) => {
+    const [localQuery, setLocalQuery] = useState(query);
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
 
     useEffect(() => {
-        setLocalQuery(searchParams.get('search') || '');
-    }, [searchParams]);
+        setLocalQuery(query);
+    }, [query]);
 
     const debouncedSearch = useMemo(
-        () =>
-            debounce((value) => {
-                const params = new URLSearchParams(searchParams);
-                params.set('search', value);
-                params.set('page', '1');
-                router.push(`/products?${params.toString()}`, undefined, { shallow: true });
-            }, 300),
-        [router, searchParams]
+        () => debounce((value) => {
+            setQuery(value);
+        }, 300),
+        [setQuery]
     );
 
     const handleInputChange = useCallback((e) => {

@@ -2,27 +2,16 @@ import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Link from "next/link";
 import Image from "next/image";
-import AsyncNavBar from "@/components/AsyncNavBar";
 import ProductLoading from "@/components/ProductLoading";
-import { fetchInitialProducts } from "@/lib/api";
 
+const AsyncNavBar = dynamic(() => import('@/components/AsyncNavBar') )
 const ProductList = dynamic(() => import('@/components/ProductList'), {
     loading: () => <ProductLoading />,
 });
 
-const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
-    loading: () => <ProductLoading />,
-});
 
 
-async function ProductsPage({ searchParams }) {
-    const page = 1;
-    const search = searchParams.search || '';
-    const category = searchParams.c || '';
-    const subCategory = searchParams.sc || '';
-
-    const initialProducts = await fetchInitialProducts(page, search, category, subCategory);
-
+async function ProductsPage() {
     return (
         <>
             <AsyncNavBar />
@@ -34,11 +23,7 @@ async function ProductsPage({ searchParams }) {
             </header>
 
             <Suspense fallback={<ProductLoading />}>
-                <SearchComponent />
-            </Suspense>
-
-            <Suspense fallback={<ProductLoading />}>
-                <ProductList initialProducts={initialProducts} />
+                <ProductList />
             </Suspense>
         </>
     );
