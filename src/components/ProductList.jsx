@@ -1,28 +1,29 @@
-'use client';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import ProductItem from './ProductItem';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
+import dynamic from "next/dynamic";
+import ProductItem from './ProductItem';
 import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
-import dynamic from "next/dynamic";
 import NoProductsFound from "@/components/NoProductsFound";
 
-const SearchComponent = dynamic(() => import('@/components/SearchComponent'),
-    {ssr: false})
+const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
+    ssr: false,
+    loading: () => <SearchComponentSkeleton />
+});
 
 const ITEMS_PER_PAGE = 10;
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
-    const [query, setQuery] = useState("")
-    const [c, setC] = useState("")
-    const [sc, setSc] = useState("")
-    const prevSearch = useRef("")
+    const [query, setQuery] = useState("");
+    const [c, setC] = useState("");
+    const [sc, setSc] = useState("");
+    const prevSearch = useRef("");
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -35,29 +36,27 @@ export default function ProductList() {
     }, [searchParams]);
 
     const loadMoreProducts = useCallback(async () => {
-        if (!paramsLoaded) return;
+        if (!paramsLoaded || loading || !hasMore) return;
 
         let resetProducts = false;
         if (prevSearch.current !== query) {
-            setPage(0);
+            setPage(1);
             resetProducts = true;
             setHasMore(true);
             prevSearch.current = query;
         }
 
-        if (loading || !hasMore) return;
-
-        console.log('Fetching products...');
         setLoading(true);
-        const nextPage = resetProducts ? 1 : page + 1;
 
         try {
-            const newProducts = await fetchProducts(nextPage, query, c, sc);
+            const newProducts = await fetchProducts(page, query, c, sc);
             if (newProducts.length < ITEMS_PER_PAGE) {
                 setHasMore(false);
             }
-            setProducts(resetProducts ? newProducts : prevProducts => [...prevProducts, ...newProducts]);
-            setPage(nextPage);
+            setProducts(prev => resetProducts ? newProducts : [...prev, ...newProducts]);
+            if (!resetProducts) {
+                setPage(prev => prev + 1);
+            }
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
@@ -66,14 +65,19 @@ export default function ProductList() {
     }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
     useEffect(() => {
-        loadMoreProducts()
-    }, [paramsLoaded, query]);
-
-    useEffect(() => {
-        if (inView && paramsLoaded) {
+        if (paramsLoaded) {
+            setProducts([]);
+            setPage(1);
+            setHasMore(true);
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts]);
+    }, [paramsLoaded, query, c, sc]);
+
+    useEffect(() => {
+        if (inView && paramsLoaded && !loading && hasMore) {
+            loadMoreProducts();
+        }
+    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
@@ -120,4 +124,13 @@ function getCheapestPrice(product) {
 function formatPrice(price) {
     if (price == null) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
+}
+
+function SearchComponentSkeleton() {
+    return (
+        <div className="flex mb-4 items-center space-x-2 animate-pulse">
+            <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>
+            <div className="h-10 w-[5.5rem] bg-gray-200 rounded-md"></div>
+        </div>
+    );
 }
