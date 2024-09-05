@@ -39,14 +39,6 @@ export default function ProductList() {
     const loadMoreProducts = useCallback(async () => {
         if (!paramsLoaded || loading || !hasMore) return;
 
-        let resetProducts = false;
-        if (prevSearch.current !== query) {
-            setPage(1);
-            resetProducts = true;
-            setHasMore(true);
-            prevSearch.current = query;
-        }
-
         setLoading(true);
 
         try {
@@ -54,10 +46,8 @@ export default function ProductList() {
             if (newProducts.length < ITEMS_PER_PAGE) {
                 setHasMore(false);
             }
-            setProducts(prev => resetProducts ? newProducts : [...prev, ...newProducts]);
-            if (!resetProducts) {
-                setPage(prev => prev + 1);
-            }
+            setProducts(prev => [...prev, ...newProducts]);
+            setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
@@ -65,20 +55,25 @@ export default function ProductList() {
         }
     }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
-    useEffect(() => {
-        if (paramsLoaded) {
-            setProducts([]);
-            setPage(1);
-            setHasMore(true);
-            loadMoreProducts();
-        }
-    }, [paramsLoaded, query, c, sc]);
+    const resetSearch = useCallback(() => {
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
+        prevSearch.current = query;
+    }, [query]);
 
     useEffect(() => {
-        if (inView && paramsLoaded && !loading && hasMore) {
+        if (paramsLoaded && (prevSearch.current !== query || page === 1)) {
+            resetSearch();
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
+    }, [paramsLoaded, query, c, sc, resetSearch, loadMoreProducts, page]);
+
+    useEffect(() => {
+        if (inView && paramsLoaded && !loading && hasMore && page > 1) {
+            loadMoreProducts();
+        }
+    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore, page]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
