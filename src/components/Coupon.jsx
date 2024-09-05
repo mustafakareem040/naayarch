@@ -1,6 +1,5 @@
 'use client'
 import React, { useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
@@ -38,7 +37,7 @@ const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
                 </button>
             </div>
             <div className="w-24 h-24 ml-4">
-                <img src={image} alt={type} className="w-full h-full object-cover rounded-lg" />
+                <Image fill={true} src={image} alt={type} className="w-full h-full object-cover rounded-lg" />
             </div>
         </div>
     );

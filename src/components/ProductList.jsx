@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { fetchMoreProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 
-const ITEMS_PER_PAGE = 20; // Adjust based on your API's page size
+const ITEMS_PER_PAGE = 10;
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
@@ -18,7 +18,6 @@ export default function ProductList({ initialProducts }) {
 
     const { ref, inView } = useInView({
         threshold: 0,
-        rootMargin: '200px',
     });
 
     const loadMoreProducts = useCallback(async () => {
