@@ -24,7 +24,7 @@ export default function ProductList() {
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
-    const prevSearchRef = useRef("");
+    const prevSearch = useRef("");
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -36,43 +36,44 @@ export default function ProductList() {
         setParamsLoaded(true);
     }, [searchParams]);
 
-    const loadProducts = useCallback(async (pageToLoad, isNewSearch) => {
-        if (loading || !hasMore) return;
+    const loadMoreProducts = useCallback(async () => {
+        if (!paramsLoaded || loading || !hasMore) return;
 
         setLoading(true);
 
         try {
-            const newProducts = await fetchProducts(pageToLoad, query, c, sc);
+            const newProducts = await fetchProducts(page, query, c, sc);
             if (newProducts.length < ITEMS_PER_PAGE) {
                 setHasMore(false);
             }
-            setProducts(prev => isNewSearch ? newProducts : [...prev, ...newProducts]);
-            setPage(pageToLoad + 1);
+            setProducts(prev => [...prev, ...newProducts]);
+            setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
             setLoading(false);
         }
-    }, [query, c, sc, loading, hasMore]);
+    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
+
+    const resetSearch = useCallback(() => {
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
+        prevSearch.current = query;
+    }, [query]);
 
     useEffect(() => {
-        if (!paramsLoaded) return;
-
-        const isNewSearch = prevSearchRef.current !== query || prevSearchRef.current === "";
-        if (isNewSearch) {
-            setProducts([]);
-            setPage(1);
-            setHasMore(true);
-            prevSearchRef.current = query;
-            loadProducts(1, true);
+        if (paramsLoaded && (prevSearch.current !== query || page === 1)) {
+            resetSearch();
+            loadMoreProducts();
         }
-    }, [paramsLoaded, query, c, sc, loadProducts]);
+    }, [paramsLoaded, query, c, sc, resetSearch, loadMoreProducts, page]);
 
     useEffect(() => {
-        if (inView && !loading && hasMore && page > 1) {
-            loadProducts(page, false);
+        if (inView && paramsLoaded && !loading && hasMore && page > 1) {
+            loadMoreProducts();
         }
-    }, [inView, loading, hasMore, page, loadProducts]);
+    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore, page]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
