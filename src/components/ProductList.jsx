@@ -63,7 +63,7 @@ export default function ProductList() {
         } finally {
             setLoading(false);
         }
-    }, [query, c, sc, loading, hasMore, paramsLoaded]);
+    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
     useEffect(() => {
         if (paramsLoaded) {
