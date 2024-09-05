@@ -3,11 +3,9 @@ import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { debounce } from 'lodash';
-import dynamic from "next/dynamic";
+import FilterComponent from "@/components/FilterComponent";
 
-const FilterComponent = dynamic(() => import('@/components/FilterComponent'), {
-    ssr: false
-})
+
 
 const SearchComponent = ({ query, setQuery }) => {
     const [localQuery, setLocalQuery] = useState(query);
