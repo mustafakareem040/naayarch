@@ -20,7 +20,6 @@ export default function ProductList({ initialProducts }) {
     const searchParams = useSearchParams();
     const { ref, inView } = useInView({
         threshold: 0,
-        rootMargin: '200px',
     });
 
     const search = useMemo(() => searchParams.get('search') || '', [searchParams]);
@@ -75,7 +74,7 @@ export default function ProductList({ initialProducts }) {
     const rowVirtualizer = useVirtualizer({
         count: Math.ceil(products.length / columnCount),
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 275, // Adjust based on your product item height
+        estimateSize: () => 300, // Adjust based on your product item height
         overscan: 5,
         gap: 0
     });
@@ -89,6 +88,7 @@ export default function ProductList({ initialProducts }) {
             ref={parentRef}
             style={{
                 overflow: 'auto',
+                height: "100vh",
                 width: '100%',
             }}
         >
@@ -125,7 +125,8 @@ export default function ProductList({ initialProducts }) {
                     </div>
                 ))}
             </div>
-
+            {loading && <ProductLoading />}
+            <div ref={ref} style={{ height: '20px' }} />
         </div>
     );
 }
