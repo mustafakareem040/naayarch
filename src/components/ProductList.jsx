@@ -1,16 +1,13 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import ProductItem from './ProductItem';
 import { useSearchParams } from 'next/navigation';
-import { useInView } from 'react-intersection-observer';
+import { FixedSizeGrid as Grid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { fetchMoreProducts } from "@/lib/api";
-import dynamic from 'next/dynamic';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import ProductLoading from "@/components/ProductLoading";
 
-const ProductItem = dynamic(() => import('./ProductItem'), { ssr: false });
-const ProductLoading = dynamic(() => import("@/components/ProductLoading"));
-const NoProductsFound = dynamic(() => import("@/components/NoProductsFound"));
-
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10; // Adjust based on your API's page size
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
@@ -18,135 +15,112 @@ export default function ProductList({ initialProducts }) {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
-    const { ref, inView } = useInView({
-        threshold: 0,
-    });
-
-    const search = useMemo(() => searchParams.get('search') || '', [searchParams]);
-    const category = useMemo(() => searchParams.get('c') || '', [searchParams]);
-    const subCategory = useMemo(() => searchParams.get('sc') || '', [searchParams]);
+    const prevSearchRef = useRef('');
+    const gridRef = useRef();
 
     const loadMoreProducts = useCallback(async () => {
         if (loading || !hasMore) return;
 
         setLoading(true);
         const nextPage = page + 1;
+        const search = searchParams.get('search') || '';
+        const category = searchParams.get('c') || '';
+        const subCategory = searchParams.get('sc') || '';
 
         try {
             const newProducts = await fetchMoreProducts(nextPage, search, category, subCategory);
-            if (newProducts.length === 0) {
+            if (newProducts.length < ITEMS_PER_PAGE) {
                 setHasMore(false);
-            } else {
-                setProducts(prevProducts => [...prevProducts, ...newProducts]);
-                setPage(nextPage);
             }
+            setProducts(prevProducts => [...prevProducts, ...newProducts]);
+            setPage(nextPage);
         } catch (error) {
             console.error('Error fetching more products:', error);
         } finally {
             setLoading(false);
         }
-    }, [loading, hasMore, page, search, category, subCategory]);
+    }, [loading, hasMore, page, searchParams]);
 
     useEffect(() => {
-        if (inView) {
+        const currentSearch = searchParams.get('search') || '';
+        if (currentSearch !== prevSearchRef.current) {
+            setProducts(initialProducts);
+            setPage(1);
+            setHasMore(true);
+            prevSearchRef.current = currentSearch;
+        }
+    }, [searchParams, initialProducts]);
+
+    const memoizedProducts = useMemo(() => products.map((product) => ({
+        ...product,
+        cheapestPrice: getCheapestPrice(product),
+    })), [products]);
+
+    const onItemsRendered = useCallback(({ visibleRowStopIndex }) => {
+        if (visibleRowStopIndex > products.length - 10 && !loading && hasMore) {
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts]);
+    }, [loadMoreProducts, products.length, loading, hasMore]);
 
-    useEffect(() => {
-        setProducts(initialProducts);
-        setPage(1);
-        setHasMore(true);
-    }, [search, category, subCategory, initialProducts]);
-
-    const parentRef = React.useRef();
-
-    const columnCount = useMemo(() => {
-        if (typeof window !== 'undefined') {
-            if (window.innerWidth >= 1024) return 5; // lg
-            if (window.innerWidth >= 768) return 4; // md
-            if (window.innerWidth >= 480) return 3; // ssm3
-            return 2; // default
-        }
-        return 2;
-    }, []);
-
-    const rowVirtualizer = useVirtualizer({
-        count: Math.ceil(products.length / columnCount),
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 300, // Adjust based on your product item height
-        overscan: 5,
-        gap: 0
-    });
-
-    if (products.length === 0) {
-        return <NoProductsFound />;
+    if (memoizedProducts.length === 0) {
+        return <div className="text-center font-serif text-red-700">No products found.</div>;
     }
 
-    return (
-        <div
-            ref={parentRef}
-            style={{
-                overflow: 'auto',
-                height: "100vh",
-                width: '100%',
-            }}
-        >
-            <div
-                style={{
-                    height: `${rowVirtualizer.getTotalSize()}px`,
-                    width: '100%',
-                    position: 'relative',
-                }}
-            >
-                {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-                    <div
-                        key={virtualRow.index}
-                        className="absolute top-0 left-0 w-full grid grid-cols-2 gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-                        style={{
-                            height: `${virtualRow.size}px`,
-                            transform: `translateY(${virtualRow.start}px)`,
-                        }}
-                    >
-                        {Array.from({ length: columnCount }).map((_, columnIndex) => {
-                            const productIndex = virtualRow.index * columnCount + columnIndex;
-                            const product = products[productIndex];
-                            if (!product) return null;
-                            return (
-                                <ProductItem
-                                    key={product.id}
-                                    id={product.id}
-                                    name={product.name}
-                                    price={formatPrice(getCheapestPrice(product))}
-                                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                                />
-                            );
-                        })}
-                    </div>
-                ))}
+    const Cell = ({ columnIndex, rowIndex, style }) => {
+        const index = rowIndex * 5 + columnIndex;
+        if (index >= memoizedProducts.length) return null;
+        const product = memoizedProducts[index];
+        return (
+            <div style={style}>
+                <ProductItem
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    price={formatPrice(product.cheapestPrice)}
+                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                />
             </div>
+        );
+    };
+
+    return (
+        <>
+            <AutoSizer>
+                {({ height, width }) => (
+                    <Grid
+                        ref={gridRef}
+                        className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                        columnCount={5}
+                        columnWidth={width / 5}
+                        height={height}
+                        rowCount={Math.ceil(memoizedProducts.length / 5)}
+                        rowHeight={300} // Adjust based on your item height
+                        width={width}
+                        onItemsRendered={onItemsRendered}
+                    >
+                        {Cell}
+                    </Grid>
+                )}
+            </AutoSizer>
             {loading && <ProductLoading />}
-            <div ref={ref} style={{ height: '20px' }} />
-        </div>
+        </>
     );
 }
 
-
-
-const getCheapestPrice = (product) => {
+function getCheapestPrice(product) {
     const prices = [
-        product.price !== "0.00" ? product.price : Math.infinity,
-        ...(product.sizes?.map(size => size.price) || []),
+        product.price !== "0.00" ? parseFloat(product.price) : Infinity,
+        ...(product.sizes?.map(size => parseFloat(size.price)) || []),
         ...(product.colors?.flatMap(color => [
-            color.price,
-            ...(color.sizes?.map(size => (size.price !== 0 && size.price)) || [])
+            parseFloat(color.price),
+            ...(color.sizes?.map(size => (size.price !== 0 && parseFloat(size.price))) || [])
         ]) || [])
-    ].filter(Boolean).map(price => parseFloat(price.toString().replace(/[^\d.]/g, '')));
+    ].filter(price => !isNaN(price) && isFinite(price));
 
     return prices.length > 0 ? Math.min(...prices) : null;
 }
 
-const formatPrice = (price) => {
+function formatPrice(price) {
     if (price == null) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
 }
