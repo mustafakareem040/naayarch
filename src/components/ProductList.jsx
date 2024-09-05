@@ -1,34 +1,37 @@
-'use client'
-import React, { useState, useEffect, useCallback } from 'react';
+'use client';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import { FixedSizeGrid as Grid } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { fetchMoreProducts } from "@/lib/api";
-import ProductItem from './ProductItem';
-import SearchComponent from './SearchComponent';
-import ProductLoading from "@/components/ProductLoading";
-import NoProductsFound from "@/components/NoProductsFound";
+import dynamic from 'next/dynamic';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
-const ProductList = ({ initialProducts }) => {
+const ProductItem = dynamic(() => import('./ProductItem'), { ssr: false });
+const ProductLoading = dynamic(() => import("@/components/ProductLoading"));
+const NoProductsFound = dynamic(() => import("@/components/NoProductsFound"));
+
+const ITEMS_PER_PAGE = 10;
+
+export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
-
     const { ref, inView } = useInView({
         threshold: 0,
+        rootMargin: '200px',
     });
+
+    const search = useMemo(() => searchParams.get('search') || '', [searchParams]);
+    const category = useMemo(() => searchParams.get('c') || '', [searchParams]);
+    const subCategory = useMemo(() => searchParams.get('sc') || '', [searchParams]);
 
     const loadMoreProducts = useCallback(async () => {
         if (loading || !hasMore) return;
 
         setLoading(true);
         const nextPage = page + 1;
-        const search = searchParams.get('search') || '';
-        const category = searchParams.get('c') || '';
-        const subCategory = searchParams.get('sc') || '';
 
         try {
             const newProducts = await fetchMoreProducts(nextPage, search, category, subCategory);
@@ -43,7 +46,7 @@ const ProductList = ({ initialProducts }) => {
         } finally {
             setLoading(false);
         }
-    }, [loading, hasMore, page, searchParams]);
+    }, [loading, hasMore, page, search, category, subCategory]);
 
     useEffect(() => {
         if (inView) {
@@ -51,70 +54,85 @@ const ProductList = ({ initialProducts }) => {
         }
     }, [inView, loadMoreProducts]);
 
-    const Cell = ({ columnIndex, rowIndex, style }) => {
-        const index = rowIndex * 2 + columnIndex;
-        const product = products[index];
+    useEffect(() => {
+        setProducts(initialProducts);
+        setPage(1);
+        setHasMore(true);
+    }, [search, category, subCategory, initialProducts]);
 
-        if (!product) return null;
+    const parentRef = React.useRef();
 
-        return (
-            <div style={style}>
-                <ProductItem
-                    id={product.id}
-                    name={product.name}
-                    price={formatPrice(getCheapestPrice(product))}
-                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                />
-            </div>
-        );
-    };
+    const columnCount = useMemo(() => {
+        if (typeof window !== 'undefined') {
+            if (window.innerWidth >= 1024) return 5; // lg
+            if (window.innerWidth >= 768) return 4; // md
+            if (window.innerWidth >= 480) return 3; // ssm3
+            return 2; // default
+        }
+        return 2;
+    }, []);
+
+    const rowVirtualizer = useVirtualizer({
+        count: Math.ceil(products.length / columnCount),
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 275, // Adjust based on your product item height
+        overscan: 5,
+        gap: 0
+    });
 
     if (products.length === 0) {
-        return (
-            <>
-                <SearchComponent
-                    setProducts={setProducts}
-                    setPage={setPage}
-                    setHasMore={setHasMore}
-                    setLoading={setLoading}
-                />
-            <NoProductsFound />
-                </>
-        );
+        return <NoProductsFound />;
     }
 
     return (
-        <>
-            <SearchComponent
-                setProducts={setProducts}
-                setPage={setPage}
-                setHasMore={setHasMore}
-                setLoading={setLoading}
-            />
-            <AutoSizer>
-                {({ height, width }) => (
-                    <Grid
-                        columnCount={2}
-                        columnWidth={width / 2}
-                        height={height}
-                        rowCount={Math.ceil(products.length / 2)}
-                        rowHeight={300}
-                        width={width}
+        <div
+            ref={parentRef}
+            style={{
+                overflow: 'auto',
+                width: '100%',
+            }}
+        >
+            <div
+                style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                }}
+            >
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                        key={virtualRow.index}
+                        className="absolute top-0 left-0 w-full grid grid-cols-2 gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                        style={{
+                            height: `${virtualRow.size}px`,
+                            transform: `translateY(${virtualRow.start}px)`,
+                        }}
                     >
-                        {Cell}
-                    </Grid>
-                )}
-            </AutoSizer>
-            {loading && <ProductLoading />}
-            <div ref={ref} style={{ height: '20px' }} />
-        </>
+                        {Array.from({ length: columnCount }).map((_, columnIndex) => {
+                            const productIndex = virtualRow.index * columnCount + columnIndex;
+                            const product = products[productIndex];
+                            if (!product) return null;
+                            return (
+                                <ProductItem
+                                    key={product.id}
+                                    id={product.id}
+                                    name={product.name}
+                                    price={formatPrice(getCheapestPrice(product))}
+                                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                                />
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
+
+        </div>
     );
-};
-
-export default ProductList;
+}
 
 
-function getCheapestPrice(product) {
+
+const getCheapestPrice = (product) => {
     const prices = [
         product.price !== "0.00" ? product.price : Math.infinity,
         ...(product.sizes?.map(size => size.price) || []),
@@ -127,10 +145,7 @@ function getCheapestPrice(product) {
     return prices.length > 0 ? Math.min(...prices) : null;
 }
 
-function formatPrice(price) {
+const formatPrice = (price) => {
     if (price == null) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
 }
-
-
-

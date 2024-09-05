@@ -17,10 +17,11 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
 
 async function ProductsPage({ searchParams }) {
     const page = 1;
+    const search = searchParams.search || '';
     const category = searchParams.c || '';
     const subCategory = searchParams.sc || '';
 
-    const initialProducts = await fetchInitialProducts(page, '', category, subCategory);
+    const initialProducts = await fetchInitialProducts(page, search, category, subCategory);
 
     return (
         <>
@@ -31,6 +32,10 @@ async function ProductsPage({ searchParams }) {
                 </Link>
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
+
+            <Suspense fallback={<ProductLoading />}>
+                <SearchComponent />
+            </Suspense>
 
             <Suspense fallback={<ProductLoading />}>
                 <ProductList initialProducts={initialProducts} />

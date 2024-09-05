@@ -1,52 +1,32 @@
 'use client'
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import Image from "next/image";
 import FilterComponent from "@/components/FilterComponent";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from 'next/navigation';
-import { fetchMoreProducts } from "@/lib/api";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { debounce } from 'lodash';
 
-const performSearch = async (value, category, subCategory, setProducts, setPage, setHasMore, setLoading) => {
-    setLoading(true);
-    try {
-        const newProducts = await fetchMoreProducts(1, value, category, subCategory);
-        if (newProducts.length === 0) {
-            setHasMore(false);
-        } else {
-            setProducts(newProducts);
-            setPage(1);
-            setHasMore(true);
-        }
-    } catch (error) {
-        console.error('Error performing search:', error);
-        setHasMore(false);
-    } finally {
-        setLoading(false);
-    }
-};
-
-
-const SearchComponent = ({ setProducts, setPage, setHasMore, setLoading }) => {
+const SearchComponent = () => {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const [localQuery, setLocalQuery] = useState('');
+    const [localQuery, setLocalQuery] = useState(searchParams.get('search') || '');
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
 
-    const debounce = useCallback((func, delay) => {
-        let timeoutId;
-        return (...args) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func(...args), delay);
-        };
-    }, []);
+    useEffect(() => {
+        setLocalQuery(searchParams.get('search') || '');
+    }, [searchParams]);
 
-    const debouncedSearch = useMemo(() =>
+    const debouncedSearch = useMemo(
+        () =>
             debounce((value) => {
-                const category = searchParams.get('c') || '';
-                const subCategory = searchParams.get('sc') || '';
-                performSearch(value, category, subCategory, setProducts, setPage, setHasMore, setLoading);
+                const params = new URLSearchParams(searchParams);
+                params.set('search', value);
+                params.set('page', '1');
+                router.push(`/products?${params.toString()}`, undefined, { shallow: true });
             }, 300),
-        [searchParams, setProducts, setPage, setHasMore, setLoading]);
+        [router, searchParams]
+    );
 
     const handleInputChange = useCallback((e) => {
         const value = e.target.value;
@@ -57,6 +37,10 @@ const SearchComponent = ({ setProducts, setPage, setHasMore, setLoading }) => {
     const toggleFilter = useCallback(() => {
         setFilter(prev => !prev);
     }, []);
+
+    const MemoizedFilterComponent = useMemo(() => (
+        <FilterComponent modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
+    ), [filter]);
 
     return (
         <>
@@ -107,7 +91,7 @@ const SearchComponent = ({ setProducts, setPage, setHasMore, setLoading }) => {
                             transition={{ type: "spring", damping: 25, stiffness: 500 }}
                             className="bg-white overflow-y-auto rounded-t-xl max-h-[80%] w-full p-6"
                         >
-                            <FilterComponent modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
+                            {MemoizedFilterComponent}
                         </motion.div>
                     </motion.div>
                 )}
@@ -116,4 +100,4 @@ const SearchComponent = ({ setProducts, setPage, setHasMore, setLoading }) => {
     );
 };
 
-export default SearchComponent;
+export default React.memo(SearchComponent);
