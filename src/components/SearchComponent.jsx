@@ -1,20 +1,36 @@
 'use client'
-import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import Image from "next/image";
 import FilterComponent from "@/components/FilterComponent";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { fetchMoreProducts } from "@/lib/api";
 
-const SearchComponent = () => {
-    const router = useRouter();
+const performSearch = async (value, category, subCategory, setProducts, setPage, setHasMore, setLoading) => {
+    setLoading(true);
+    try {
+        const newProducts = await fetchMoreProducts(1, value, category, subCategory);
+        if (newProducts.length === 0) {
+            setHasMore(false);
+        } else {
+            setProducts(newProducts);
+            setPage(1);
+            setHasMore(true);
+        }
+    } catch (error) {
+        console.error('Error performing search:', error);
+        setHasMore(false);
+    } finally {
+        setLoading(false);
+    }
+};
+
+
+const SearchComponent = ({ setProducts, setPage, setHasMore, setLoading }) => {
     const searchParams = useSearchParams();
-    const [localQuery, setLocalQuery] = useState(searchParams.get('search') || '');
+    const [localQuery, setLocalQuery] = useState('');
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
-
-    useEffect(() => {
-        setLocalQuery(searchParams.get('search') || '');
-    }, [searchParams]);
 
     const debounce = useCallback((func, delay) => {
         let timeoutId;
@@ -26,13 +42,11 @@ const SearchComponent = () => {
 
     const debouncedSearch = useMemo(() =>
             debounce((value) => {
-                const params = new URLSearchParams(searchParams);
-                params.set('search', value);
-                params.set('page', '1');
-                router.push(`/products?${params.toString()}`);
+                const category = searchParams.get('c') || '';
+                const subCategory = searchParams.get('sc') || '';
+                performSearch(value, category, subCategory, setProducts, setPage, setHasMore, setLoading);
             }, 300),
-        [router, searchParams, debounce]
-    );
+        [searchParams, setProducts, setPage, setHasMore, setLoading]);
 
     const handleInputChange = useCallback((e) => {
         const value = e.target.value;
@@ -43,10 +57,6 @@ const SearchComponent = () => {
     const toggleFilter = useCallback(() => {
         setFilter(prev => !prev);
     }, []);
-
-    const MemoizedFilterComponent = useMemo(() => (
-        <FilterComponent modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
-    ), [filter]);
 
     return (
         <>
@@ -62,7 +72,6 @@ const SearchComponent = () => {
                     <Image
                         src="/search.svg"
                         width={20}
-                        unoptimized
                         height={20}
                         alt="search"
                         className="absolute opacity-50 left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -77,7 +86,6 @@ const SearchComponent = () => {
                         width={20}
                         height={20}
                         alt="filter"
-                        unoptimized
                         className="fill-white"
                     />
                     <span className="text-sm">Filter</span>
@@ -99,7 +107,7 @@ const SearchComponent = () => {
                             transition={{ type: "spring", damping: 25, stiffness: 500 }}
                             className="bg-white overflow-y-auto rounded-t-xl max-h-[80%] w-full p-6"
                         >
-                            {MemoizedFilterComponent}
+                            <FilterComponent modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
                         </motion.div>
                     </motion.div>
                 )}

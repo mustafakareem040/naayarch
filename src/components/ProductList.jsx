@@ -1,19 +1,21 @@
-'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import ProductItem from './ProductItem';
+'use client'
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import {fetchMoreProducts} from "@/lib/api";
+import { FixedSizeGrid as Grid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { fetchMoreProducts } from "@/lib/api";
+import ProductItem from './ProductItem';
+import SearchComponent from './SearchComponent';
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 
-export default function ProductList({ initialProducts }) {
+const ProductList = ({ initialProducts }) => {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
-    const prevSearchRef = useRef('');
 
     const { ref, inView } = useInView({
         threshold: 0,
@@ -49,38 +51,67 @@ export default function ProductList({ initialProducts }) {
         }
     }, [inView, loadMoreProducts]);
 
-    useEffect(() => {
-        const currentSearch = searchParams.get('search') || '';
-        if (currentSearch !== prevSearchRef.current) {
-            setProducts(initialProducts);
-            setPage(1);
-            setHasMore(true);
-            prevSearchRef.current = currentSearch;
-        }
-    }, [searchParams, initialProducts]);
+    const Cell = ({ columnIndex, rowIndex, style }) => {
+        const index = rowIndex * 2 + columnIndex;
+        const product = products[index];
+
+        if (!product) return null;
+
+        return (
+            <div style={style}>
+                <ProductItem
+                    id={product.id}
+                    name={product.name}
+                    price={formatPrice(getCheapestPrice(product))}
+                    imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                />
+            </div>
+        );
+    };
 
     if (products.length === 0) {
-        return <NoProductsFound />
+        return (
+            <>
+                <SearchComponent
+                    setProducts={setProducts}
+                    setPage={setPage}
+                    setHasMore={setHasMore}
+                    setLoading={setLoading}
+                />
+            <NoProductsFound />
+                </>
+        );
     }
 
     return (
         <>
-            <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {products.map((product) => (
-                    <ProductItem
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        price={formatPrice(getCheapestPrice(product))}
-                        imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                    />
-                ))}
-            </div>
+            <SearchComponent
+                setProducts={setProducts}
+                setPage={setPage}
+                setHasMore={setHasMore}
+                setLoading={setLoading}
+            />
+            <AutoSizer>
+                {({ height, width }) => (
+                    <Grid
+                        columnCount={2}
+                        columnWidth={width / 2}
+                        height={height}
+                        rowCount={Math.ceil(products.length / 2)}
+                        rowHeight={300}
+                        width={width}
+                    >
+                        {Cell}
+                    </Grid>
+                )}
+            </AutoSizer>
             {loading && <ProductLoading />}
             <div ref={ref} style={{ height: '20px' }} />
         </>
     );
-}
+};
+
+export default ProductList;
 
 
 function getCheapestPrice(product) {

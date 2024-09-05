@@ -23,8 +23,8 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => (
                 src={imageUrl}
                 alt={name}
                 fill={true}
-                unoptimized={true}
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"
+                loading="lazy"
                 onError={(e) => { e.target.src = "/noimage.png"; }}
                 className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
             />
@@ -60,5 +60,4 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => (
     </Link>
 ));
 
-ProductItem.displayName = 'ProductItem';
 export default ProductItem;
