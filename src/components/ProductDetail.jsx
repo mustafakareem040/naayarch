@@ -100,7 +100,7 @@ export default function ProductDetail({
                 {images.map((image, index) => (
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
-                            src={image || '/noimage.png'}
+                            src={image || 'https://storage.naayiq.com/resources/noimage.png'}
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}

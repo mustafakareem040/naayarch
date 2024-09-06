@@ -52,7 +52,7 @@ export default function ProfileClient() {
                         <p>Hi {userData.name}!</p>
                         <p className="text-base font-serif">Let your beauty shine!</p>
                     </div>
-                    <Image src={"/bg_flowers.png"} alt={"bg_flowers"} fill={true}
+                    <Image src={"https://storage.naayiq.com/resources/bg_flowers.png"} unoptimized={true} alt={"bg_flowers"} fill={true}
                            className="object-contain"/>
                 </div>
                 <div className="h-screen flex flex-col justify-between">

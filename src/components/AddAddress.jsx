@@ -146,7 +146,7 @@ export default function AddAddress() {
                         }`}
                         onClick={() => setAddressType("work")}
                     >
-                        <Image src={"/work.svg"} width={16} height={16} className="mr-2" alt={"work"}/> Work
+                        <Image src={"https://storage.naayiq.com/resources/work.svg"} unoptimized={true} width={16} height={16} className="mr-2" alt={"work"}/> Work
                     </button>
                     <button
                         className={`flex-1 flex items-center justify-center px-4 py-2 border rounded-md ${

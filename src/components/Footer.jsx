@@ -6,8 +6,9 @@ const Footer = () => {
         <footer className="flex mt-36 flex-col justify-end items-center px-4 sm:px-8 pt-16 pb-8 w-full mx-auto bg-[#F6F3F1] rounded-lg">
             <div className="mb-8">
                 <Image
-                    src="/logo_with_backgorund.svg"
+                    src="https://storage.naayiq.com/resources/logo_with_backgorund.svg"
                     alt="Nay Iraq Logo"
+                    unoptimized={true}
                     width={120}
                     height={120}
                     className="rounded-lg"

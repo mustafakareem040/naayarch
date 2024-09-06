@@ -9,7 +9,7 @@ const ImageButton = ({ src, alt, dest, isClose = false }) => (
     <Link
         href={dest}
         className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
-        <Image src={src} alt={alt} width={32} height={32} />
+        <Image src={src} alt={alt} width={32} height={32} unoptimized={true} />
     </Link>
 );
 
@@ -37,18 +37,18 @@ export function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
             <nav className={`flex items-center justify-between p-5 bg-[${bg ? bg : 'white'}] absolute top-0 left-0 right-0 z-50`}
             style={{backgroundColor: bg ? bg : "white"}}>
                 <ImageCloseButton
-                    src={isDrawerOpen ? "/close.svg" : "/menu.svg"}
+                    src={isDrawerOpen ? "https://storage.naayiq.com/resources/close.svg" : "https://storage.naayiq.com/resources/menu.svg"}
                     alt={isDrawerOpen ? "Close Menu" : "Open Menu"}
                     onClick={toggleDrawer}
                     isClose={true}
                 />
                 <Link className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
-                    <Image src="/logo.svg" alt="Nay Logo" width={53} height={37} />
+                    <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Nay Logo" width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
-                    <ImageButton src="/search.svg" alt="Search" dest={"/"} />
-                    <ImageButton src="/heart.svg" alt="Favorites" dest={"/"} />
-                    <ImageButton src="/shop.svg" alt="Cart"  dest={"/cart"}/>
+                    <ImageButton src="https://storage.naayiq.com/resources/search.svg" alt="Search" dest={"/"} />
+                    <ImageButton src="https://storage.naayiq.com/resources/heart.svg" alt="Favorites" dest={"/"} />
+                    <ImageButton src="https://storage.naayiq.com/resources/shop.svg" alt="Cart"  dest={"/cart"}/>
                 </div>
             </nav>
             <Drawer categories={categories} subcategories={subCategories} isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />

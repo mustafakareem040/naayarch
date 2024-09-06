@@ -49,8 +49,9 @@ const SearchComponent = ({ query, setQuery }) => {
                         className="w-full font-serif text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
                     />
                     <Image
-                        src="/search.svg"
+                        src="https://storage.naayiq.com/resources/search.svg"
                         width={20}
+                        unoptimized={true}
                         height={20}
                         alt="search"
                         className="absolute opacity-50 left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -61,8 +62,9 @@ const SearchComponent = ({ query, setQuery }) => {
                     onClick={toggleFilter}
                 >
                     <Image
-                        src="/filter.svg"
+                        src="https://storage.naayiq.com/resources/filter.svg"
                         width={20}
+                        unoptimized={true}
                         height={20}
                         alt="filter"
                         className="fill-white"

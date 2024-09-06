@@ -4,10 +4,11 @@ import React from "react";
 
 export default function ProductLoading() {
     return (
-        <Image src={"/products-loading.gif"}
+        <Image src={"https://storage.naayiq.com/resources/products-loading.gif"}
                loading={"eager"}
                priority={true}
                width={200}
+               unoptimized={true}
                height={200}
                className="m-auto text-center"
                alt={"Loading"}/>

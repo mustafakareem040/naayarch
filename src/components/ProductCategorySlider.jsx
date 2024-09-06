@@ -11,13 +11,13 @@ const ProductCategorySlider = () => {
         {
             id: 1,
             title: 'Korean Products',
-            image: '/korean.png',
+            image: 'https://storage.naayiq.com/resources/korean.png',
             description: 'Providing our customers with the best Korean Skincare!',
         },
         {
             id: 2,
             title: 'Global Products',
-            image: '/global.png',
+            image: 'https://storage.naayiq.com/resources/global.png',
             description: 'Providing our customers with the best Korean Skincare!',
         },
     ];
@@ -46,6 +46,7 @@ const ProductCategorySlider = () => {
                                     src={product.image}
                                     alt={product.title}
                                     fill={true}
+                                    unoptimized={true}
                                     className="object-cover rounded-md"
                                 />
                             </div>
@@ -62,7 +63,7 @@ const ProductCategorySlider = () => {
                 className="absolute font-serif text-xl bottom-[40%] right-6 px-2 py-2 little-white border border-[#695C5C] rounded-[20px]"
             >
                 <span>Swipe </span>
-                <Image src="/nextArrow.svg" alt="next" width={24} height={24} className="inline"/>
+                <Image src="https://storage.naayiq.com/resources/nextArrow.svg" unoptimized={true} alt="next" width={24} height={24} className="inline"/>
             </button>
         </div>
     );

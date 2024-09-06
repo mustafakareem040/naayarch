@@ -10,13 +10,13 @@ const ProductSlider = () => {
         {
             id: 1,
             title: 'Beauty of Joseon\n Sunscreen',
-            image: '/cream.png',
+            image: 'https://storage.naayiq.com/resources/cream.png',
             price: '25.00 IQD',
         },
         {
             id: 2,
             title: 'A test cream',
-            image: '/korean.jpeg',
+            image: 'https://storage.naayiq.com/resources/korean.jpeg',
             price: '0.00 IQD',
         },
     ];
@@ -50,6 +50,7 @@ const ProductSlider = () => {
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
+                                        unoptimized={true}
                                         className="object-cover rounded-lg"
                                     />
                                 </div>
@@ -71,7 +72,7 @@ const ProductSlider = () => {
                     className="absolute font-serif text-xl little-white bottom-[40%] right-6 px-2 py-2 border border-[#695C5C] rounded-[20px]"
                 >
                     <span>Swipe </span>
-                    <Image src="/nextArrow.svg" alt="next" width={24} height={24} className="inline"/>
+                    <Image src="https://storage.naayiq.com/resources/nextArrow.svg" unoptimized={true} alt="next" width={24} height={24} className="inline"/>
                 </button>
             </div>
             <div className="absolute transform -translate-y-14 left-4">

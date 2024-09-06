@@ -4,10 +4,11 @@ export default function NoProductsFound() {
     return (
         <main className="flex flex-col justify-center items-center">
             <div className="w-full relative h-[50vh]">
-                <Image src="/no-product-found.gif"
+                <Image src="https://storage.naayiq.com/resources/no-product-found.gif"
                        alt="No Products Found"
                        className="object-contain"
                        fill={true}
+                       unoptimized={true}
                        priority={true}
                 />
             </div>

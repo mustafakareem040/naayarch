@@ -62,7 +62,7 @@ function ProfileItem({src, title, hasNavigate, alt, onClick, href="/"}) {
                 <Image src={src} width={26} height={26} alt={alt} />
                 <p className="font-serif text-black text-xl">{title}</p>
             </div>
-            {hasNavigate && <Image src="leftAlt.svg" alt="Navigate" width={10} height={18} />}
+            {hasNavigate && <Image unoptimized={true} src="https://storage.naayiq.com/resources/leftAlt.svg" alt="Navigate" width={10} height={18} />}
         </Link>
     );
 }

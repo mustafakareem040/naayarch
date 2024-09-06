@@ -8,7 +8,7 @@ const MenuItem = ({ label, hasChildren, onClick }) => (
     <div className="py-2" onClick={onClick}>
         <div className="flex justify-between items-center">
             <span className="font-serif text-xl">{label}</span>
-            {hasChildren && <Image src="/navigate.svg" alt="Expand" width={24} height={24} />}
+            {hasChildren && <Image src="https://storage.naayiq.com/resources/navigate.svg" unoptimized={true} alt="Expand" width={24} height={24} />}
         </div>
     </div>
 );
@@ -17,7 +17,7 @@ const SubcategoryView = ({ category, subcategories, onBack, isVisible }) => (
     <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center mb-6">
             <button onClick={onBack} className="mr-4">
-                <Image src="/arrow-left.svg" alt="Back" width={40} height={40} />
+                <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} alt="Back" width={40} height={40} />
             </button>
             <h2 className="font-sans font-medium text-[1.775rem]">{category}</h2>
         </div>
@@ -88,7 +88,7 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                                         <Link className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
                                         {!category.is_brand &&
                                             <Image onClick={() => handleCategoryClick(category.name)}
-                                                   src="/navigate.svg" alt="Expand" width={24} height={24}/>}
+                                                   src="https://storage.naayiq.com/resources/navigate.svg" unoptimized={true} alt="Expand" width={24} height={24}/>}
                                     </div>
                                 </div>
                             ))}
@@ -102,7 +102,7 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                                         <Link className="font-serif text-xl"
                                               href={`/products?c=${category.id}`}>{category.name}</Link>
                                         <Image onClick={() => handleCategoryClick(category.name)}
-                                                   src="/navigate.svg" alt="Expand" width={24} height={24}/>
+                                                   src="https://storage.naayiq.com/resources/navigate.svg" alt="Expand" unoptimized={true} width={24} height={24}/>
                                     </div>
                                 </div>
                             ))}
@@ -112,12 +112,12 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Account</h2>
                             {isLoggedIn ? (
                                 <Link className="flex items-center space-x-2" href="/profile">
-                                    <Image src={"/profile.svg"} alt={"Profile"} width={24} height={24}/>
+                                    <Image src={"https://storage.naayiq.com/resources/profile.svg"} unoptimized={true} alt={"Profile"} width={24} height={24}/>
                                     <MenuItem label="Profile" hasChildren={false}/>
                                 </Link>
                             ) : (
                                 <Link className="flex items-center space-x-2" href="/login">
-                                    <Image src={"/login.svg"} alt={"Login"} width={24} height={24}/>
+                                    <Image src={"https://storage.naayiq.com/resources/login.svg"} unoptimized={true} alt={"Login"} width={24} height={24}/>
                                     <MenuItem label="Login" hasChildren={false}/>
                                 </Link>
                             )}
@@ -126,13 +126,13 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>
                             <div className="flex items-center space-x-3 mb-6 ">
-                                <Image src="/ar.svg" alt="Arabic" width={24} height={24}/>
+                                <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic" width={24} height={24}/>
                                 <span className="font-serif text-xl">Arabic</span>
                             </div>
                             <div className="flex items-center space-x-3">
-                                <Image src="/en.svg" alt="English" width={24} height={24}/>
+                                <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true} alt="English" width={24} height={24}/>
                                 <span className="font-serif text-xl">English</span>
-                                <Image src="/checkmark.svg" alt="Selected" width={20} height={20} className="ml-auto"/>
+                                <Image src="https://storage.naayiq.com/resources/checkmark.svg" unoptimized={true} alt="Selected" width={20} height={20} className="ml-auto"/>
                             </div>
                         </div>
                     </div>
