@@ -5,7 +5,7 @@ export default function Custom404() {
     return (
         <>
             <AsyncNavBar />
-            <div className="h-[50vh] relative translate-y-1/2 w-full">
+            <div className="h-[65vh] relative translate-y-[30%] w-full">
                 <Image src={"/404.png"} alt={"404 Not Found"} className="object-contain" fill={true} priority={true} quality={100} />
             </div>
         </>
