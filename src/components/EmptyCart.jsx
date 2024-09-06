@@ -30,12 +30,12 @@ const EmptyCart = () => {
                     />
                 </div>
                 <p className="text-3xl font-semibold font-serif text-black mb-12">Empty Cart</p>
-                    <div className="w-full font-serif font-lg font-medium flex justify-center items-center gap-4">
+                    <div className="w-full font-serif text-sm ssm:text-base ssm2:text-lg font-medium flex justify-center items-center gap-4">
                         <button
-                            className="px-6 min-h-[56px] bg-[rgba(59,83,69,0.05)] text-[#3B5345] rounded-lg outline outline-1 outline-[#3B5345]">
+                            className="px-3 ssm:px-6 min-h-[56px] bg-[rgba(59,83,69,0.05)] text-[#3B5345] rounded-lg outline outline-1 outline-[#3B5345]">
                             Check Wishlist
                         </button>
-                        <button className="min-h-[56px] px-6 bg-[#3B5345] text-white rounded-lg">
+                        <button className="min-h-[56px] px-3 ssm:px-6 bg-[#3B5345] text-white rounded-lg">
                             Start Browsing
                         </button>
                     </div>
