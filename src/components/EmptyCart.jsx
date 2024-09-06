@@ -19,7 +19,7 @@ const EmptyCart = () => {
             </header>
 
             <main className="flex-grow flex flex-col items-center">
-                <div className="relative w-full h-[50vh]">
+                <div className="relative w-full h-[65vh]">
                     <Image
                         src="/empty.png"
                         alt="Empty cart"
