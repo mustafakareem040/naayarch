@@ -55,7 +55,7 @@ export default function AddAddress() {
         <div className="bg-white font-sans max-w-2xl mx-auto px-4">
             <header className="flex items-center justify-between mb-8">
                 <button onClick={() => router.back()} className="p-2">
-                    <Image src="/arrow-left.svg" width={24} height={24} alt="Go back" priority />
+                    <Image src="/arrow-left.svg" width={40} height={40} alt="Go back" priority />
                 </button>
                 <h1 className="text-2xl font-bold">Add Address</h1>
                 <div className="w-10"></div>
