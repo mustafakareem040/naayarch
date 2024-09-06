@@ -61,7 +61,6 @@ const MyAccount = () => {
         };
 
         // Only include DOB if all fields are filled
-        // In the handleSubmit function:
         if (dateOfBirth.year && dateOfBirth.month && dateOfBirth.day) {
             const month = dateOfBirth.month.toString().padStart(2, '0');
             const day = dateOfBirth.day.toString().padStart(2, '0');
