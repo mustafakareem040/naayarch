@@ -25,7 +25,8 @@ const EmptyCart = () => {
                         alt="Empty cart"
                         fill
                         priority={true}
-                        className="object-contain aspect-square"
+                        quality={100}
+                        className="object-contain"
                     />
                 </div>
                 <p className="text-3xl font-semibold font-serif text-black mb-12">Empty Cart</p>
