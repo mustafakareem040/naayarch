@@ -20,11 +20,11 @@ const MyAccount = () => {
             if (data.isAuthenticated) {
                 setUser(data);
                 if (data.dob) {
-                    const [year, month, day] = data.dob.split('-');
+                    const dobDate = new Date(data.dob);
                     setDateOfBirth({
-                        year,
-                        month: month.replace(/^0/, ''), // Remove leading zero
-                        day: day.replace(/^0/, '')      // Remove leading zero
+                        year: dobDate.getFullYear().toString(),
+                        month: (dobDate.getMonth() + 1).toString(), // getMonth() returns 0-11
+                        day: dobDate.getDate().toString()
                     });
                 } else {
                     setDateOfBirth({ year: '', month: '', day: '' });
