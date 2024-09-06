@@ -28,7 +28,7 @@ AddressItem.displayName = 'AddressItem';
 const NoAddresses = ({ onAddNew }) => (
     <div className="text-center py-10">
         <h2 className="text-2xl font-bold mb-4">You have no addresses yet</h2>
-        <p className="mb-6">Let's add your first address to get started!</p>
+        <p className="mb-6">Let&apos;s add your first address to get started!</p>
         <button
             onClick={onAddNew}
             className="py-3 px-6 bg-[#3B5345] text-white rounded-lg font-medium hover:bg-[#2A3E32] transition-colors"
@@ -113,6 +113,7 @@ const ManageAddress = () => {
                         width={24}
                         height={24}
                         alt="Go back"
+                        unoptimized={true}
                         priority
                     />
                 </button>
