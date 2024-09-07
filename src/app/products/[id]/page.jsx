@@ -21,6 +21,8 @@ async function ProductContent({ id }) {
             images={product.images?.map((image) => `https://storage.naayiq.com/resources/${image.url}`)}
             sizeNames={product.sizes?.map((size) => size.name)}
             sizePrices={product.sizes?.map((size) => size.price)}
+            sizeIds={product.sizes?.map((size) => size.id)}
+            colorIds={product.colors?.map((color) => color.id)}
             sizeQuantities={product.sizes?.map((size) => size.qty)}
             colorNames={product.colors?.map((color) => color.name)}
             colorPrices={product.colors?.map((color) => color.price)}

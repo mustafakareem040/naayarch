@@ -21,6 +21,8 @@ export default function ProductDetail({
                                           colorNames,
                                           colorPrices,
                                           colorQuantities,
+    sizeIds,
+    colorIds,
                                           colorImages,
                                           title,
                                           description,
@@ -55,8 +57,8 @@ export default function ProductDetail({
                 credentials: 'include',
                 body: JSON.stringify({
                     product_id: productId,
-                    size_id: selectedSize ? sizeNames.indexOf(selectedSize) + 1 : undefined,
-                    color_id: selectedColor ? colorNames.indexOf(selectedColor) + 1 : undefined,
+                    size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
+                    color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
                     qty: quantity,
                 }),
             });
