@@ -1,10 +1,22 @@
+'use client'
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Hero() {
+    const videoRef = useRef(null);
+
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.error("Autoplay was prevented:", error);
+            });
+        }
+    }, []);
 
     return (
         <div className="relative mb-12 font-sans w-full h-[450px] overflow-hidden rounded-lg">
             <video
+                ref={videoRef}
                 autoPlay
                 muted
                 loop
