@@ -118,7 +118,7 @@ export default function SignUpPage() {
                 </form>
                 <div className="text-center">
                     <span className="text-black">Already have an account? </span>
-                    <Link href="/login" className="text-[#44594A] hover:text-[#374c3d]">
+                    <Link prefetch={false} href="/login" className="text-[#44594A] hover:text-[#374c3d]">
                         Login
                     </Link>
                 </div>

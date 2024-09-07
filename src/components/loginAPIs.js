@@ -37,6 +37,7 @@ export async function checkAuth() {
         {
             method: 'GET',
             credentials: "include",
+            cache: "force-cache"
         }
     );
 }

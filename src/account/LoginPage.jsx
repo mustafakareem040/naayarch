@@ -104,7 +104,7 @@ export default function LoginPage() {
                                 <span className="text-[1rem] font-medium text-gray-700">Remember Me</span>
                             </label>
                         </div>
-                        <Link href="/forgot-password" className="text-[#44594A] font-medium hover:text-[#374c3d]">
+                        <Link prefetch={false} href="/forgot-password" className="text-[#44594A] font-medium hover:text-[#374c3d]">
                             Forgot Password?
                         </Link>
                     </div>
@@ -120,7 +120,7 @@ export default function LoginPage() {
                 </form>
                 <div className="text-center">
                     <span className="text-black">Don&apos;t have an account? </span>
-                    <Link href="/signup" className="text-[#44594A] font-semibold hover:text-[#374c3d]">
+                    <Link prefetch={false} href="/signup" className="text-[#44594A] font-semibold hover:text-[#374c3d]">
                         Sign Up
                     </Link>
                 </div>

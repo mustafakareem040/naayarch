@@ -2,7 +2,6 @@
 import Image from "next/image";
 import {logout} from "@/components/loginAPIs";
 import {redirect, useRouter} from "next/navigation";
-import {getToken} from "@/components/Token";
 import Link from "next/link";
 
 export function Profile() {
@@ -57,7 +56,8 @@ function ProfileItem({src, title, hasNavigate, alt, onClick, href="/"}) {
         <Link
             className="flex mx-2 mb-6 justify-between border border-[#3b534580] border-solid rounded-lg py-3 px-4 items-center"
             onClick={onClick}
-         href={href}>
+         href={href}
+        prefetch={false}>
             <div className="flex items-center space-x-5">
                 <Image src={src} width={26} height={26} alt={alt} />
                 <p className="font-serif text-black text-xl">{title}</p>

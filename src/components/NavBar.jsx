@@ -8,6 +8,7 @@ import {useRouter} from "next/navigation";
 const ImageButton = ({ src, alt, dest, isClose = false }) => (
     <Link
         href={dest}
+        prefetch={false}
         className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
         <Image src={src} alt={alt} width={32} height={32} unoptimized={true} />
     </Link>
@@ -42,7 +43,7 @@ export function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
                     onClick={toggleDrawer}
                     isClose={true}
                 />
-                <Link className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
+                <Link prefetch={false} className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
                     <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Nay Logo" width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">

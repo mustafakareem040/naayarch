@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
+import {ReduxProvider} from "@/components/ReduxProvider";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [
@@ -48,7 +49,10 @@ export default function RootLayout({ children }) {
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
             />
         <SpeedInsights />
+        <ReduxProvider>
             {children}
+        </ReduxProvider>
+
         </body>
         </html>
     );

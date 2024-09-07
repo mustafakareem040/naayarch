@@ -23,7 +23,7 @@ const SubcategoryView = ({ category, subcategories, onBack, isVisible }) => (
         </div>
         <div className="grid grid-cols-2 justify-center text-center items-center gap-4">
             {subcategories.map((item) => (
-                <Link key={item.id} className="border border-[#3B5345] rounded-lg h-[4rem] flex justify-center leading-none items-center px-1" href={`/products?sc=${item.id}`}>
+                <Link prefetch={false} key={item.id} className="border border-[#3B5345] rounded-lg h-[4rem] flex justify-center leading-none items-center px-1" href={`/products?sc=${item.id}`}>
                     <span className="font-serif text-[#545454] text-base">{item.name}</span>
                 </Link>
             ))}
@@ -85,7 +85,7 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                             {productCategories.map(category => (
                                 <div key={category.id} className="py-2">
                                     <div className="flex justify-between items-center">
-                                        <Link className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
+                                        <Link prefetch={false} className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
                                         {!category.is_brand &&
                                             <Image onClick={() => handleCategoryClick(category.name)}
                                                    src="https://storage.naayiq.com/resources/navigate.svg" unoptimized={true} alt="Expand" width={24} height={24}/>}
@@ -99,7 +99,7 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                             {brandCategories.map(category => (
                                 <div key={category.id} className="py-2">
                                     <div className="flex justify-between items-center">
-                                        <Link className="font-serif text-xl"
+                                        <Link prefetch={false} className="font-serif text-xl"
                                               href={`/products?c=${category.id}`}>{category.name}</Link>
                                         <Image onClick={() => handleCategoryClick(category.name)}
                                                    src="https://storage.naayiq.com/resources/navigate.svg" alt="Expand" unoptimized={true} width={24} height={24}/>
@@ -111,12 +111,12 @@ const Drawer = ({ categories, subcategories, isOpen, onClose }) => {
                         <div>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Account</h2>
                             {isLoggedIn ? (
-                                <Link className="flex items-center space-x-2" href="/profile">
+                                <Link prefetch={false} className="flex items-center space-x-2" href="/profile">
                                     <Image src={"https://storage.naayiq.com/resources/profile.svg"} unoptimized={true} alt={"Profile"} width={24} height={24}/>
                                     <MenuItem label="Profile" hasChildren={false}/>
                                 </Link>
                             ) : (
-                                <Link className="flex items-center space-x-2" href="/login">
+                                <Link prefetch={false} className="flex items-center space-x-2" href="/login">
                                     <Image src={"https://storage.naayiq.com/resources/login.svg"} unoptimized={true} alt={"Login"} width={24} height={24}/>
                                     <MenuItem label="Login" hasChildren={false}/>
                                 </Link>

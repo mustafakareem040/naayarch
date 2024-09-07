@@ -41,6 +41,7 @@ const Pagination = ({ currentPage, totalPages }) => {
     return (
         <div className="flex font-serif flex-row justify-center items-center gap-2 w-full mt-6 overflow-x-auto py-2 text-sm">
             <Link
+                prefetch={false}
                 href={createPageUrl(currentPage - 1)}
                 className={`px-2 py-1 bg-gray-100 rounded-md text-black ${currentPage === 1 ? 'pointer-events-none opacity-50' : ''}`}
             >
@@ -53,6 +54,7 @@ const Pagination = ({ currentPage, totalPages }) => {
                             <span className="w-6 text-gray-600 text-center">...</span>
                         ) : (
                             <Link
+                                prefetch={false}
                                 href={createPageUrl(number)}
                                 className={`w-8 h-8 flex-shrink-0 flex justify-center items-center rounded-md ${
                                     currentPage === number
@@ -67,6 +69,7 @@ const Pagination = ({ currentPage, totalPages }) => {
                 ))}
             </div>
             <Link
+                prefetch={false}
                 href={createPageUrl(currentPage + 1)}
                 className={`px-2 py-1 bg-gray-100 rounded-md text-black ${currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}`}
             >

@@ -26,7 +26,7 @@ const OrderCard = ({ id, status, productImages, price, quantity, orderDate, loca
     };
 
     return (
-        <Link href={"/profile/orders/detail"} className="bg-white font-sans rounded-lg font-medium shadow-md p-4 max-w-sm">
+        <Link prefetch={false} href={"/profile/orders/detail"} className="bg-white font-sans rounded-lg font-medium shadow-md p-4 max-w-sm">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-baseline gap-3">
                     <h2 className="text-lg">Order ID</h2>
