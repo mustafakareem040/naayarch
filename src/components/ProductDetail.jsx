@@ -45,7 +45,7 @@ export default function ProductDetail({
     }, [selectedSize, sizeNames, sizePrices]);
     const handleAddToCart = async () => {
         try {
-            const response = await fetch('https://naayiq.com/api', {
+            const response = await fetch('https://api.naayiq.com/cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

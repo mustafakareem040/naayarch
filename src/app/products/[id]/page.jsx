@@ -6,7 +6,8 @@ import { NotificationProvider } from "@/components/NotificationContext";
 export const experimental_ppr = true;
 
 async function fetchProduct(id) {
-    const response = await fetch(`https://api.naayiq.com/products/${id}`, { next: { revalidate: 3600 } });
+    const response = await fetch(`https://api.naayiq.com/products/${id}`, {cache: "force-cache",
+        next: { revalidate: 86400 } });
     if (!response.ok) {
         throw new Error('Failed to fetch product');
     }

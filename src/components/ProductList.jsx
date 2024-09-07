@@ -92,7 +92,6 @@ export default function ProductList() {
                                 id={product.id}
                                 name={product.name}
                                 price={formatPrice(product.cheapestPrice)}
-                                imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
                             />
                         ))}
                     </div>
