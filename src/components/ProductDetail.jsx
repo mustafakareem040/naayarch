@@ -24,7 +24,8 @@ export default function ProductDetail({
                                           colorImages,
                                           title,
                                           description,
-                                          price
+                                          price,
+                                            productId
                                       }) {
     const [selectedSize, setSelectedSize] = useState(sizeNames && sizeNames.length > 0 ? sizeNames[0] : null);
     const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);

@@ -29,6 +29,7 @@ async function ProductContent({ id }) {
             title={product.name}
             description={product.description.replace(/\n/g, '<br />')}
             price={product.price ?? product.sizes[0]?.price ?? "N/A"}
+            productId={product.id}
         />
     );
 }
