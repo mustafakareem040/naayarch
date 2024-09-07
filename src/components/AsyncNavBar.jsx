@@ -8,10 +8,7 @@ export const dynamic = "force-dynamic";
 
 const fetchWithRevalidate = cache(async (url) => {
     const res = await fetch(url, {
-        cache: "force-cache",
-        next: {
-            revalidate: 86400
-        }
+        cache: "force-cache"
     });
     if (!res.ok) {
         throw new Error(`Failed to fetch data from ${url}`);
