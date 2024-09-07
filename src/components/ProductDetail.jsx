@@ -237,16 +237,6 @@ export default function ProductDetail({
                         onClick={handleAddToCart}
                         className={`w-full font-serif ${isAddedToCart ? 'bg-[#4CAF50] hover:bg-[#45a049]' : 'bg-[#3B5345] hover:bg-[#2E4035]'} text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300`}
                     >
-                        {isAddedToCart ? (
-                            <>
-                                <svg className="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 7L9 18L4 13" stroke="white" strokeWidth="2" strokeLinecap="round"
-                                          strokeLinejoin="round"/>
-                                </svg>
-                                Buy Now
-                            </>
-                        ) : (
                             <>
                                 <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
@@ -263,9 +253,8 @@ export default function ProductDetail({
                                     <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
                                           strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
-                                Add To Cart
+                                {isAddedToCart ? "Add To Cart" : "Go to cart" }
                             </>
-                        )}
                     </button>
                 </footer>
             </div>
