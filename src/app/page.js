@@ -1,5 +1,5 @@
 import Dashboard from "@/components/Dashboard";
-export const experimental_ppr = true
+export const runtime = 'edge'
 export default function Home() {
     return (
         <Dashboard />
