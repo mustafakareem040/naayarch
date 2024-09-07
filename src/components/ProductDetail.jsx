@@ -43,6 +43,7 @@ export default function ProductDetail({
             setCurrentPrice(sizePrices[sizeIndex]);
         }
     }, [selectedSize, sizeNames, sizePrices]);
+
     const handleAddToCart = async () => {
         try {
             const response = await fetch('https://api.naayiq.com/cart', {
@@ -50,12 +51,12 @@ export default function ProductDetail({
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
-                    title,
-                    selectedSize,
-                    selectedColor,
-                    quantity,
-                    price: currentPrice
+                    product_id: productId,
+                    size_id: selectedSize ? sizeNames.indexOf(selectedSize) + 1 : null,
+                    color_id: selectedColor ? colorNames.indexOf(selectedColor) + 1 : null,
+                    qty: quantity,
                 }),
             });
 
@@ -63,7 +64,8 @@ export default function ProductDetail({
                 setIsAddedToCart(true);
                 addNotification('success', 'Product Added To Cart');
             } else {
-                addNotification('error', 'Failed to add product to cart');
+                const errorData = await response.json();
+                addNotification('error', errorData.message || 'Failed to add product to cart');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -207,25 +209,26 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
+                <footer
+                    className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
                     <div className="flex justify-between items-center mb-6">
                         <span className="text-xl font-serif font-medium">{currentPrice * quantity} IQD</span>
-                    <div className="flex items-center space-x-4">
-                        <button
-                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                        >
-                            <Minus className="w-4 h-4 text-[#3B5345]"/>
-                        </button>
-                        <span className="text-lg font-medium">{quantity}</span>
-                        <button
-                            onClick={() => setQuantity(quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                        >
-                            <Plus className="w-4 h-4 text-[#3B5345]"/>
-                        </button>
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                            >
+                                <Minus className="w-4 h-4 text-[#3B5345]"/>
+                            </button>
+                            <span className="text-lg font-medium">{quantity}</span>
+                            <button
+                                onClick={() => setQuantity(quantity + 1)}
+                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                            >
+                                <Plus className="w-4 h-4 text-[#3B5345]"/>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
                     <button
                         onClick={handleAddToCart}
