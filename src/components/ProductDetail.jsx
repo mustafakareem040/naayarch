@@ -55,8 +55,8 @@ export default function ProductDetail({
                 credentials: 'include',
                 body: JSON.stringify({
                     product_id: productId,
-                    size_id: selectedSize ? sizeNames.indexOf(selectedSize) + 1 : null,
-                    color_id: selectedColor ? colorNames.indexOf(selectedColor) + 1 : null,
+                    size_id: selectedSize ? sizeNames.indexOf(selectedSize) + 1 : undefined,
+                    color_id: selectedColor ? colorNames.indexOf(selectedColor) + 1 : undefined,
                     qty: quantity,
                 }),
             });
