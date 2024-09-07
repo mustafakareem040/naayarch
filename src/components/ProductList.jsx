@@ -43,10 +43,10 @@ export default function ProductList() {
 
         try {
             const newProducts = await fetchProducts(page, query, c, sc);
-            if (newProducts.length < ITEMS_PER_PAGE) {
+            if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
                 setHasMore(false);
             }
-            setProducts(prev => [...prev, ...newProducts]);
+            setProducts(prev => [...prev, ...newProducts.products]);
             setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);

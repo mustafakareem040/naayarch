@@ -16,15 +16,17 @@ export async function fetchProducts(page, search, category, subCategory) {
         const response = await fetch(`${API_URL}/products?${params.toString()}`, {
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            cache: "force-cache",
+            priority: "high",
+
         });
 
         if (!response.ok) {
             throw new Error('Failed to fetch more products');
         }
 
-        const data = await response.json();
-        return data.products;
+        return await response.json();
     } catch (error) {
         console.error('Error fetching more products:', error);
         return [];
