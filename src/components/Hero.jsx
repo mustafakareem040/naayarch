@@ -14,19 +14,18 @@ export default function Hero() {
     }, []);
 
     return (
-        <div className="relative mb-12 font-sans w-full h-[450px] overflow-hidden rounded-lg">
+        <div className="relative mt-14 mb-12 font-sans w-full h-[550px] overflow-hidden rounded-lg">
             <video
                 ref={videoRef}
                 autoPlay
                 muted
                 loop
                 playsInline
-                className="absolute top-0 left-0 w-full h-full object-cover"
+                className="w-full h-full object-cover"
             >
                 <source src="https://storage.naayiq.com/resources/forest.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
             </video>
-            <div className="absolute -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
+            <div className="absolute -top-48 mr-1 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
                 <h1 className="text-2xl mb-4 text-white ">
                     Welcome To<br />Nay Iraq
                 </h1>

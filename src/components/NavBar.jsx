@@ -35,7 +35,7 @@ export function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
     const router = useRouter()
     return (
         <>
-            <nav className={`flex items-center justify-between p-5 bg-[${bg ? bg : 'white'}] absolute top-0 left-0 right-0 z-50`}
+            <nav className={`flex items-center z-50 justify-between p-5 bg-[${bg ? bg : 'white'}] absolute top-0 left-0 right-0`}
             style={{backgroundColor: bg ? bg : "white"}}>
                 <ImageCloseButton
                     src={isDrawerOpen ? "https://storage.naayiq.com/resources/close.svg" : "https://storage.naayiq.com/resources/menu.svg"}
