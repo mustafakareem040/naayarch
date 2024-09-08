@@ -27,7 +27,7 @@ const Cart = () => {
                         return {
                             ...item,
                             title: product.name,
-                            image: `https://storage.naayiq.com/storage/${selectedSize?.images[0]}`,
+                            image: `https://storage.naayiq.com/resources/${selectedSize?.images[0]}`,
                             price: parseInt(selectedSize?.price || product.price),
                             color: selectedColor?.name,
                             size: selectedSize?.name,
