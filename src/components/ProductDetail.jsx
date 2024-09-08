@@ -12,6 +12,7 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
 import {useNotification} from "@/components/NotificationContext";
+import Link from "next/link";
 
 export default function ProductDetail({
                                           images,
@@ -36,10 +37,22 @@ export default function ProductDetail({
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
-    const [isAddedToCart, setIsAddedToCart] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isInCart, setIsInCart] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        // Check if the product is in the cart
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const productInCart = cart.some(item => item.product_id === productId);
+        setIsInCart(productInCart);
+    }, [productId]);
+    const handleBuyNow = () => {
+        if (!isInCart) {
+            handleAddToCart();
+        }
+        router.push('/cart'); // Assuming you have a cart page route
+    };
     useEffect(() => {
         // Check if user is logged in (you may need to implement this check)
         const checkLoginStatus = async () => {
@@ -47,6 +60,7 @@ export default function ProductDetail({
             // For example: const loggedIn = await checkUserLoginStatus();
             // setIsLoggedIn(loggedIn);
         };
+        console.log(localStorage.getItem("cart"))
         checkLoginStatus();
     }, []);
 
@@ -68,7 +82,7 @@ export default function ProductDetail({
                 });
 
                 if (response.ok) {
-                    setIsAddedToCart(true);
+                    setIsInCart(true);
                     addNotification('success', 'Product Added To Cart');
                 } else {
                     const errorData = await response.json();
@@ -101,7 +115,7 @@ export default function ProductDetail({
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
-            setIsAddedToCart(true);
+            setIsInCart(true);
             addNotification('success', 'Product Added To Cart');
         }
     };
@@ -263,29 +277,53 @@ export default function ProductDetail({
                         </div>
                     </div>
 
-                    <button
-                        onClick={handleAddToCart}
-                        className={`w-full font-serif ${isAddedToCart ? 'bg-[#4CAF50] hover:bg-[#45a049]' : 'bg-[#3B5345] hover:bg-[#2E4035]'} text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300`}
-                    >
-                            <>
-                                <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
-                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
-                                    <path
-                                        d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
-                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
-                                    <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                                {isAddedToCart ? "Add To Cart" : "Go to cart" }
-                            </>
-                    </button>
+                    {isInCart ? (
+                        <Link
+                            href={"/cart"}
+                            prefetch={false}
+                            alt={"Go to cart"}
+                            className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
+                        >
+                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
+                                    stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                    strokeLinejoin="round"/>
+                                <path
+                                    d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
+                                    stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                    strokeLinejoin="round"/>
+                                <path d="M18.8318 14.0001H18.8423" stroke="#3B5345" strokeWidth="2"
+                                      strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M10.6638 14.0001H10.6743" stroke="#3B5345" strokeWidth="2"
+                                      strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Buy Now
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={handleAddToCart}
+                            className="w-full font-serif bg-[#3B5345] hover:bg-[#2E4035] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
+                        >
+                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
+                                    stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                    strokeLinejoin="round"/>
+                                <path
+                                    d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
+                                    stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                    strokeLinejoin="round"/>
+                                <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
+                                      strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
+                                      strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        Add To Cart
+                        </button>
+                        )}
                 </footer>
             </div>
         </div>
