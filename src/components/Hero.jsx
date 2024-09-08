@@ -23,7 +23,7 @@ export default function Hero() {
                 playsInline
                 className="absolute top-0 left-0 w-full h-full object-cover"
             >
-                <source src="https://storage.naayiq.com/resources/water.mp4" type="video/mp4" />
+                <source src="https://storage.naayiq.com/resources/forest.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
             <div className="absolute -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
