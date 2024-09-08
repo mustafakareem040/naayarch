@@ -22,6 +22,7 @@ const CartItem = ({ id, title, color, image, size, qty, price, onUpdateQuantity,
                     src={`https://storage.naayiq.com/products/${image}`}
                     alt={title}
                     fill={true}
+                    unoptimized={true}
                     className="object-cover"
                 />
             </div>
