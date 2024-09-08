@@ -25,9 +25,9 @@ export default function Hero() {
             >
                 <source src="https://storage.naayiq.com/resources/forest.mp4" type="video/mp4" />
             </video>
-            <div className="absolute -top-48 mr-1 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
-                <h1 className="text-2xl mb-4 text-white ">
-                    Welcome To<br />Nay Iraq
+            <div className="absolute mr-1 font-medium text-center inset-0 transform right-0 top-1/3 left-1/2 flex flex-col items-center justify-center space-y-4">
+                <h1 className="text-2xl font-serif font-medium mb-4 text-white ">
+                    Welcome To<br />Naay Iraq
                 </h1>
                 <Link
                     href="/products"

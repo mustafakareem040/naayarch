@@ -7,7 +7,7 @@ const Footer = () => {
             <div className="mb-8">
                 <Image
                     src="https://storage.naayiq.com/resources/logo_with_backgorund.svg"
-                    alt="Nay Iraq Logo"
+                    alt="Naay Iraq Logo"
                     unoptimized={true}
                     width={120}
                     height={120}
@@ -22,7 +22,7 @@ const Footer = () => {
             </div>
 
             <div className="text-sm text-gray-500">
-                Copyright © 2024 NayIraq
+                Copyright © 2024 NaayIraq
             </div>
         </footer>
     );

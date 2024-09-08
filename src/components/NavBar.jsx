@@ -44,7 +44,7 @@ export function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
                     isClose={true}
                 />
                 <Link prefetch={false} className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
-                    <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Nay Logo" width={53} height={37} />
+                    <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Naay Logo" unoptimized={true} width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
                     <ImageButton src="https://storage.naayiq.com/resources/search.svg" alt="Search" dest={"/"} />

@@ -28,7 +28,7 @@ const nnFont = localFont({
 
 
 export const metadata = {
-    title: "Nay Store",
+    title: "Naay Store",
     description: "An Iraqi store for makeups",
 };
 
