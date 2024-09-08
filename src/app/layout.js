@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
         <head>
-            <title>Nay Store</title>
+            <title>Naay Store</title>
         </head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader

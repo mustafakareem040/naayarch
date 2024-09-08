@@ -37,42 +37,72 @@ export default function ProductDetail({
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
     const [isAddedToCart, setIsAddedToCart] = useState(false);
-    const router = useRouter()
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        if (selectedSize) {
-            const sizeIndex = sizeNames.indexOf(selectedSize);
-            setCurrentPrice(sizePrices[sizeIndex]);
-        }
-    }, [selectedSize, sizeNames, sizePrices]);
+        // Check if user is logged in (you may need to implement this check)
+        const checkLoginStatus = async () => {
+            // Implement your login check logic here
+            // For example: const loggedIn = await checkUserLoginStatus();
+            // setIsLoggedIn(loggedIn);
+        };
+        checkLoginStatus();
+    }, []);
 
     const handleAddToCart = async () => {
-        try {
-            const response = await fetch('https://api.naayiq.com/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    product_id: productId,
-                    size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
-                    color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
-                    qty: quantity,
-                }),
-            });
+        if (isLoggedIn) {
+            try {
+                const response = await fetch('https://api.naayiq.com/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        product_id: productId,
+                        size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
+                        color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
+                        qty: quantity,
+                    }),
+                });
 
-            if (response.ok) {
-                setIsAddedToCart(true);
-                addNotification('success', 'Product Added To Cart');
-            } else {
-                const errorData = await response.json();
-                addNotification('error', errorData.message || 'Failed to add product to cart');
+                if (response.ok) {
+                    setIsAddedToCart(true);
+                    addNotification('success', 'Product Added To Cart');
+                } else {
+                    const errorData = await response.json();
+                    addNotification('error', errorData.message || 'Failed to add product to cart');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                addNotification('error', 'Failed to add product to cart');
             }
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-            addNotification('error', 'Failed to add product to cart');
+        } else {
+            // Handle localStorage cart for unregistered users
+            const cartItem = {
+                product_id: productId,
+                size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
+                color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
+                qty: quantity
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItemIndex = cart.findIndex(item =>
+                item.product_id === cartItem.product_id &&
+                item.size_id === cartItem.size_id &&
+                item.color_id === cartItem.color_id
+            );
+
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].qty += quantity;
+            } else {
+                cart.push(cartItem);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            setIsAddedToCart(true);
+            addNotification('success', 'Product Added To Cart');
         }
     };
     const sliderSettings = {
