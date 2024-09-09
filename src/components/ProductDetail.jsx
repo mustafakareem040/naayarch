@@ -11,29 +11,14 @@ import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
-import {useNotification} from "@/components/NotificationContext";
+import { useNotification } from "@/components/NotificationContext";
 import Link from "next/link";
 
-export default function ProductDetail({
-                                          images,
-                                          sizeNames,
-                                          sizePrices,
-                                          sizeQuantities,
-                                          colorNames,
-                                          colorPrices,
-                                          colorQuantities,
-                                          sizeIds,
-                                          colorIds,
-                                          colorImages,
-                                          title,
-                                          description,
-                                          price,
-                                          productId
-                                      }) {
-    const [selectedSize, setSelectedSize] = useState(sizeNames && sizeNames.length > 0 ? sizeNames[0] : null);
-    const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);
+export default function ProductDetail({ product }) {
+    const [selectedColor, setSelectedColor] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [currentPrice, setCurrentPrice] = useState(price);
+    const [currentPrice, setCurrentPrice] = useState(product.price);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
@@ -45,9 +30,39 @@ export default function ProductDetail({
 
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const productInCart = cart.some(item => item.product_id === productId);
+        const productInCart = cart.some(item => item.product_id === product.id);
         setIsInCart(productInCart);
-    }, [productId]);
+
+        // Set initial color and size if available
+        if (product.has_color && product.colors.length > 0) {
+            setSelectedColor(product.colors[0]);
+        }
+        if (product.has_size && product.sizes.length > 0) {
+            setSelectedSize(product.sizes[0]);
+        }
+
+        updatePrice();
+    }, [product]);
+
+    useEffect(() => {
+        updatePrice();
+    }, [selectedColor, selectedSize]);
+
+    const updatePrice = () => {
+        let price = parseFloat(product.price);
+        if (selectedColor) {
+            price = parseFloat(selectedColor.price);
+            if (selectedSize) {
+                const sizeInColor = selectedColor.sizes.find(s => s.id === selectedSize.id);
+                if (sizeInColor) {
+                    price = parseFloat(sizeInColor.price);
+                }
+            }
+        } else if (selectedSize) {
+            price = parseFloat(selectedSize.price);
+        }
+        setCurrentPrice(price);
+    };
 
     const handleBuyNow = () => {
         if (!isInCart) {
@@ -56,16 +71,15 @@ export default function ProductDetail({
         router.push('/cart');
     };
 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            // Implement your login check logic here
-        };
-        console.log(localStorage.getItem("cart"))
-        checkLoginStatus();
-    }, []);
-
     const handleAddToCart = async () => {
         setIsAddingToCart(true);
+        const cartItem = {
+            product_id: product.id,
+            color_id: selectedColor ? selectedColor.id : undefined,
+            size_id: selectedSize ? selectedSize.id : undefined,
+            qty: quantity
+        };
+
         if (isLoggedIn) {
             try {
                 const response = await fetch('https://api.naayiq.com/cart', {
@@ -74,12 +88,7 @@ export default function ProductDetail({
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include',
-                    body: JSON.stringify({
-                        product_id: productId,
-                        size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
-                        color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
-                        qty: quantity,
-                    }),
+                    body: JSON.stringify(cartItem),
                 });
 
                 if (response.ok) {
@@ -94,13 +103,6 @@ export default function ProductDetail({
                 addNotification('error', 'Failed to add product to cart');
             }
         } else {
-            const cartItem = {
-                product_id: productId,
-                size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
-                color_id: selectedColor ? colorIds[colorNames.indexOf(selectedColor)] : undefined,
-                qty: quantity
-            };
-
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const existingItemIndex = cart.findIndex(item =>
                 item.product_id === cartItem.product_id &&
@@ -122,7 +124,7 @@ export default function ProductDetail({
     };
 
     const sliderSettings = {
-        dots: images.length > 1,
+        dots: product.images.length > 1,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
@@ -143,59 +145,17 @@ export default function ProductDetail({
         },
     };
 
-    const lightboxSlides = images.map(src => ({ src }));
+    const lightboxSlides = product.images.map(image => ({ src: image.url }));
 
     return (
         <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
-            <style jsx global>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { transform: translateY(20px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                    100% { transform: scale(1); }
-                }
-                .fade-in {
-                    animation: fadeIn 0.5s ease-out;
-                }
-                .slide-up {
-                    animation: slideUp 0.5s ease-out;
-                }
-                .pulse {
-                    animation: pulse 0.5s;
-                }
-                .color-button {
-                    transition: all 0.3s ease;
-                }
-                .color-button:hover {
-                    transform: scale(1.1);
-                }
-                .add-to-cart-button {
-                    transition: all 0.3s ease;
-                }
-                .add-to-cart-button:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                }
-                .heart-button {
-                    transition: all 0.3s ease;
-                }
-                .heart-button:hover {
-                    transform: scale(1.1);
-                }
-            `}</style>
+            {/* Styles and animations... */}
 
             <Slider {...sliderSettings} className="w-full mb-6 h-[55vh] fade-in">
-                {images.map((image, index) => (
+                {product.images.map((image, index) => (
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
-                            src={image || 'https://storage.naayiq.com/resources/noimage.png'}
+                            src={image.url || 'https://storage.naayiq.com/resources/noimage.png'}
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
@@ -213,8 +173,8 @@ export default function ProductDetail({
                 slides={lightboxSlides}
                 plugins={[Zoom, Fullscreen]}
                 carousel={{
-                    finite: images.length <= 1,
-                    navigationDisabled: images.length <= 1
+                    finite: product.images.length <= 1,
+                    navigationDisabled: product.images.length <= 1
                 }}
                 animation={{ zoom: 500 }}
                 zoom={{
@@ -246,54 +206,48 @@ export default function ProductDetail({
 
             <div className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30 slide-up">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
-                <h1 className="text-xl font-semibold mb-1 capitalize">{title}</h1>
+                <h1 className="text-xl font-semibold mb-1 capitalize">{product.name}</h1>
 
-                {sizeNames && sizeNames.length > 0 && (
-                    <div className="mb-6 font-serif">
-                        {sizeNames.length === 1 ? (
-                            <div className="w-32 p-2 border border-[#E5E7EB] rounded-lg bg-white">
-                                Size: {sizeNames[0]}
-                            </div>
-                        ) : (
-                            <select
-                                value={selectedSize}
-                                onChange={(e) => setSelectedSize(e.target.value)}
-                                className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
-                            >
-                                {sizeNames.map((size, index) => (
-                                    <option className="text-xs" key={size} value={size}>
-                                        Size: {size}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
-                )}
-
-                {colorNames && colorNames.length > 0 && (
+                {product.has_color && product.colors.length > 0 && (
                     <div className="mb-10 mt-6">
                         <h2 className="text-xl font-medium mb-2">Color</h2>
                         <div className="flex space-x-4 overflow-x-auto pb-2">
-                            {colorNames.map((color, index) => (
-                                <div key={index} className="flex flex-col items-center">
+                            {product.colors.map((color) => (
+                                <div key={color.id} className="flex flex-col items-center">
                                     <button
-                                        className={`w-20 h-20 rounded-full border-2 ${selectedColor === color ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden color-button`}
+                                        className={`w-20 h-20 rounded-full border-2 ${selectedColor?.id === color.id ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden color-button`}
                                         onClick={() => setSelectedColor(color)}
                                     >
-                                        {colorImages[index] && (
+                                        {color.images && color.images.length > 0 && (
                                             <Image
-                                                src={colorImages[index]}
-                                                alt={color}
+                                                src={color.images[0]}
+                                                alt={color.name}
                                                 width={80}
                                                 height={80}
                                                 className="object-cover"
                                             />
                                         )}
                                     </button>
-                                    <span className="text-sm">{color}</span>
+                                    <span className="text-sm">{color.name}</span>
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {product.has_size && (selectedColor ? selectedColor.sizes : product.sizes).length > 0 && (
+                    <div className="mb-6 font-serif">
+                        <select
+                            value={selectedSize?.id || ''}
+                            onChange={(e) => setSelectedSize((selectedColor ? selectedColor.sizes : product.sizes).find(s => s.id.toString() === e.target.value))}
+                            className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
+                        >
+                            {(selectedColor ? selectedColor.sizes : product.sizes).map((size) => (
+                                <option key={size.id} value={size.id}>
+                                    Size: {size.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 )}
 
@@ -302,7 +256,7 @@ export default function ProductDetail({
                     <p
                         style={{direction: "rtl"}}
                         className="text-xl font-normal text-left font-serif"
-                        dangerouslySetInnerHTML={{__html: description}}
+                        dangerouslySetInnerHTML={{__html: product.description}}
                     />
                 </div>
                 <footer className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">

@@ -17,20 +17,7 @@ async function ProductContent({ id }) {
 
     return (
         <ProductDetail
-            images={product.images?.map((image) => `https://storage.naayiq.com/resources/${image.url}`)}
-            sizeNames={product.sizes?.map((size) => size.name)}
-            sizePrices={product.sizes?.map((size) => size.price)}
-            sizeIds={product.sizes?.map((size) => size.id)}
-            colorIds={product.colors?.map((color) => color.id)}
-            sizeQuantities={product.sizes?.map((size) => size.qty)}
-            colorNames={product.colors?.map((color) => color.name)}
-            colorPrices={product.colors?.map((color) => color.price)}
-            colorQuantities={product.colors?.map((color) => color.qty)}
-            colorImages={product.colors?.map((color) => color.images[0] ? `https://storage.naayiq.com/resources/${color.images[0]}` : null)}
-            title={product.name}
-            description={product.description.replace(/\n/g, '<br />')}
-            price={product.price ?? product.sizes[0]?.price ?? "N/A"}
-            productId={product.id}
+            product={product}
         />
     );
 }
