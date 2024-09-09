@@ -3,15 +3,15 @@ import dynamic from 'next/dynamic';
 import Link from "next/link";
 import Image from "next/image";
 import ProductLoading from "@/components/ProductLoading";
+
 export const runtime = 'edge'
-const AsyncNavBar = dynamic(() => import('@/components/AsyncNavBar') )
+
+const AsyncNavBar = dynamic(() => import('@/components/AsyncNavBar'))
 const ProductList = dynamic(() => import('@/components/ProductList'), {
     loading: () => <ProductLoading />,
 });
 
-
-
-async function ProductsPage() {
+function ProductsPage() {
     return (
         <>
             <AsyncNavBar />

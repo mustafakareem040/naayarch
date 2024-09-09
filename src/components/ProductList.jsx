@@ -13,7 +13,6 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
-const ITEMS_PER_PAGE = 10;
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
@@ -25,10 +24,11 @@ export default function ProductList() {
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
     const prevSearch = useRef("");
-    const { ref, inView } = useInView({
+    const {ref, inView} = useInView({
         threshold: 0,
     });
     const [paramsLoaded, setParamsLoaded] = useState(false);
+    const initialLoadDone = useRef(false);
 
     useEffect(() => {
         setC(searchParams.get("c") || "");
@@ -60,20 +60,28 @@ export default function ProductList() {
         setPage(1);
         setHasMore(true);
         prevSearch.current = query;
+        initialLoadDone.current = false;
     }, [query]);
 
     useEffect(() => {
-        if (paramsLoaded && (prevSearch.current !== query || page === 1)) {
+        if (paramsLoaded && !initialLoadDone.current) {
             resetSearch();
             loadMoreProducts();
+            initialLoadDone.current = true;
         }
-    }, [paramsLoaded, query, c, sc, resetSearch, loadMoreProducts, page]);
+    }, [paramsLoaded, resetSearch, loadMoreProducts]);
 
     useEffect(() => {
-        if (inView && paramsLoaded && !loading && hasMore && page > 1) {
+        if (inView && paramsLoaded && !loading && hasMore && initialLoadDone.current) {
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore, page]);
+    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
+
+    useEffect(() => {
+        if (prevSearch.current !== query) {
+            resetSearch();
+        }
+    }, [query, resetSearch]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
@@ -82,23 +90,26 @@ export default function ProductList() {
 
     return (
         <>
-            <SearchComponent query={query} setQuery={setQuery} />
-            {loading && products.length === 0 ? <ProductLoading /> :
-                memoizedProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                        {memoizedProducts.map((product) => (
-                            <ProductItem
-                                key={product.id}
-                                id={product.id}
-                                name={product.name}
-                                price={formatPrice(product.cheapestPrice)}
-                                imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                            />
-                        ))}
-                    </div>
-                ) : <NoProductsFound />
-            }
-            {loading && products.length > 0 && <ProductLoading />}
+            <SearchComponent query={query} setQuery={setQuery}/>
+            {loading && products.length === 0 ? (
+                <ProductLoading/>
+            ) : memoizedProducts.length > 0 ? (
+                <div
+                    className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {memoizedProducts.map((product) => (
+                        <ProductItem
+                            key={product.id}
+                            id={product.id}
+                            name={product.name}
+                            price={formatPrice(product.cheapestPrice)}
+                            imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                        />
+                    ))}
+                </div>
+            ) : !loading ? (
+                <NoProductsFound/>
+            ) : null}
+            {loading && products.length > 0 && <ProductLoading/>}
             <div ref={ref}></div>
         </>
     );
