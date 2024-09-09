@@ -17,7 +17,7 @@ const CartItem = ({ id, title, color, image, size, qty, price, onUpdateQuantity,
 
     return (
         <div className="flex justify-between font-serif items-stretch p-4 bg-[rgba(246,243,241,0.3)] shadow-[0px_2px_4px_3px_rgba(0,0,0,0.1)] rounded-md mb-4 w-full">
-            <div className="w-full relative aspect-[2/3] ssm:w-1/2 bg-transparent rounded-lg overflow-hidden">
+            <div className="w-full max-h-[300px] relative aspect-[4/5] ssm:w-1/2 bg-transparent rounded-lg overflow-hidden">
                 <Image
                     src={image}
                     alt={title}

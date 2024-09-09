@@ -22,13 +22,13 @@ export default function ProductDetail({
                                           colorNames,
                                           colorPrices,
                                           colorQuantities,
-    sizeIds,
-    colorIds,
+                                          sizeIds,
+                                          colorIds,
                                           colorImages,
                                           title,
                                           description,
                                           price,
-                                            productId
+                                          productId
                                       }) {
     const [selectedSize, setSelectedSize] = useState(sizeNames && sizeNames.length > 0 ? sizeNames[0] : null);
     const [selectedColor, setSelectedColor] = useState(colorNames && colorNames.length > 0 ? colorNames[0] : null);
@@ -39,32 +39,33 @@ export default function ProductDetail({
     const { addNotification } = useNotification();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        // Check if the product is in the cart
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const productInCart = cart.some(item => item.product_id === productId);
         setIsInCart(productInCart);
     }, [productId]);
+
     const handleBuyNow = () => {
         if (!isInCart) {
             handleAddToCart();
         }
-        router.push('/cart'); // Assuming you have a cart page route
+        router.push('/cart');
     };
+
     useEffect(() => {
-        // Check if user is logged in (you may need to implement this check)
         const checkLoginStatus = async () => {
             // Implement your login check logic here
-            // For example: const loggedIn = await checkUserLoginStatus();
-            // setIsLoggedIn(loggedIn);
         };
         console.log(localStorage.getItem("cart"))
         checkLoginStatus();
     }, []);
 
     const handleAddToCart = async () => {
+        setIsAddingToCart(true);
         if (isLoggedIn) {
             try {
                 const response = await fetch('https://api.naayiq.com/cart', {
@@ -93,7 +94,6 @@ export default function ProductDetail({
                 addNotification('error', 'Failed to add product to cart');
             }
         } else {
-            // Handle localStorage cart for unregistered users
             const cartItem = {
                 product_id: productId,
                 size_id: selectedSize ? sizeIds[sizeNames.indexOf(selectedSize)] : undefined,
@@ -118,7 +118,9 @@ export default function ProductDetail({
             setIsInCart(true);
             addNotification('success', 'Product Added To Cart');
         }
+        setTimeout(() => setIsAddingToCart(false), 1000);
     };
+
     const sliderSettings = {
         dots: images.length > 1,
         infinite: false,
@@ -145,7 +147,51 @@ export default function ProductDetail({
 
     return (
         <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
-            <Slider {...sliderSettings} className="w-full mb-6 h-[55vh]">
+            <style jsx global>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+                .fade-in {
+                    animation: fadeIn 0.5s ease-out;
+                }
+                .slide-up {
+                    animation: slideUp 0.5s ease-out;
+                }
+                .pulse {
+                    animation: pulse 0.5s;
+                }
+                .color-button {
+                    transition: all 0.3s ease;
+                }
+                .color-button:hover {
+                    transform: scale(1.1);
+                }
+                .add-to-cart-button {
+                    transition: all 0.3s ease;
+                }
+                .add-to-cart-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .heart-button {
+                    transition: all 0.3s ease;
+                }
+                .heart-button:hover {
+                    transform: scale(1.1);
+                }
+            `}</style>
+
+            <Slider {...sliderSettings} className="w-full mb-6 h-[55vh] fade-in">
                 {images.map((image, index) => (
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
@@ -181,28 +227,31 @@ export default function ProductDetail({
                     wheelZoomDistanceFactor: 100,
                     pinchZoomDistanceFactor: 100,
                     scrollToZoom: true,
-                }} />
+                }}
+            />
+
             <button
-                className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
+                className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10 fade-in"
                 onClick={router.back}>
                 <ArrowLeft width={30} height={30} strokeWidth={1}/>
             </button>
+
             <button
-                className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center">
-            <Heart
-                className="w-[1.85rem] h-[1.85rem] z-10 text-transparent stroke-1 stroke-[#C91C1C] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"/>
+                className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center heart-button"
+                onClick={() => setIsLiked(!isLiked)}>
+                <Heart
+                    className={`w-[1.85rem] h-[1.85rem] z-10 ${isLiked ? 'text-[#C91C1C]' : 'text-transparent'} stroke-1 stroke-[#C91C1C] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current transition-colors duration-300`}
+                />
             </button>
 
-            <div
-                className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
+            <div className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30 slide-up">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
                 <h1 className="text-xl font-semibold mb-1 capitalize">{title}</h1>
 
                 {sizeNames && sizeNames.length > 0 && (
                     <div className="mb-6 font-serif">
                         {sizeNames.length === 1 ? (
-                            <div
-                                className="w-32 p-2 border border-[#E5E7EB] rounded-lg bg-white">
+                            <div className="w-32 p-2 border border-[#E5E7EB] rounded-lg bg-white">
                                 Size: {sizeNames[0]}
                             </div>
                         ) : (
@@ -228,7 +277,7 @@ export default function ProductDetail({
                             {colorNames.map((color, index) => (
                                 <div key={index} className="flex flex-col items-center">
                                     <button
-                                        className={`w-20 h-20 rounded-full border-2 ${selectedColor === color ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden`}
+                                        className={`w-20 h-20 rounded-full border-2 ${selectedColor === color ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden color-button`}
                                         onClick={() => setSelectedColor(color)}
                                     >
                                         {colorImages[index] && (
@@ -256,23 +305,22 @@ export default function ProductDetail({
                         dangerouslySetInnerHTML={{__html: description}}
                     />
                 </div>
-                <footer
-                    className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
+                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
                     <div className="flex justify-between items-center mb-6">
                         <span className="text-xl font-serif font-medium">{currentPrice * quantity} IQD</span>
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full transition-all duration-300 hover:bg-[#3B5345] hover:text-white"
                             >
-                                <Minus className="w-4 h-4 text-[#3B5345]"/>
+                                <Minus className="w-4 h-4"/>
                             </button>
                             <span className="text-lg font-medium">{quantity}</span>
                             <button
                                 onClick={() => setQuantity(quantity + 1)}
-                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full transition-all duration-300 hover:bg-[#3B5345] hover:text-white"
                             >
-                                <Plus className="w-4 h-4 text-[#3B5345]"/>
+                                <Plus className="w-4 h-4"/>
                             </button>
                         </div>
                     </div>
@@ -282,48 +330,31 @@ export default function ProductDetail({
                             href={"/cart"}
                             prefetch={false}
                             alt={"Go to cart"}
-                            className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
+                            className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345] hover:bg-[#3B5345] hover:text-white"
                         >
-                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
-                                    stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                    strokeLinejoin="round"/>
-                                <path
-                                    d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
-                                    stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                    strokeLinejoin="round"/>
-                                <path d="M18.8318 14.0001H18.8423" stroke="#3B5345" strokeWidth="2"
-                                      strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M10.6638 14.0001H10.6743" stroke="#3B5345" strokeWidth="2"
-                                      strokeLinecap="round" strokeLinejoin="round"/>
+                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z" stroke="currentColor" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M18.8318 14.0001H18.8423" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M10.6638 14.0001H10.6743" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                             Buy Now
                         </Link>
                     ) : (
                         <button
                             onClick={handleAddToCart}
-                            className="w-full font-serif bg-[#3B5345] hover:bg-[#2E4035] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
+                            className={`w-full font-serif bg-[#3B5345] hover:bg-[#2E4035] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 add-to-cart-button ${isAddingToCart ? 'pulse' : ''}`}
+                            disabled={isAddingToCart}
                         >
-                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
-                                    stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                    strokeLinejoin="round"/>
-                                <path
-                                    d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
-                                    stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                    strokeLinejoin="round"/>
-                                <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
-                                      strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
-                                      strokeLinecap="round" strokeLinejoin="round"/>
+                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                        Add To Cart
+                            {isAddingToCart ? 'Adding...' : 'Add To Cart'}
                         </button>
-                        )}
+                    )}
                 </footer>
             </div>
         </div>
