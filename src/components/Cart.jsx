@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
-const Cart = () => {
+const Cart = ({onProceed}) => {
     const [cartItems, setCartItems] = useState([]);
     const [subTotal, setSubTotal] = useState(0);
     const [delivery, setDelivery] = useState(5000);
@@ -19,6 +19,13 @@ const Cart = () => {
     const [couponMessage, setCouponMessage] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const router = useRouter()
+    const handleProceed = () => {
+        onProceed({
+            subTotal,
+            delivery,
+            discount
+        });
+    };
     useEffect(() => {
         const fetchCartItems = async () => {
             const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -247,20 +254,11 @@ const Cart = () => {
                     <span>{subTotal + delivery - discount} IQD</span>
                 </div>
             </motion.div>
-            <Link
-                href={{
-                    pathname: "/cart/order",
-                    query: {
-                        subTotal: subTotal,
-                        delivery: delivery,
-                        discount: discount
-                    }
-                }}
-                prefetch={false}
-                className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6"
-            >
+            <button
+                onClick={handleProceed}
+                className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6">
                 Proceed
-            </Link>
+            </button>
         </motion.div>
             </>
     );

@@ -5,40 +5,27 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, FileText } from 'lucide-react';
 import Link from 'next/link';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
 
-const CartCheckout = ({ subTotal, delivery, discount }) => {
+const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
     const [note, setNote] = useState('');
-    const router = useRouter()
+
     return (
         <>
             <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={router.back}>
+                <button className="relative z-20" onClick={onBack}>
                     <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} width={40}
                            height={40} alt="left"/>
                 </button>
                 <h1
                     className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
-                    Cart
+                    Checkout
                 </h1>
             </header>
-            <motion.div
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                exit={{opacity: 0}}
+            <div
                 className="p-4 font-serif container mx-auto max-w-md"
             >
-                <div className="flex items-center mb-6">
-                    <Link href="/" className="mr-4">
-                        <ArrowLeft className="w-6 h-6"/>
-                    </Link>
-                    <h1 className="text-2xl font-sans font-bold">Cart</h1>
-                </div>
 
-                <motion.section
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.1}}
+                <section
                     className="mb-6"
                 >
                     <h2 className="text-xl font-sans font-medium mb-2">Shipping Address</h2>
@@ -47,12 +34,9 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
                         <Plus className="w-6 h-6 mr-3"/>
                         <span className="text-base font-semibold">Add address</span>
                     </button>
-                </motion.section>
+                </section>
 
-                <motion.section
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.2}}
+                <section
                     className="mb-6"
                 >
                     <h2 className="text-xl font-sans font-medium mb-2">Note</h2>
@@ -67,12 +51,9 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
                             className="w-full border border-[rgba(105,92,92,0.3)] rounded-lg p-4 pl-12 text-sm"
                         />
                     </div>
-                </motion.section>
+                </section>
 
-                <motion.section
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.3}}
+                <section
                     className="mb-6"
                 >
                     <h2 className="text-xl font-sans font-medium mb-2">Payment Method</h2>
@@ -83,12 +64,9 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
                         </div>
                         <span>Cash On Delivery</span>
                     </div>
-                </motion.section>
+                </section>
 
-                <motion.section
-                    initial={{opacity: 0, y: 20}}
-                    animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.4}}
+                <section
                     className="-mx-8 mb-6 bg-[#F6F3F1]/30 rounded-lg p-8"
                 >
                     <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
@@ -111,16 +89,14 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
                             <span>{subTotal + delivery - discount} IQD</span>
                         </div>
                     </div>
-                </motion.section>
+                </section>
 
-                <motion.button
-                    whileHover={{scale: 1.02}}
-                    whileTap={{scale: 0.98}}
+                <button
                     className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
                 >
                     Submit Order
-                </motion.button>
-            </motion.div>
+                </button>
+            </div>
         </>
     );
 };
