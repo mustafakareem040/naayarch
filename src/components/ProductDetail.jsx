@@ -145,17 +145,15 @@ export default function ProductDetail({ product }) {
         },
     };
 
-    const lightboxSlides = product.images.map(image => ({ src: image.url }));
+    const lightboxSlides = product.images.map(image => ({ src: `https://storage.naayiq.com/resources/${image}` }));
 
     return (
         <div className="flex overflow-x-hidden font-serif font-medium flex-col -mt-5 -mx-4 bg-white">
-            {/* Styles and animations... */}
-
             <Slider {...sliderSettings} className="w-full mb-6 h-[55vh] fade-in">
                 {product.images.map((image, index) => (
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
-                            src={image.url || 'https://storage.naayiq.com/resources/noimage.png'}
+                            src={`https://storage.naayiq.com/resources/${image}` || 'https://storage.naayiq.com/resources/noimage.png'}
                             alt={`Product image ${index + 1}`}
                             fill={true}
                             unoptimized={true}
