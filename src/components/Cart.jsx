@@ -247,14 +247,20 @@ const Cart = () => {
                     <span>{subTotal + delivery - discount} IQD</span>
                 </div>
             </motion.div>
-
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <Link
+                href={{
+                    pathname: "/cart/order",
+                    query: {
+                        subTotal: subTotal,
+                        delivery: delivery,
+                        discount: discount
+                    }
+                }}
+                prefetch={false}
                 className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6"
             >
                 Proceed
-            </motion.button>
+            </Link>
         </motion.div>
             </>
     );
