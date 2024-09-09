@@ -6,6 +6,7 @@ import CartItem from './CartItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
+import Loading from "@/components/Loading";
 
 const Cart = ({onProceed}) => {
     const [cartItems, setCartItems] = useState([]);
@@ -112,7 +113,7 @@ const Cart = ({onProceed}) => {
     const [confirmAction, setConfirmAction] = useState(() => {});
 
     if (isLoading) {
-        return <div className="p-4 max-w-lg mx-auto">Loading...</div>;
+        return <Loading />;
     }
 
     return (
@@ -166,12 +167,6 @@ const Cart = ({onProceed}) => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <div className="flex items-center mb-6">
-                <Link href="/" className="mr-4">
-                    <ArrowLeft className="w-6 h-6" />
-                </Link>
-                <h1 className="text-2xl font-bold">Cart</h1>
-            </div>
 
             <AnimatePresence>
                 {cartItems.map(item => (
