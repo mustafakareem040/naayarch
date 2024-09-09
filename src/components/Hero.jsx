@@ -1,23 +1,27 @@
 'use client'
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Hero() {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     return (
         <div className="relative mt-14 mb-12 font-sans w-full h-[550px] overflow-hidden rounded-lg">
-            <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover"
-            >
-                <source src="https://storage.naayiq.com/resources/water.mp4" type="video/mp4" />
-            </video>
-            <div className="absolute mr-1 font-medium text-center inset-0 transform right-0 top-1/4 left-1/2 flex flex-col items-center justify-center space-y-4">
-                <h1 className="text-2xl font-serif font-medium mb-4 text-white ">
-                    Welcome To<br />Naay Iraq
-                </h1>
+            {isClient && (
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover"
+                >
+                    <source src="https://storage.naayiq.com/resources/water.mp4" type="video/mp4" />
+                </video>
+            )}
                 <Link
                     href="/products"
                     prefetch={false}
@@ -26,6 +30,5 @@ export default function Hero() {
                     Shop Now
                 </Link>
             </div>
-        </div>
     );
 }

@@ -1,9 +1,10 @@
 'use client'
 import React, { useRef } from 'react';
-import Slider from 'react-slick';
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+const Slider = dynamic(() => import('react-slick'), { ssr: false });
+import Image from 'next/image';
 const ProductSlider = () => {
     const sliderRef = useRef(null);
     const products = [

@@ -1,11 +1,11 @@
-import { Suspense } from "react";
+import dynamic from 'next/dynamic';
+
+const ProductSlider = dynamic(() => import('@/components/ProductSlider'));
+const CustomProduct = dynamic(() => import('@/components/CustomProduct'));
+const ProductCategorySlider = dynamic(() => import('@/components/ProductCategorySlider'));
+const Footer = dynamic(() => import('@/components/Footer'))
 import Hero from "@/components/Hero";
 import {ProductWithSales} from "@/components/ProductWithSales";
-import ProductSlider from "@/components/ProductSlider";
-import CustomProduct from "@/components/CustomProduct";
-import ProductCategorySlider from "@/components/ProductCategorySlider";
-import Footer from "@/components/Footer";
-import {NavBar} from "@/components/NavBar";
 import AsyncNavBar from "@/components/AsyncNavBar";
 
 export default function Dashboard() {
