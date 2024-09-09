@@ -1,8 +1,5 @@
-'use client'
 import React from 'react';
 import Image from 'next/image';
-import useScrollScale from "@/components/useScrollState";
-import AnimatedImage from "@/components/useScrollState";
 
 const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flower, hideFlower }) => {
     return (

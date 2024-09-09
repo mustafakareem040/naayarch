@@ -2,10 +2,9 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import NextTopLoader from 'nextjs-toploader';
 import {ReduxProvider} from "@/components/ReduxProvider";
-import dynamic from 'next/dynamic';
-const SpeedInsights = dynamic(() => import('@vercel/speed-insights/next').then(mod => mod.SpeedInsights), { ssr: false });
-const NextTopLoader = dynamic(() => import('nextjs-toploader'), { ssr: false });
 export const runtime = 'edge'
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
