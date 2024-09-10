@@ -15,9 +15,7 @@ export function ProductWithSales() {
                 flower="/pingwing.png"
                 hideFlower={true}
             />
-            <div className="-mt-96">
             <SaleBanner />
-            </div>
         </div>
     )
 }

@@ -17,7 +17,8 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
 export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [justNow, setJustNow] = useState(true)
+    const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
@@ -82,7 +83,9 @@ export default function ProductList() {
             resetSearch();
         }
     }, [query, resetSearch]);
-
+    useEffect(() => {
+        setJustNow(false)
+    }, []);
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
@@ -91,7 +94,7 @@ export default function ProductList() {
     return (
         <>
             <SearchComponent query={query} setQuery={setQuery}/>
-            {loading ? (
+            {loading || justNow ? (
                 <ProductLoading/>
             ) : memoizedProducts.length > 0 ? (
                 <div
