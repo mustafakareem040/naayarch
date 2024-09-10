@@ -1,34 +1,21 @@
 'use client'
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
 import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 import ErrorHandler from "@/components/ErrorHandler";
-import { useProducts } from './ProductsContext';
-
-const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
-    ssr: false,
-    loading: () => <SearchComponentSkeleton />
-});
+import SearchComponent from '@/components/SearchComponent';
 
 export default function ProductList() {
-    const {
-        products,
-        updateProducts,
-        resetProducts,
-        page,
-        setPage,
-        hasMore,
-        setHasMore,
-        scrollPosition,
-        setScrollPosition
-    } = useProducts();
+    const [products, setProducts] = useState([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
@@ -57,7 +44,7 @@ export default function ProductList() {
             if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
                 setHasMore(false);
             }
-            updateProducts(newProducts.products);
+            setProducts(prev => [...prev, ...newProducts.products]);
             setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -65,14 +52,16 @@ export default function ProductList() {
         } finally {
             setLoading(false);
         }
-    }, [query, c, sc, page, loading, hasMore, paramsLoaded, updateProducts, setPage, setHasMore]);
+    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
 
     const resetSearch = useCallback(() => {
-        resetProducts();
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
         setError(false);
         prevSearch.current = query;
         initialLoadDone.current = false;
-    }, [query, resetProducts]);
+    }, [query]);
 
     useEffect(() => {
         if (paramsLoaded && !initialLoadDone.current) {
@@ -95,22 +84,12 @@ export default function ProductList() {
     }, [query, resetSearch]);
 
     useEffect(() => {
-        const handleScroll = () => {
-            setScrollPosition(window.pageYOffset);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [setScrollPosition]);
-
-    useEffect(() => {
-        if (scrollPosition > 0) {
-            window.scrollTo(0, scrollPosition);
+        const scrollPosition = sessionStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            window.scrollTo(0, parseInt(scrollPosition));
+            sessionStorage.removeItem('scrollPosition');
         }
-    }, [scrollPosition]);
+    }, []);
 
     const handleRetry = useCallback(() => {
         setError(false);
@@ -122,7 +101,7 @@ export default function ProductList() {
             <SearchComponent query={query} setQuery={setQuery}/>
             {error ? (
                 <ErrorHandler onRetry={handleRetry} />
-            ) : loading && products.length === 0 ? (
+            ) : loading ? (
                 <ProductLoading/>
             ) : products.length > 0 ? (
                 <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -136,7 +115,7 @@ export default function ProductList() {
                         />
                     ))}
                 </div>
-            ) : !loading ? (
+            ) : !loading && products.length === 0 ? (
                 <NoProductsFound/>
             ) : null}
             {loading && products.length > 0 && <ProductLoading/>}
@@ -144,8 +123,6 @@ export default function ProductList() {
         </div>
     );
 }
-
-
 
 function getCheapestPrice(product) {
     const prices = [
