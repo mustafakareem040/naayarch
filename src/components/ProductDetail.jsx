@@ -22,7 +22,6 @@ export default function ProductDetail({ product }) {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
     const images = product.images.map(img => img.url || img);

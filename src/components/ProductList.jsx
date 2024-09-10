@@ -8,7 +8,6 @@ import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
-import AsyncNavBar from "@/components/AsyncNavBar";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -102,7 +101,6 @@ export default function ProductList() {
         const handlePopState = () => {
             setShouldScroll(true);
         };
-
         window.addEventListener('popstate', handlePopState);
 
         return () => {
@@ -112,10 +110,7 @@ export default function ProductList() {
 
     useEffect(() => {
         if (shouldScroll) {
-            const savedScrollPosition = sessionStorage.getItem('scrollPosition');
-            if (savedScrollPosition) {
-                window.scrollTo(0, parseInt(savedScrollPosition, 10));
-            }
+            window.scrollTo(0, scroll.current)
             setShouldScroll(false);
         }
     }, [shouldScroll]);
@@ -123,6 +118,7 @@ export default function ProductList() {
     useEffect(() => {
         if (path.length <= 10) {
             setDetail(null);
+            setShouldScroll(true)
         }
     }, [path]);
     return (
