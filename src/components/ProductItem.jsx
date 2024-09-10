@@ -1,12 +1,11 @@
-'use client'
 import React, { memo } from 'react';
 import Image from 'next/image';
 
 const ProductItem = memo(({ id, name, price, imageUrl, handleClick }) => {
     return (
-        <div className="block" onClick={handleClick}>
+        <button className="block" onClick={handleClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
-                <button className="absolute left-1 top-4 z-10" onClick={(e) => e.preventDefault()}>
+                <div className="absolute left-1 top-4 z-10" onClick={(e) => e.preventDefault()}>
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="30" height="30" rx="15" fill="url(#paint0_linear_733_2359)"/>
                         <path
@@ -20,7 +19,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, handleClick }) => {
                             </linearGradient>
                         </defs>
                     </svg>
-                </button>
+                </div>
                 <Image
                     src={imageUrl}
                     alt={name}
@@ -63,7 +62,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, handleClick }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </button>
     )});
 ProductItem.displayName = "ProductItem"
 export default ProductItem;

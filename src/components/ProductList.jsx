@@ -125,10 +125,11 @@ export default function ProductList() {
                                         key={product.id}
                                         id={product.id}
                                         name={product.name}
-                                        onClick={() => {
+                                        handleClick={() => {
                                             scroll.current = window.scrollY
                                             setDetail(product)
-                                            window.history.pushState(null, '', `/products/${product.id}`)
+                                            const newURL = `/products/${product.id}`;
+                                            window.history.pushState({ path: newURL }, '', newURL);
                                         }}
                                         price={formatPrice(product.cheapestPrice)}
                                         imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
