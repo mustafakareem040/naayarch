@@ -58,7 +58,7 @@ const SearchComponent = ({ query, setQuery }) => {
                     />
                 </div>
                 <button
-                    className="py-2 w-[5.5rem] font-sans border flex justify-around px-2 bg-[#3B5345] text-white items-center rounded-md hover:bg-[#2E4238] focus:outline-none focus:ring-1 focus:ring-[#2E4238]"
+                    className="py-2 w-[5.5rem] font-sans border flex justify-around px-2 bg-[#3B5345] text-white items-center rounded-md"
                     onClick={toggleFilter}
                 >
                     <Image

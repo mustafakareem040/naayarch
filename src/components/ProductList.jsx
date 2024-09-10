@@ -1,20 +1,23 @@
 'use client'
-
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
+import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
 import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
-import ErrorHandler from "@/components/ErrorHandler";
-import SearchComponent from '@/components/SearchComponent';
+
+const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
+    ssr: false,
+    loading: () => <SearchComponentSkeleton />
+});
+
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
@@ -37,7 +40,6 @@ export default function ProductList() {
         if (!paramsLoaded || loading || !hasMore) return;
 
         setLoading(true);
-        setError(false);
 
         try {
             const newProducts = await fetchProducts(page, query, c, sc);
@@ -48,7 +50,6 @@ export default function ProductList() {
             setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
-            setError(true);
         } finally {
             setLoading(false);
         }
@@ -58,7 +59,6 @@ export default function ProductList() {
         setProducts([]);
         setPage(1);
         setHasMore(true);
-        setError(false);
         prevSearch.current = query;
         initialLoadDone.current = false;
     }, [query]);
@@ -83,34 +83,25 @@ export default function ProductList() {
         }
     }, [query, resetSearch]);
 
-    useEffect(() => {
-        const scrollPosition = sessionStorage.getItem('scrollPosition');
-        if (scrollPosition) {
-            window.scrollTo(0, parseInt(scrollPosition));
-            sessionStorage.removeItem('scrollPosition');
-        }
-    }, []);
-
-    const handleRetry = useCallback(() => {
-        setError(false);
-        loadMoreProducts();
-    }, [loadMoreProducts]);
+    const memoizedProducts = useMemo(() => products.map((product) => ({
+        ...product,
+        cheapestPrice: getCheapestPrice(product),
+    })), [products]);
 
     return (
-        <div className="overflow-x-hidden">
+        <>
             <SearchComponent query={query} setQuery={setQuery}/>
-            {error ? (
-                <ErrorHandler onRetry={handleRetry} />
-            ) : loading ? (
+            {loading ? (
                 <ProductLoading/>
-            ) : products.length > 0 ? (
-                <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {products.map((product) => (
+            ) : memoizedProducts.length > 0 ? (
+                <div
+                    className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {memoizedProducts.map((product) => (
                         <ProductItem
                             key={product.id}
                             id={product.id}
                             name={product.name}
-                            price={formatPrice(getCheapestPrice(product))}
+                            price={formatPrice(product.cheapestPrice)}
                             imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
                         />
                     ))}
@@ -118,9 +109,7 @@ export default function ProductList() {
             ) : !loading && products.length === 0 ? (
                 <NoProductsFound/>
             ) : null}
-            {loading && products.length > 0 && <ProductLoading/>}
-            <div ref={ref}></div>
-        </div>
+        </>
     );
 }
 

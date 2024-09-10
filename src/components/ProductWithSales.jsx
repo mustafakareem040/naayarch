@@ -1,11 +1,9 @@
 import CustomProduct from "@/components/CustomProduct";
 import SaleBanner from "@/components/SaleBanner";
 import Image from "next/image";
-import React from "react";
-
 export function ProductWithSales() {
     return (
-        <div className="bg-[#F6F3F17F] mb-8">
+        <div className="white mb-12">
             <Image src="https://storage.naayiq.com/resources/star.svg" alt={"star"} width={35} height={35}
                    unoptimized={true}
             className="absolute scale-75 ssm2:left-10 ssm3:left-16 ssm5:left-[20%] ssm:scale-100" />
@@ -17,8 +15,9 @@ export function ProductWithSales() {
                 flower="/pingwing.png"
                 hideFlower={true}
             />
-            <div className="-mb-16"></div>
+            <div className="-mt-96">
             <SaleBanner />
+            </div>
         </div>
     )
 }

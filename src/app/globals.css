@@ -43,6 +43,19 @@ body {
 .black {
     color: #1C1B19;
 }
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-1 * var(--content-width)));
+    }
+}
+
+.animate-scroll {
+    display: inline-flex;
+    animation: scroll var(--animation-duration) linear infinite;
+}
 @layer components {
     .sr-only {
         position: absolute;
@@ -107,12 +120,12 @@ input:focus {
     scale: 2.3;
 }
 
-.animate-scroll {
-    will-change: transform;
-    display: inline-flex;
-    animation: scroll var(--animation-duration) linear infinite;
-    width: calc(var(--content-width) * var(--repetitions, 3));
-}
+/*.animate-scroll {*/
+/*    will-change: transform;*/
+/*    display: inline-flex;*/
+/*    animation: scroll var(--animation-duration) linear infinite;*/
+/*    width: calc(var(--content-width) * var(--repetitions, 3));*/
+/*}*/
 
 .white {
     background: rgba(246, 243, 241, 0.5)
