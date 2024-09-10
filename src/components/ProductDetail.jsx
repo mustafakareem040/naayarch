@@ -25,8 +25,7 @@ export default function ProductDetail({ product }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
-
-    const images = product.images.map(img => img.url);
+    const images = product.images.map(img => img.url || img);
     useEffect(() => {
         window.scrollTo(0, 0)
     }, []);
