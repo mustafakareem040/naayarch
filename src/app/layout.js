@@ -5,6 +5,7 @@ import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 import {ReduxProvider} from "@/components/ReduxProvider";
+
 export const runtime = 'edge'
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
@@ -24,9 +25,6 @@ const nnFont = localFont({
     display: "swap"
 });
 
-
-
-
 export const metadata = {
     title: "Naay Store",
     description: "An Iraqi store for makeups",
@@ -37,6 +35,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
         <head>
             <title>Naay Store</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         </head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
@@ -48,12 +47,11 @@ export default function RootLayout({ children }) {
             showSpinner={false}
             speed={300}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
-            />
+        />
         <SpeedInsights />
         <ReduxProvider>
             {children}
         </ReduxProvider>
-
         </body>
         </html>
     );

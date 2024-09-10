@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from "next/dynamic";
@@ -7,18 +7,28 @@ import ProductItem from './ProductItem';
 import { fetchProducts } from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
+import ErrorHandler from "@/components/ErrorHandler";
+import { useProducts } from './ProductsContext';
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />
 });
 
-
 export default function ProductList() {
-    const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(1);
+    const {
+        products,
+        updateProducts,
+        resetProducts,
+        page,
+        setPage,
+        hasMore,
+        setHasMore,
+        scrollPosition,
+        setScrollPosition
+    } = useProducts();
     const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
+    const [error, setError] = useState(false);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
@@ -40,28 +50,29 @@ export default function ProductList() {
         if (!paramsLoaded || loading || !hasMore) return;
 
         setLoading(true);
+        setError(false);
 
         try {
             const newProducts = await fetchProducts(page, query, c, sc);
             if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
                 setHasMore(false);
             }
-            setProducts(prev => [...prev, ...newProducts.products]);
+            updateProducts(newProducts.products);
             setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
+            setError(true);
         } finally {
             setLoading(false);
         }
-    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
+    }, [query, c, sc, page, loading, hasMore, paramsLoaded, updateProducts, setPage, setHasMore]);
 
     const resetSearch = useCallback(() => {
-        setProducts([]);
-        setPage(1);
-        setHasMore(true);
+        resetProducts();
+        setError(false);
         prevSearch.current = query;
         initialLoadDone.current = false;
-    }, [query]);
+    }, [query, resetProducts]);
 
     useEffect(() => {
         if (paramsLoaded && !initialLoadDone.current) {
@@ -83,25 +94,44 @@ export default function ProductList() {
         }
     }, [query, resetSearch]);
 
-    const memoizedProducts = useMemo(() => products.map((product) => ({
-        ...product,
-        cheapestPrice: getCheapestPrice(product),
-    })), [products]);
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollPosition(window.pageYOffset);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [setScrollPosition]);
+
+    useEffect(() => {
+        if (scrollPosition > 0) {
+            window.scrollTo(0, scrollPosition);
+        }
+    }, [scrollPosition]);
+
+    const handleRetry = useCallback(() => {
+        setError(false);
+        loadMoreProducts();
+    }, [loadMoreProducts]);
 
     return (
-        <>
+        <div className="overflow-x-hidden">
             <SearchComponent query={query} setQuery={setQuery}/>
-            {loading && products.length === 0 ? (
+            {error ? (
+                <ErrorHandler onRetry={handleRetry} />
+            ) : loading && products.length === 0 ? (
                 <ProductLoading/>
-            ) : memoizedProducts.length > 0 ? (
-                <div
-                    className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {memoizedProducts.map((product) => (
+            ) : products.length > 0 ? (
+                <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {products.map((product) => (
                         <ProductItem
                             key={product.id}
                             id={product.id}
                             name={product.name}
-                            price={formatPrice(product.cheapestPrice)}
+                            price={formatPrice(getCheapestPrice(product))}
                             imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
                         />
                     ))}
@@ -111,9 +141,11 @@ export default function ProductList() {
             ) : null}
             {loading && products.length > 0 && <ProductLoading/>}
             <div ref={ref}></div>
-        </>
+        </div>
     );
 }
+
+
 
 function getCheapestPrice(product) {
     const prices = [

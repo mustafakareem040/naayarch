@@ -274,7 +274,7 @@ export default function ProductDetail({ product }) {
                     ) : (
                         <button
                             onClick={handleAddToCart}
-                            className="w-full font-serif bg-[#3B5345] hover:bg-[#2E4035] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
+                            className="w-full font-serif bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
                         >
                             <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
