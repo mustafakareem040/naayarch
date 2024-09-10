@@ -21,7 +21,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, handleClick }) => {
                     </svg>
                 </div>
                 <Image
-                    src={imageUrl}
+                    src={`https://storage.naayiq.com/resources/${imageUrl}`}
                     alt={name}
                     fill={true}
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"

@@ -155,7 +155,7 @@ export default function ProductList() {
                                             window.history.pushState({ path: newURL }, '', newURL);
                                         }}
                                         price={formatPrice(product.cheapestPrice)}
-                                        imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                                        imageUrl={product.images[0]}
                                     />
                                 ))}
                             </div>
