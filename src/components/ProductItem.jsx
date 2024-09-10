@@ -1,13 +1,12 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const ProductItem = memo(({ id, name, price, imageUrl }) => {
     const handleClick = () => {
-        sessionStorage.setItem('scrollPosition', window.pageYOffset.toString());
+        window.history.replaceState('', '', `/products/${id}`)
     };
     return (
-        <Link href={`/products/${id}`} prefetch={false} className="block" onClick={handleClick}>
+        <button className="block" onClick={handleClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                 <button className="absolute left-1 top-4 z-10" onClick={(e) => e.preventDefault()}>
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +65,7 @@ const ProductItem = memo(({ id, name, price, imageUrl }) => {
                     </div>
                 </div>
             </div>
-        </Link>
+        </button>
     )});
 ProductItem.displayName = "ProductItem"
 export default ProductItem;
