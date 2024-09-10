@@ -43,19 +43,7 @@ body {
 .black {
     color: #1C1B19;
 }
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(calc(-1 * var(--content-width)));
-    }
-}
 
-.animate-scroll {
-    display: inline-flex;
-    animation: scroll var(--animation-duration) linear infinite;
-}
 @layer components {
     .sr-only {
         position: absolute;
@@ -70,14 +58,7 @@ body {
     }
 }
 
-/* Add these styles if not using Tailwind, or if you want to ensure these specific styles are applied */
-.custom-checkbox {
-    transition: all 0.2s ease-in-out;
-}
 
-.custom-checkbox svg {
-    transition: all 0.2s ease-in-out;
-}
 .black40 {
     color: rgba(0, 0, 0, 0.4);
 }
@@ -107,25 +88,11 @@ input:focus {
     transform: translateZ(0);
 }
 
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(calc(-1 * var(--content-width)));
-    }
-}
 
 .slick-dots li button:before {
     scale: 2.3;
 }
 
-/*.animate-scroll {*/
-/*    will-change: transform;*/
-/*    display: inline-flex;*/
-/*    animation: scroll var(--animation-duration) linear infinite;*/
-/*    width: calc(var(--content-width) * var(--repetitions, 3));*/
-/*}*/
 
 input[type="text"],
 input[type="number"],

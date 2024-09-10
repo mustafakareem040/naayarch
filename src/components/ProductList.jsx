@@ -37,7 +37,7 @@ export default function ProductList() {
     }, [searchParams]);
 
     const loadMoreProducts = useCallback(async () => {
-        if (!paramsLoaded || loading || !hasMore) return;
+        if (!paramsLoaded || (loading && !first) || !hasMore) return;
 
         setLoading(true);
 
@@ -83,8 +83,9 @@ export default function ProductList() {
         }
     }, [query, resetSearch]);
     useEffect(() => {
-        setFirst(false)
-    }, [])
+        if (!loading)
+            setFirst(false)
+    }, [loading])
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
