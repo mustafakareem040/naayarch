@@ -6,7 +6,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 import {ReduxProvider} from "@/components/ReduxProvider";
 
-export const runtime = 'edge'
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [

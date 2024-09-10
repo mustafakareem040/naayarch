@@ -27,6 +27,7 @@ export default function ProductList() {
     const [first, setFirst] = useState(true)
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
+    const back = useRef(false)
     const prevSearch = useRef("");
     const {ref, inView} = useInView({
         threshold: 0,
@@ -99,13 +100,16 @@ export default function ProductList() {
     useEffect(() => {
         console.log(path)
         if (path.length <= 10) {
+            back.current = true
             setDetail(null)
         }
     }, [path])
     return (
         <>
             {detail ? (
+                <div className="absolute left-0 top-0 right-0 bottom-0 z-[9999999]">
                 <ProductDetail product={detail}/>
+                </div>
             ) : (
                 <>
                     <header className="flex items-center mb-6">
@@ -136,13 +140,14 @@ export default function ProductList() {
                                     />
                                 ))}
                             </div>
-                            {loading && <ProductLoading/>}
-                            {!loading && <div ref={ref} style={{height: '10px'}}></div>}
-                            {window.scrollTo(0, scroll.current)}
+                            {back.current && window.scrollTo(0, scroll.current)}
+                            {back.current = false}
                         </>
                     ) : !loading ? (
                         <NoProductsFound/>
                     ) : null}
+                    {loading && <ProductLoading/>}
+                    {!loading && <div ref={ref} style={{height: '10px'}}></div>}
                 </>
             )}
         </>

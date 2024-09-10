@@ -3,7 +3,6 @@ import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
 import { NotificationProvider } from "@/components/NotificationContext";
 
-export const runtime = 'edge'
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, {cache: "force-cache"});
     if (!response.ok) {
