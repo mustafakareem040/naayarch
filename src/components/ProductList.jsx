@@ -16,7 +16,7 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
 export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");

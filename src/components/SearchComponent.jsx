@@ -47,6 +47,7 @@ const SearchComponent = ({ query, setQuery }) => {
                         value={localQuery}
                         onChange={handleInputChange}
                         className="w-full font-serif text-sm pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-[#3B5345]/50"
+                        autoComplete="off"
                     />
                     <Image
                         src="https://storage.naayiq.com/resources/search.svg"

@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
         <head>
             <title>Naay Store</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
         </head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader

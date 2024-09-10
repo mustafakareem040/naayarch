@@ -127,6 +127,14 @@ input:focus {
 /*    width: calc(var(--content-width) * var(--repetitions, 3));*/
 /*}*/
 
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+input[type="password"] {
+    touch-action: manipulation;
+}
+
 .white {
     background: rgba(246, 243, 241, 0.5)
 }
