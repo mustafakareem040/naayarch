@@ -19,7 +19,7 @@ const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flo
                     <p className="text-sm font-serif pb-2 text-[#3B5345] font-bold border-b w-fit border-[#695C5C] inline-block">Show
                         More</p>
                 </div>
-                <div className="relative w-[60%] max-h-[400px] translate-y-12 aspect-[3/4]">
+                <div className="relative w-[60%] max-h-[400px] -translate-y-12 aspect-[3/4]">
                 <Image
                     src={`https://storage.naayiq.com/resources${bigimg}`}
                     alt="Product Image"

@@ -13,15 +13,14 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
-
 export default function ProductList() {
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [justNow, setJustNow] = useState(true)
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
+    const [first, setFirst] = useState(true)
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
     const prevSearch = useRef("");
@@ -84,8 +83,8 @@ export default function ProductList() {
         }
     }, [query, resetSearch]);
     useEffect(() => {
-        setJustNow(false)
-    }, []);
+        setFirst(false)
+    }, [])
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
@@ -94,22 +93,23 @@ export default function ProductList() {
     return (
         <>
             <SearchComponent query={query} setQuery={setQuery}/>
-            {loading || justNow ? (
-                <ProductLoading/>
-            ) : memoizedProducts.length > 0 ? (
-                <div
-                    className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {memoizedProducts.map((product) => (
-                        <ProductItem
-                            key={product.id}
-                            id={product.id}
-                            name={product.name}
-                            price={formatPrice(product.cheapestPrice)}
-                            imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
-                        />
-                    ))}
-                </div>
-            ) : !loading ? (
+            {memoizedProducts.length > 0 ? (
+                <>
+                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {memoizedProducts.map((product) => (
+                            <ProductItem
+                                key={product.id}
+                                id={product.id}
+                                name={product.name}
+                                price={formatPrice(product.cheapestPrice)}
+                                imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
+                            />
+                        ))}
+                    </div>
+                    {loading && <ProductLoading />}
+                    <div ref={ref} style={{ height: '20px' }}></div>
+                </>
+            ) : !loading && !first ? (
                 <NoProductsFound/>
             ) : null}
         </>
