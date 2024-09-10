@@ -27,7 +27,9 @@ export default function ProductDetail({ product }) {
     const router = useRouter();
 
     const images = product.images.map(img => img.url);
-
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, []);
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartItems(cart);

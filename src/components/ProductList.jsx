@@ -27,11 +27,11 @@ export default function ProductList() {
     const [first, setFirst] = useState(true)
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
-    const back = useRef(false)
     const prevSearch = useRef("");
     const {ref, inView} = useInView({
         threshold: 0,
     });
+    const [shouldScroll, setShouldScroll] = useState(false);
     const scroll = useRef(0);
     const path = usePathname()
     const [paramsLoaded, setParamsLoaded] = useState(false);
@@ -97,13 +97,34 @@ export default function ProductList() {
         ...product,
         cheapestPrice: getCheapestPrice(product),
     })), [products]);
+
     useEffect(() => {
-        console.log(path)
-        if (path.length <= 10) {
-            back.current = true
-            setDetail(null)
+        const handlePopState = () => {
+            setShouldScroll(true);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (shouldScroll) {
+            const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+            if (savedScrollPosition) {
+                window.scrollTo(0, parseInt(savedScrollPosition, 10));
+            }
+            setShouldScroll(false);
         }
-    }, [path])
+    }, [shouldScroll]);
+
+    useEffect(() => {
+        if (path.length <= 10) {
+            setDetail(null);
+        }
+    }, [path]);
     return (
         <>
             {detail ? (
@@ -138,14 +159,12 @@ export default function ProductList() {
                                     />
                                 ))}
                             </div>
-                            {back.current && window.scrollTo(0, scroll.current)}
-                            {back.current = false}
                         </>
                     ) : !loading ? (
                         <NoProductsFound/>
                     ) : null}
                     {loading && <ProductLoading/>}
-                    {!loading && <div ref={ref} style={{height: '10px'}}></div>}
+                    {!loading && <div ref={ref} style={{height: '15px'}}></div>}
                 </>
             )}
         </>
