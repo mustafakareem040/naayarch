@@ -109,7 +109,7 @@ export default function ProductList() {
                         />
                     ))}
                 </div>
-            ) : !loading && products.length === 0 ? (
+            ) : !loading ? (
                 <NoProductsFound/>
             ) : null}
         </>
