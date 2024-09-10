@@ -7,7 +7,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, onClick }) => {
         onClick()
     };
     return (
-        <button className="block" onClick={handleClick}>
+        <div className="block" onClick={handleClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                 <button className="absolute left-1 top-4 z-10" onClick={(e) => e.preventDefault()}>
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +66,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, onClick }) => {
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     )});
 ProductItem.displayName = "ProductItem"
 export default ProductItem;
