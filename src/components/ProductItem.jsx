@@ -1,9 +1,10 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
 
-const ProductItem = memo(({ id, name, price, imageUrl }) => {
+const ProductItem = memo(({ id, name, price, imageUrl, onClick }) => {
     const handleClick = () => {
-        window.history.replaceState('', '', `/products/${id}`)
+        window.history.pushState('', '', `/products/${id}`)
+        onClick()
     };
     return (
         <button className="block" onClick={handleClick}>
