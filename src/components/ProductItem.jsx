@@ -2,11 +2,7 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
 
-const ProductItem = memo(({ id, name, price, imageUrl, onClick }) => {
-    const handleClick = () => {
-        window.history.pushState('', '', `/products/${id}`)
-        onClick()
-    };
+const ProductItem = memo(({ id, name, price, imageUrl, handleClick }) => {
     return (
         <div className="block" onClick={handleClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">

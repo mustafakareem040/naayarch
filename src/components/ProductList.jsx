@@ -126,8 +126,9 @@ export default function ProductList() {
                                         id={product.id}
                                         name={product.name}
                                         onClick={() => {
-                                            setDetail(product)
                                             scroll.current = window.scrollY
+                                            setDetail(product)
+                                            window.history.pushState(null, '', `/products/${product.id}`)
                                         }}
                                         price={formatPrice(product.cheapestPrice)}
                                         imageUrl={`https://storage.naayiq.com/resources/${product.images[0]}` || "/placeholder.png"}
