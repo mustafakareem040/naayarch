@@ -72,7 +72,7 @@ export default function ProductList() {
     }, [paramsLoaded, resetSearch, loadMoreProducts]);
 
     useEffect(() => {
-        if (inView && paramsLoaded && !loading && hasMore && initialLoadDone.current) {
+        if (inView && paramsLoaded && (!loading || first) && hasMore && initialLoadDone.current) {
             loadMoreProducts();
         }
     }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
@@ -95,7 +95,8 @@ export default function ProductList() {
             <SearchComponent query={query} setQuery={setQuery}/>
             {memoizedProducts.length > 0 ? (
                 <>
-                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    <div
+                        className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         {memoizedProducts.map((product) => (
                             <ProductItem
                                 key={product.id}
@@ -106,10 +107,10 @@ export default function ProductList() {
                             />
                         ))}
                     </div>
-                    {loading && <ProductLoading />}
-                    <div ref={ref} style={{ height: '20px' }}></div>
+                    {loading && <ProductLoading/>}
+                    {!loading && <div ref={ref} style={{height: '10px'}}></div>}
                 </>
-            ) : !loading && !first ? (
+            ) : !loading ? (
                 <NoProductsFound/>
             ) : null}
         </>
