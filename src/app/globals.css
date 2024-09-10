@@ -100,7 +100,7 @@ input[type="email"],
 input[type="tel"],
 input[type="password"] {
     touch-action: manipulation;
-    font-size: 1.2rem;
+    font-size: 16px;
 }
 
 .white {
