@@ -107,9 +107,7 @@ export default function ProductList() {
     return (
         <>
             {detail ? (
-                <div className="absolute left-0 top-0 right-0 bottom-0 z-[9999999]">
                 <ProductDetail product={detail}/>
-                </div>
             ) : (
                 <>
                     <header className="flex items-center mb-6">
