@@ -35,7 +35,7 @@ const CartItem = ({ id, title, color, image, size, qty, price, onUpdateQuantity,
                     <span className="text-sm">Qty:{qty}</span>
                     <ChevronDown size={16} />
                 </div>
-                <p className="font-semibold text-sm text-center">{price}</p>
+                <p className="font-semibold text-sm text-center">{price} IQD</p>
             </div>
 
             <div className="flex flex-col justify-between gap-2">
