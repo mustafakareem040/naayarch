@@ -20,7 +20,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick }) =
 
     return (
         <>
-            <div className="block" onClick={handleProductClick}>
+            <div className="rounded-lg" onClick={handleProductClick}>
                 <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                     <div className="absolute left-1 top-4 z-10 heart-icon" onClick={(e) => e.stopPropagation()}>
                         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
