@@ -1,10 +1,10 @@
 'use client'
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {usePathname, useSearchParams} from 'next/navigation';
-import { useInView } from 'react-intersection-observer';
+import {useInView} from 'react-intersection-observer';
 import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
-import { fetchProducts } from "@/lib/api";
+import {fetchProducts} from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
@@ -53,7 +53,16 @@ export default function ProductList() {
             if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
                 setHasMore(false);
             }
-            setProducts(prev => [...prev, ...newProducts.products]);
+            setProducts(prev => {
+                return [...prev, ...newProducts.products].reduce((acc, current) => {
+                    const x = acc.find(item => item.id === current.id);
+                    if (!x) {
+                        return acc.concat([current]);
+                    } else {
+                        return acc;
+                    }
+                }, []);
+            });
             setPage(prev => prev + 1);
         } catch (error) {
             console.error('Error fetching products:', error);
