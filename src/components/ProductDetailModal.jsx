@@ -167,14 +167,14 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                             <Link
                                 href="/cart"
                                 prefetch={false}
-                                className="flex-1 font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
+                                className="flex-1 font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-base md:text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
                             >
                                 <ShoppingCart className="mr-2" />
                                 Buy Now
                             </Link>
                         ) : (
                             <button
-                                className={`flex-1 ${selectedSize ? 'bg-[#3B5345] text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} py-3 rounded-lg font-medium text-lg flex items-center justify-center`}
+                                className={`flex-1 ${selectedSize ? 'bg-[#3B5345] text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} py-3 rounded-lg font-medium text-base md:text-lg flex items-center justify-center`}
                                 onClick={handleAddToCart}
                                 disabled={!selectedSize}
                             >
@@ -183,7 +183,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                             </button>
                         )}
                         <button
-                            className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium text-lg"
+                            className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-medium text-base md:text-lg"
                             onClick={onClose}
                         >
                             Close

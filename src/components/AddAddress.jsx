@@ -2,9 +2,13 @@
 import React, { useState } from 'react';
 import { HomeIcon, PlusCircleIcon } from 'lucide-react';
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
+import {addAddress} from "@/lib/features/addressesSlice";
+import {useAppDispatch, useAppSelector} from "@/lib/hook";
 
 export default function AddAddress() {
+    const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const [addressType, setAddressType] = useState('');
     const [formData, setFormData] = useState({
         full_name: '',
@@ -17,6 +21,7 @@ export default function AddAddress() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -28,13 +33,21 @@ export default function AddAddress() {
         setIsLoading(true);
         setError('');
 
+        const newAddress = { ...formData, type: addressType };
+
+        if (!isAuthenticated) {
+            dispatch(addAddress(newAddress));
+            handleRedirect();
+            return;
+        }
+
         try {
             const response = await fetch('https://api.naayiq.com/addresses', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...formData, type: addressType }),
+                body: JSON.stringify(newAddress),
                 credentials: 'include'
             });
 
@@ -43,11 +56,21 @@ export default function AddAddress() {
                 throw new Error(errorData.message || 'Failed to add address');
             }
 
-            router.push('/profile/address');
+            dispatch(addAddress(newAddress));
+            handleRedirect();
         } catch (err) {
             setError(err.message);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleRedirect = () => {
+        const redirectPath = searchParams.get('redirect');
+        if (redirectPath) {
+            router.push(redirectPath);
+        } else {
+            router.push('/profile/address');
         }
     };
 
@@ -96,9 +119,24 @@ export default function AddAddress() {
                         required
                     >
                         <option value="" disabled hidden>Governorate</option>
+                        <option value="anbar">Al-Anbar</option>
+                        <option value="babil">Babil</option>
                         <option value="baghdad">Baghdad</option>
                         <option value="basra">Basra</option>
-                        <option value="mosul">Mosul</option>
+                        <option value="dhi_qar">Dhi Qar</option>
+                        <option value="diyala">Diyala</option>
+                        <option value="dohuk">Dohuk</option>
+                        <option value="erbil">Erbil</option>
+                        <option value="karbala">Karbala</option>
+                        <option value="kirkuk">Kirkuk</option>
+                        <option value="maysan">Maysan</option>
+                        <option value="muthanna">Muthanna</option>
+                        <option value="najaf">Najaf</option>
+                        <option value="nineveh">Nineveh</option>
+                        <option value="qadisiyyah">Al-Qadisiyyah</option>
+                        <option value="saladin">Saladin</option>
+                        <option value="sulaymaniyah">Sulaymaniyah</option>
+                        <option value="wasit">Wasit</option>
                     </select>
                     <input
                         className="w-full p-3 border rounded-md"

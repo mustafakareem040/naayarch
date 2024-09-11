@@ -5,35 +5,37 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, FileText } from 'lucide-react';
 import Link from 'next/link';
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
     const [note, setNote] = useState('');
-
+    const router = useRouter()
     return (
         <>
-            <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={onBack}>
-                    <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} width={40}
-                           height={40} alt="left"/>
+            <header className="flex items-center mb-12">
+                <button className="relative z-20" onClick={router.back}>
+                    <Image unoptimized={true} src={"https://storage.naayiq.com/resources/arrow-left.svg"} width={40}
+                           height={40} alt={"left"}/>
                 </button>
-                <h1
-                    className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
-                    Checkout
-                </h1>
+                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
             </header>
             <div
-                className="p-4 font-serif container mx-auto max-w-md"
+                className="font-serif container mx-auto max-w-md"
             >
 
                 <section
                     className="mb-6"
                 >
                     <h2 className="text-xl font-sans font-medium mb-2">Shipping Address</h2>
-                    <button
+                    <Link
+                        href={{
+                            pathname: "/profile/address/add",
+                            query: {redirect: "/cart/order"}
+                        }}
                         className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]">
                         <Plus className="w-6 h-6 mr-3"/>
                         <span className="text-base font-semibold">Add address</span>
-                    </button>
+                    </Link>
                 </section>
 
                 <section
@@ -70,7 +72,7 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                     className="-mx-8 mb-6 bg-[#F6F3F1]/30 rounded-lg p-8"
                 >
                     <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
-                    <div className="h-[1px] w-[100vw] -mx-4 mb-6 bg-[#695C5C]/30"></div>
+                    <div className="h-[1px] w-full mb-6 bg-[#695C5C]/30"></div>
                     <div className="space-y-3">
                         <div className="flex justify-between">
                             <span>Sub-total</span>

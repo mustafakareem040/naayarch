@@ -1,17 +1,19 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, X } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import CartItem from './CartItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import { useAppDispatch } from "@/lib/hook";
+import { setOrder } from "@/lib/features/orderSlice";
+import EmptyCart from "@/components/EmptyCart";
 
-const Cart = ({onProceed}) => {
+const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [subTotal, setSubTotal] = useState(0);
-    const [delivery, setDelivery] = useState(5000);
+    const [delivery] = useState(5000);
     const [discount, setDiscount] = useState(0);
     const [coupon, setCoupon] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -19,85 +21,86 @@ const Cart = ({onProceed}) => {
     const [confirmationMessage, setConfirmationMessage] = useState('');
     const [couponMessage, setCouponMessage] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState('');
-    const router = useRouter()
-    const handleProceed = () => {
-        onProceed({
-            subTotal,
-            delivery,
-            discount
-        });
-    };
-    useEffect(() => {
-        const fetchCartItems = async () => {
-            const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-            const itemsWithDetails = await Promise.all(
-                storedCart.map(async (item) => {
-                    try {
-                        const response = await fetch(`https://api.naayiq.com/products/${item.product_id}`);
-                        const data = await response.json();
-                        const product = data.product;
-                        const selectedSize = product.sizes.find(size => size.id === item.size_id);
-                        const selectedColor = product.colors.find(color => color.id === item.color_id);
+    const dispatch = useAppDispatch();
+    const router = useRouter();
 
-                        return {
-                            ...item,
-                            title: product.name,
-                            image: `https://storage.naayiq.com/resources/${selectedSize?.images[0]}`,
-                            price: parseInt(selectedSize?.price || product.price),
-                            color: selectedColor?.name,
-                            size: selectedSize?.name,
-                        };
-                    } catch (error) {
-                        console.error('Error fetching product details:', error);
-                        return item;
-                    }
-                })
-            );
-            setCartItems(itemsWithDetails);
+    const fetchCartItems = useCallback(async () => {
+        const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (storedCart.length === 0) {
             setIsLoading(false);
-        };
+            return;
+        }
 
-        fetchCartItems();
+        const itemsWithDetails = await Promise.all(
+            storedCart.map(async (item) => {
+                try {
+                    const response = await fetch(`https://api.naayiq.com/products/${item.product_id}`);
+                    const data = await response.json();
+                    const product = data.product;
+                    const selectedSize = product.sizes.find(size => size.id === item.size_id);
+                    const selectedColor = product.colors.find(color => color.id === item.color_id);
+
+                    return {
+                        ...item,
+                        title: product.name,
+                        image: `https://storage.naayiq.com/resources/${selectedSize?.images[0]}`,
+                        price: parseInt(selectedSize?.price || product.price),
+                        color: selectedColor?.name,
+                        size: selectedSize?.name,
+                    };
+                } catch (error) {
+                    console.error('Error fetching product details:', error);
+                    return item;
+                }
+            })
+        );
+        setCartItems(itemsWithDetails);
+        setIsLoading(false);
     }, []);
+
+    useEffect(() => {
+        fetchCartItems();
+    }, [fetchCartItems]);
 
     useEffect(() => {
         const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
         setSubTotal(total);
     }, [cartItems]);
 
-    const handleUpdateQuantity = (id, newQty) => {
-        const updatedItems = cartItems.map(item =>
-            item.product_id === id ? { ...item, qty: newQty } : item
-        );
-        setCartItems(updatedItems);
-        localStorage.setItem('cart', JSON.stringify(updatedItems));
-    };
+    const handleUpdateQuantity = useCallback((id, newQty) => {
+        setCartItems(prevItems => {
+            const updatedItems = prevItems.map(item =>
+                item.product_id === id ? { ...item, qty: newQty } : item
+            );
+            localStorage.setItem('cart', JSON.stringify(updatedItems));
+            return updatedItems;
+        });
+    }, []);
 
-    const handleRemoveItem = (id) => {
+    const handleRemoveItem = useCallback((id) => {
         setShowConfirmation(true);
         setConfirmationMessage(`Are you sure you want to remove this item from your cart?`);
-        const confirmRemove = () => {
-            const updatedItems = cartItems.filter(item => item.product_id !== id);
-            setCartItems(updatedItems);
-            localStorage.removeItem("cart");
-            localStorage.setItem('cart', JSON.stringify(updatedItems));
+        setConfirmAction(() => () => {
+            setCartItems(prevItems => {
+                const updatedItems = prevItems.filter(item => item.product_id !== id);
+                localStorage.setItem('cart', JSON.stringify(updatedItems));
+                return updatedItems;
+            });
             setShowConfirmation(false);
-        };
-        setConfirmAction(() => confirmRemove);
-    };
+        });
+    }, []);
 
-    const handleApplyCoupon = () => {
+    const handleApplyCoupon = useCallback(() => {
         if (appliedCoupon) {
             setShowConfirmation(true);
             setConfirmationMessage(`Are you sure you want to remove the applied coupon?`);
-            const confirmRemove = () => {
+            setConfirmAction(() => () => {
                 setAppliedCoupon('');
                 setDiscount(0);
                 setCoupon('');
                 setCouponMessage('');
                 setShowConfirmation(false);
-            };
-            setConfirmAction(() => confirmRemove);
+            });
         } else {
             if (coupon === "FREE") {
                 setDiscount(5000);
@@ -108,154 +111,159 @@ const Cart = ({onProceed}) => {
                 setTimeout(() => setCouponMessage(''), 3000);
             }
         }
-    };
+    }, [appliedCoupon, coupon]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
+
+    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
     if (isLoading) {
         return <Loading />;
     }
 
+
     return (
+        cartItems.length === 0 ? <EmptyCart />:
         <>
             <header className="flex items-center mb-6">
                 <button className="relative z-20" onClick={router.back}>
                     <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} width={40}
                            height={40} alt="left"/>
                 </button>
-                <h1
-                    className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                     Cart
                 </h1>
             </header>
-    <motion.div
-        initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        exit={{opacity: 0}}
-        className="p-4 font-serif container mx-auto relative"
-    >
-        <AnimatePresence>
-            {showConfirmation && (
-                <motion.div
-                    initial={{opacity: 0}}
-                    animate={{opacity: 1}}
-                    exit={{opacity: 0}}
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.9 }}
-                            className="bg-white p-4 rounded-lg shadow-lg"
-                        >
-                            <p className="mb-4">{confirmationMessage}</p>
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={() => setShowConfirmation(false)}
-                                    className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmAction}
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-                {cartItems.map(item => (
-                    <motion.div
-                        key={item.product_id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <CartItem
-                            id={item.product_id}
-                            title={item.title}
-                            color={item.color}
-                            image={item.image}
-                            size={item.size}
-                            qty={item.qty}
-                            price={item.price}
-                            onUpdateQuantity={handleUpdateQuantity}
-                            onRemove={handleRemoveItem}
-                        />
-                    </motion.div>
-                ))}
-            </AnimatePresence>
-
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mt-8 bg-white rounded-lg shadow p-4"
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                className="p-4 font-serif container mx-auto relative"
             >
-                <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
-                <div className="mb-2">
-                    <span>Discounted Coupon</span>
-                    <div className="flex justify-between items-center">
-                        <input
-                            type="text"
-                            value={coupon}
-                            onChange={(e) => setCoupon(e.target.value)}
-                            className="border rounded w-full p-2 mr-2"
-                            placeholder="Enter coupon"
-                            disabled={appliedCoupon !== ''}
-                        />
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={handleApplyCoupon}
-                            className={`${appliedCoupon ? 'bg-red-500' : 'bg-[#3B5345]'} text-white px-8 py-2 rounded`}
+                <AnimatePresence>
+                    {showConfirmation && (
+                        <motion.div
+                            initial={{opacity: 0}}
+                            animate={{opacity: 1}}
+                            exit={{opacity: 0}}
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
                         >
-                            {appliedCoupon ? 'Remove' : 'Apply'}
-                        </motion.button>
-                    </div>
-                    <AnimatePresence>
-                        {couponMessage && (
                             <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className={`text-sm mt-1 ${couponMessage === 'Applied!' ? 'text-green-500' : 'text-red-500'}`}
+                                initial={{ scale: 0.9 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0.9 }}
+                                className="bg-white p-4 rounded-lg shadow-lg"
                             >
-                                {couponMessage}
+                                <p className="mb-4">{confirmationMessage}</p>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowConfirmation(false)}
+                                        className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmAction}
+                                        className="bg-red-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
                             </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-                <div className="flex justify-between mb-2">
-                    <span>Sub-total</span>
-                    <span>{subTotal} IQD</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                    <span>Delivery</span>
-                    <span>{delivery} IQD</span>
-                </div>
-                <div className="flex justify-between mb-2">
-                    <span>Discount</span>
-                    <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
-                </div>
-                <div className="flex justify-between font-bold mt-4">
-                    <span>Total Price</span>
-                    <span>{subTotal + delivery - discount} IQD</span>
-                </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {cartItems.map(item => (
+                        <motion.div
+                            key={item.product_id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <CartItem
+                                id={item.product_id}
+                                title={item.title}
+                                color={item.color}
+                                image={item.image}
+                                size={item.size}
+                                qty={item.qty}
+                                price={item.price}
+                                onUpdateQuantity={handleUpdateQuantity}
+                                onRemove={handleRemoveItem}
+                            />
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-8 bg-white rounded-lg shadow p-4"
+                >
+                    <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
+                    <div className="mb-2">
+                        <span>Discounted Coupon</span>
+                        <div className="flex justify-between items-center">
+                            <input
+                                type="text"
+                                value={coupon}
+                                onChange={(e) => setCoupon(e.target.value)}
+                                className="border rounded w-full p-2 mr-2"
+                                placeholder="Enter coupon"
+                                disabled={appliedCoupon !== ''}
+                            />
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleApplyCoupon}
+                                className={`${appliedCoupon ? 'bg-red-500' : 'bg-[#3B5345]'} text-white px-8 py-2 rounded`}
+                            >
+                                {appliedCoupon ? 'Remove' : 'Apply'}
+                            </motion.button>
+                        </div>
+                        <AnimatePresence>
+                            {couponMessage && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className={`text-sm mt-1 ${couponMessage === 'Applied!' ? 'text-green-500' : 'text-red-500'}`}
+                                >
+                                    {couponMessage}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                        <span>Sub-total</span>
+                        <span>{subTotal} IQD</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                        <span>Delivery</span>
+                        <span>{delivery} IQD</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                        <span>Discount</span>
+                        <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
+                    </div>
+                    <div className="flex justify-between font-bold mt-4">
+                        <span>Total Price</span>
+                        <span>{totalPrice} IQD</span>
+                    </div>
+                </motion.div>
+                <Link
+                    onClick={() => dispatch(setOrder({delivery, discount, subTotal}))}
+                    href="/cart/order"
+                    className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
+                >
+                    Proceed
+                </Link>
             </motion.div>
-            <button
-                onClick={handleProceed}
-                className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6">
-                Proceed
-            </button>
-        </motion.div>
-            </>
+        </>
     );
 };
 

@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
-import {ReduxProvider} from "@/components/ReduxProvider";
+import StoreProvider from "@/app/StoreProvider";
 
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
         <head>
             <title>Naay Store</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
         </head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
@@ -48,9 +48,9 @@ export default function RootLayout({ children }) {
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
         <SpeedInsights />
-        <ReduxProvider>
+        <StoreProvider>
             {children}
-        </ReduxProvider>
+        </StoreProvider>
         </body>
         </html>
     );

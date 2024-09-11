@@ -229,17 +229,33 @@ export default function ProductDetail({ product }) {
                 )}
 
                 <div className="mb-6 pb-28">
-                    <h2 className="text-xl font-semibold mb-2">Description</h2>
-                    <p
+                    <h2 className="text-xl font-semibold w-fit mb-2">Description</h2>
+                    <div
                         style={{direction: "rtl"}}
-                        className="text-xl font-normal text-left font-serif"
-                        dangerouslySetInnerHTML={{__html: product.description}}
+                        className="text-xl font-normal text-right font-serif"
+                        dangerouslySetInnerHTML={{
+                            __html: product.description.split('\n').map((item, index) => {
+                                if (index === 0) {
+                                    return `<p class="text-xl font-semibold mb-2">${item}</p>`;
+                                } else if (item.includes(':')) {
+                                    return `<p class="text-lg font-semibold mt-4 mb-2">${item}</p>`;
+                                } else if (item.trim().startsWith('-')) {
+                                    return `<li>${item.trim().substring(1)}</li>`;
+                                } else {
+                                    return `<p>${item}</p>`;
+                                }
+                            }).join('').replace(/(<li>.*?<\/li>)+/g, function (match) {
+                                return `<ul class="list-disc pl-5 mb-2">${match}</ul>`;
+                            })
+                        }}
                     />
                 </div>
 
-                <footer className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
+                <footer
+                    className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
                     <div className="flex justify-between items-center mb-6">
-                        <span className="text-xl font-serif font-medium">{(currentPrice * quantity).toFixed(2)} IQD</span>
+                        <span
+                            className="text-xl font-serif font-medium">{(currentPrice * quantity).toFixed(2)} IQD</span>
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}

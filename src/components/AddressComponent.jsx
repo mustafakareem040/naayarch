@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
+import {useAppDispatch, useAppSelector} from "@/lib/hook";
+import {removeAddress, setAddresses} from "@/lib/features/addressesSlice";
 
 const AddressItem = ({ address, onEdit, onDelete }) => {
     return (
@@ -24,35 +26,34 @@ const AddressItem = ({ address, onEdit, onDelete }) => {
 };
 
 const ManageAddress = () => {
-    const [addresses, setAddresses] = useState([]);
+    const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+    const addresses = useAppSelector(state => state.addresses);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                if (isAuthenticated) {
+                    const response = await fetch('https://api.naayiq.com/addresses', {credentials: 'include'});
+                    if (response.status === 401 || response.status === 403) {
+                        router.push("/login");
+                    }
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch addresses');
+                    }
+                    const data = await response.json();
+                    dispatch(setAddresses(data));
+                }
+            } catch (err) {
+                console.error('Error fetching addresses:', err);
+            }
+        };
         fetchAddresses();
-    }, []);
-
-    const fetchAddresses = async () => {
-        try {
-            setIsLoading(true);
-            const response = await fetch('https://api.naayiq.com/addresses', { credentials: 'include' });
-            if (response.status === 401 || response.status === 403) {
-                router.push("/login")
-            }
-            if (!response.ok) {
-                throw new Error('Failed to fetch addresses');
-            }
-            const data = await response.json();
-            setAddresses(data);
-            setError(null);
-        } catch (err) {
-            setError('Failed to fetch addresses. Please try again.');
-            console.error('Error fetching addresses:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        setIsLoading(false)
+    }, [dispatch, router]);
 
     const handleEdit = (address) => {
         router.push(`/profile/address/edit/${address.id}`);
@@ -68,9 +69,8 @@ const ManageAddress = () => {
                 if (!response.ok) {
                     throw new Error('Failed to delete address');
                 }
-                setAddresses(addresses.filter(address => address.id !== id));
+                dispatch(removeAddress(id));
             } catch (err) {
-                setError('Failed to delete address. Please try again.');
                 console.error('Error deleting address:', err);
             }
         }

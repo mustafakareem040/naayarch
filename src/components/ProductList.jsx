@@ -10,6 +10,7 @@ import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
 import Link from "next/link";
 import Image from "next/image";
+import {NotificationProvider} from "@/components/NotificationContext";
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
@@ -124,7 +125,9 @@ export default function ProductList() {
     return (
         <>
             {detail ? (
-                <ProductDetail product={detail}/>
+                <NotificationProvider>
+                    <ProductDetail product={detail}/>
+                </NotificationProvider>
             ) : (
                 <>
                     <header className="flex items-center mb-6">
