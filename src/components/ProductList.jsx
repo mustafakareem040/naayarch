@@ -144,6 +144,7 @@ export default function ProductList() {
                                         key={product.id}
                                         id={product.id}
                                         name={product.name}
+                                        product={product}
                                         handleClick={() => {
                                             scroll.current = window.scrollY
                                             setDetail(product)
