@@ -35,10 +35,10 @@ const EmptyCart = () => {
                     <div className="w-full font-serif text-sm ssm:text-base ssm2:text-lg font-medium flex justify-center items-center gap-4">
                         <Link
                             href={"/wishlist"}
-                            className="px-3 ssm:px-6 min-h-[56px] bg-[rgba(59,83,69,0.05)] text-[#3B5345] rounded-lg outline outline-1 outline-[#3B5345]">
+                            className="px-3 ssm:px-6 flex items-center justify-center min-h-[56px] bg-[rgba(59,83,69,0.05)] text-[#3B5345] rounded-lg outline outline-1 outline-[#3B5345]">
                             Check Wishlist
                         </Link>
-                        <Link href={"/"} className="min-h-[56px] px-3 ssm:px-6 bg-[#3B5345] text-white rounded-lg">
+                        <Link href={"/"} className="min-h-[56px] flex items-center justify-center px-3 ssm:px-6 bg-[#3B5345] text-white rounded-lg">
                             Start Browsing
                         </Link>
                     </div>
