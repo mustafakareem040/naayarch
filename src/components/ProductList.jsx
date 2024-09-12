@@ -58,6 +58,7 @@ export default function ProductList({ initialProducts }) {
         }
 
         setProducts(filtered);
+        setDisplayedProducts([]); // Reset displayed products
         setPage(1);
         setHasMore(true);
         setFirst(false)
@@ -65,7 +66,7 @@ export default function ProductList({ initialProducts }) {
 
     useEffect(() => {
         filterProducts();
-    }, [filterProducts]);
+    }, [filterProducts, query, c, sc]); // Add query, c, and sc as dependencies
 
     const loadMoreProducts = useCallback(() => {
         if (loading || !hasMore) return;
