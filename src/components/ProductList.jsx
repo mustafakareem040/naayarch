@@ -70,8 +70,8 @@ export default function ProductList({ initialProducts }) {
 
         setLoading(true);
 
-        const startIndex = (page - 1) * 20;
-        const endIndex = startIndex + 20;
+        const startIndex = (page - 1) * 10;
+        const endIndex = startIndex + 10;
         const newProducts = products.slice(startIndex, endIndex);
 
         setDisplayedProducts(prev => [...prev, ...newProducts]);
