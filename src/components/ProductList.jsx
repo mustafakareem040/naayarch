@@ -20,7 +20,7 @@ export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
     const [displayedProducts, setDisplayedProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
@@ -68,7 +68,7 @@ export default function ProductList({ initialProducts }) {
     }, [filterProducts]);
 
     const loadMoreProducts = useCallback(() => {
-        if ((loading && !first) || !hasMore) return;
+        if (loading || !hasMore) return;
 
         setLoading(true);
 
@@ -158,7 +158,7 @@ export default function ProductList({ initialProducts }) {
                     ) : !loading && !first ? (
                         <NoProductsFound/>
                     ) : null}
-                    {loading && <ProductLoading/>}
+                    {(loading || first) && <ProductLoading/>}
                     {(!loading || first) && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
                 </>
             )}
