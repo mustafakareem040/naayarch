@@ -104,12 +104,11 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                         </div>
                     </div>
                 </section>
-
                 <Link
                     href={"/cart/order/confirm"}
-                    className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
+                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
                 >
-                    Submit Order
+                    <p className="w-full text-center">Submit Order</p>
                 </Link>
             </div>
         </>

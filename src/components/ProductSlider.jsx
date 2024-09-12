@@ -43,7 +43,7 @@ const ProductSlider = () => {
                 className="flex mb-12 p-4 flex-col justify-center items-center gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
                 <div className="flex justify-between mb-6 items-center w-[95%]">
                     <h1 className="text-[#201E1C] font-sans font-medium text-3xl mb-6">Best Seller</h1>
-                    <p className="text-[#3B5345] font-serif text-xl font-medium">Show all</p>
+                    <Link prefetch={false} href={"/products"} className="text-[#3B5345] font-serif text-xl font-medium">Show all</Link>
                 </div>
                 <Slider {...settings} ref={sliderRef} className="relative bottom-12 w-full">
                     {products.map((product) => (
@@ -65,7 +65,7 @@ const ProductSlider = () => {
                                 </div>
                                 <Link
                                     href={`/products/${product.href}`}
-                                    className="w-full mb-6 py-1 mt-4 rounded-full font-serif text-2xl bg-[#3B5345] text-white">
+                                    className="w-full text-center mb-6 py-1 mt-4 rounded-full font-serif text-2xl bg-[#3B5345] text-white">
                                     Add To Cart
                                 </Link>
                             </div>

@@ -53,9 +53,14 @@ const ProductCategorySlider = () => {
                             </div>
                             <p className="font-serif text-2xl mb-6">{product.description}</p>
                         </div>
-                        <Link prefetch={false} href="/products" className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
-                            Show More
+                        <Link
+                            prefetch={false}
+                            className="w-full inline-block py-1 mb-6 text-center border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl"
+                            href="/products"
+                        >
+                            <span className="w-full inline-block">Show More</span>
                         </Link>
+
                     </div>
                 ))}
             </Slider>

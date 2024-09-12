@@ -32,7 +32,7 @@ const OrderConfirmation = () => {
                     </div>
                 </motion.div>
 
-                <h1 className="text-3xl font-sans font-bold mb-4">Order Submitted!</h1>
+                <h1 className="text-3xl font-sans font-medium mb-4">Order Submitted!</h1>
                 <p className="text-xl font-serif mb-6">Thank you for your purchase.</p>
 
                 <div className="bg-gray-100 font-serif rounded p-4 mb-6">

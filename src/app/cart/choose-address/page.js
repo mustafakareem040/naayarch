@@ -48,13 +48,13 @@ const ChooseAddress = () => {
             ))}
 
             <Link
-                className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg mt-4"
+                className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg inline-block font-medium text-lg mt-4"
                 onClick={() => router.push('/profile/address/add')}
                 href={{
                     pathname: "/profile/address/add",
                     query: {redirect: "/cart/choose-address"}
                 }}>
-                Add a new address
+                <p className="w-full text-center">Add a new address</p>
             </Link>
         </div>
     );

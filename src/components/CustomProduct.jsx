@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from "next/link";
 
 const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flower, hideFlower }) => {
     return (
@@ -16,8 +17,8 @@ const CustomProduct = ({ title, subtitle, description, bigimg = "/face.png", flo
                     className={`flex mt-7 ssm:mt-10 ssm4:mt-16 flex-col w-[35%] justify-stretch items-baseline transform ${hideFlower ? "" : "relative bottom-8"}`}>
                     <p className="inline font-sans mb-7 text-xl md:text-2xl lg:text-3xl">{subtitle}</p>
                     <p className="text-sm font-serif fig mb-7">{description}</p>
-                    <p className="text-sm font-serif pb-2 text-[#3B5345] font-bold border-b w-fit border-[#695C5C] inline-block">Show
-                        More</p>
+                    <Link href={"/products"} prefetch={false} className="text-sm font-serif pb-2 text-[#3B5345] font-bold border-b w-fit border-[#695C5C] inline-block">Show
+                        More</Link>
                 </div>
                 <div className="relative w-[60%] max-h-[400px] -translate-y-2 aspect-[3/4]">
                 <Image
