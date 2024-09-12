@@ -1,34 +1,22 @@
-// lib/api.js
+const API_URL = "https://api.naayiq.com";
 
-const API_URL = "https://api.naayiq.com"
-const PRODUCTS_PER_PAGE = 10;
-
-export async function fetchProducts(page, search, category, subCategory) {
-    const params = new URLSearchParams({
-        page: page.toString(),
-        limit: PRODUCTS_PER_PAGE.toString(),
-        search: search || '',
-        c: category || '',
-        sc: subCategory || '',
-    });
-
+export async function fetchAllProducts() {
     try {
-        const response = await fetch(`${API_URL}/products?${params.toString()}`, {
+        const response = await fetch(`${API_URL}/products?limit=1000`, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            cache: "force-cache",
-            priority: "high",
-
+            next: { revalidate: 3600 }, // Cache for 1 hour
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch more products');
+            throw new Error('Failed to fetch products');
         }
 
-        return await response.json();
+        const data = await response.json();
+        return data.products;
     } catch (error) {
-        console.error('Error fetching more products:', error);
+        console.error('Error fetching products:', error);
         return [];
     }
 }

@@ -1,111 +1,95 @@
 'use client'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {usePathname, useSearchParams} from 'next/navigation';
-import {useInView} from 'react-intersection-observer';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useInView } from 'react-intersection-observer';
 import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
-import {fetchProducts} from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
 import Link from "next/link";
 import Image from "next/image";
-import {NotificationProvider} from "@/components/NotificationContext";
+import { NotificationProvider } from "@/components/NotificationContext";
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />
 });
 
-export default function ProductList() {
-    const [products, setProducts] = useState([]);
+export default function ProductList({ initialProducts }) {
+    const [products, setProducts] = useState(initialProducts);
+    const [displayedProducts, setDisplayedProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
-    const [first, setFirst] = useState(true)
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
-    const prevSearch = useRef("");
-    const {ref, inView} = useInView({
+    const { ref, inView } = useInView({
         threshold: 0,
     });
     const [shouldScroll, setShouldScroll] = useState(false);
     const scroll = useRef(0);
     const path = usePathname()
-    const [paramsLoaded, setParamsLoaded] = useState(false);
-    const initialLoadDone = useRef(false);
     const [detail, setDetail] = useState(null);
+
     useEffect(() => {
         setC(searchParams.get("c") || "");
         setSc(searchParams.get("sc") || "");
-        setParamsLoaded(true);
     }, [searchParams]);
 
-    const loadMoreProducts = useCallback(async () => {
-        if (!paramsLoaded || (loading && !first) || !hasMore) return;
+    const filterProducts = useCallback(() => {
+        let filtered = initialProducts;
+
+        if (query) {
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(query.toLowerCase())
+            );
+        }
+
+        if (c) {
+            filtered = filtered.filter(product => product.category === c);
+        }
+
+        if (sc) {
+            filtered = filtered.filter(product => product.subCategory === sc);
+        }
+
+        setProducts(filtered);
+        setPage(1);
+        setHasMore(true);
+    }, [initialProducts, query, c, sc]);
+
+    useEffect(() => {
+        filterProducts();
+    }, [filterProducts]);
+
+    const loadMoreProducts = useCallback(() => {
+        if (loading || !hasMore) return;
 
         setLoading(true);
 
-        try {
-            const newProducts = await fetchProducts(page, query, c, sc);
-            if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
-                setHasMore(false);
-            }
-            setProducts(prev => {
-                return [...prev, ...newProducts.products].reduce((acc, current) => {
-                    const x = acc.find(item => item.id === current.id);
-                    if (!x) {
-                        return acc.concat([current]);
-                    } else {
-                        return acc;
-                    }
-                }, []);
-            });
-            setPage(prev => prev + 1);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
+        const startIndex = (page - 1) * 20;
+        const endIndex = startIndex + 20;
+        const newProducts = products.slice(startIndex, endIndex);
 
-    const resetSearch = useCallback(() => {
-        setProducts([]);
-        setPage(1);
-        setHasMore(true);
-        prevSearch.current = query;
-        initialLoadDone.current = false;
-    }, [query]);
+        setDisplayedProducts(prev => [...prev, ...newProducts]);
+        setPage(prev => prev + 1);
+        setHasMore(endIndex < products.length);
+        setLoading(false);
+    }, [products, page, loading, hasMore]);
 
     useEffect(() => {
-        if (paramsLoaded && !initialLoadDone.current) {
-            resetSearch();
-            loadMoreProducts();
-            initialLoadDone.current = true;
-        }
-    }, [paramsLoaded, resetSearch, loadMoreProducts]);
-
-    useEffect(() => {
-        if (inView && paramsLoaded && (!loading || first) && hasMore && initialLoadDone.current) {
+        if (inView && hasMore) {
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
+    }, [inView, loadMoreProducts, hasMore]);
 
-    useEffect(() => {
-        if (prevSearch.current !== query) {
-            resetSearch();
-        }
-    }, [query, resetSearch]);
-    useEffect(() => {
-        if (!loading)
-            setFirst(false)
-    }, [loading])
-    const memoizedProducts = useMemo(() => products.map((product) => ({
+    const memoizedProducts = useMemo(() => displayedProducts.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
-    })), [products]);
+    })), [displayedProducts]);
 
     useEffect(() => {
         const handlePopState = () => {
@@ -131,6 +115,7 @@ export default function ProductList() {
             setShouldScroll(true)
         }
     }, [path]);
+
     return (
         <>
             {detail ? (
@@ -149,8 +134,7 @@ export default function ProductList() {
                     <SearchComponent query={query} setQuery={setQuery}/>
                     {memoizedProducts.length > 0 ? (
                         <>
-                            <div
-                                className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                            <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                                 {memoizedProducts.map((product) => (
                                     <ProductItem
                                         key={product.id}
@@ -173,7 +157,7 @@ export default function ProductList() {
                         <NoProductsFound/>
                     ) : null}
                     {loading && <ProductLoading/>}
-                    {!loading && <div ref={ref} style={{height: '15px'}}></div>}
+                    {!loading && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
                 </>
             )}
         </>
