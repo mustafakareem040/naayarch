@@ -20,11 +20,12 @@ export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
     const [displayedProducts, setDisplayedProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
+    const [first, setFirst] = useState(true)
     const [sc, setSc] = useState("");
     const { ref, inView } = useInView({
         threshold: 0,
@@ -59,6 +60,7 @@ export default function ProductList({ initialProducts }) {
         setProducts(filtered);
         setPage(1);
         setHasMore(true);
+        setFirst(false)
     }, [initialProducts, query, c, sc]);
 
     useEffect(() => {
@@ -66,7 +68,7 @@ export default function ProductList({ initialProducts }) {
     }, [filterProducts]);
 
     const loadMoreProducts = useCallback(() => {
-        if (loading || !hasMore) return;
+        if ((loading && !first) || !hasMore) return;
 
         setLoading(true);
 
@@ -153,7 +155,7 @@ export default function ProductList({ initialProducts }) {
                                 ))}
                             </div>
                         </>
-                    ) : !loading ? (
+                    ) : !loading && !first ? (
                         <NoProductsFound/>
                     ) : null}
                     {loading && <ProductLoading/>}
