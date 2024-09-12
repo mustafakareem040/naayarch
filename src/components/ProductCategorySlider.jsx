@@ -4,6 +4,7 @@ import Slider from 'react-slick';
 import Image from 'next/image';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import Link from "next/link";
 const ProductCategorySlider = () => {
     const sliderRef = useRef(null);
 
@@ -52,9 +53,9 @@ const ProductCategorySlider = () => {
                             </div>
                             <p className="font-serif text-2xl mb-6">{product.description}</p>
                         </div>
-                        <button className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
+                        <Link prefetch={false} href="/products" className="w-full py-1 mb-6 border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl">
                             Show More
-                        </button>
+                        </Link>
                     </div>
                 ))}
             </Slider>

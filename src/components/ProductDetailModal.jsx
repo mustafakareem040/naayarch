@@ -142,7 +142,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                     )}
 
                     <div className="flex justify-between items-center mb-6">
-                        <p className="text-2xl font-medium">
+                        <p className="text-lg font-medium">
                             {totalPrice.toFixed(2)} IQD
                         </p>
                         <div className="flex items-center space-x-4">
@@ -150,14 +150,14 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                                 className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                             >
-                                <Minus size={20} />
+                                <Minus className="w-4 h-4 text-[#3B5345]" />
                             </button>
-                            <span className="text-xl">{quantity}</span>
+                            <span className="text-lg">{quantity}</span>
                             <button
                                 className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
                                 onClick={() => setQuantity(quantity + 1)}
                             >
-                                <Plus size={20} />
+                                <Plus className="w-4 h-4 text-[#3B5345]" />
                             </button>
                         </div>
                     </div>

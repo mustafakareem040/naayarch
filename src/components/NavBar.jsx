@@ -55,8 +55,8 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
                     <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Naay Logo" unoptimized={true} width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
-                    <ImageButton src="https://storage.naayiq.com/resources/search.svg" alt="Search" dest={"/"} />
-                    <ImageButton src="https://storage.naayiq.com/resources/heart.svg" alt="Favorites" dest={"/"} />
+                    <ImageButton src="https://storage.naayiq.com/resources/search.svg" alt="Search" dest={"/products"} />
+                    <ImageButton src="https://storage.naayiq.com/resources/heart.svg" alt="Favorites" dest={"/wishlist"} />
                     <ImageButton src="https://storage.naayiq.com/resources/shop.svg" alt="Cart"  dest={"/cart"}/>
                 </div>
             </nav>

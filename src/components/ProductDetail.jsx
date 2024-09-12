@@ -232,7 +232,7 @@ export default function ProductDetail({ product }) {
                     <h2 className="text-xl font-semibold w-fit mb-2">Description</h2>
                     <div
                         style={{direction: "rtl"}}
-                        className="text-xl font-normal text-right font-serif"
+                        className="text-xl mr-2 font-normal text-right font-serif"
                         dangerouslySetInnerHTML={{
                             __html: product.description.split('\n').map((item, index) => {
                                 if (index === 0) {

@@ -4,7 +4,7 @@ import CartCheckout from "@/components/CartCheckout";
 import {useAppSelector} from "@/lib/hook";
 
 export default function OrderNow() {
-    const {subTotal, delivery, discount} = useAppSelector(state => state.order);
+    const {subTotal, delivery, discount} = useAppSelector(state => state.order.info);
     if (typeof subTotal !== "number" || typeof delivery !== "number" || typeof discount !== "number") {
         redirect("/cart")
     }

@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import { useAppDispatch } from "@/lib/hook";
 import { setOrder } from "@/lib/features/orderSlice";
 import EmptyCart from "@/components/EmptyCart";
+import {useSelector} from "react-redux";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -22,6 +23,7 @@ const Cart = () => {
     const [couponMessage, setCouponMessage] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const dispatch = useAppDispatch();
+    const order = useSelector(state => state.order);
     const router = useRouter();
 
     const fetchCartItems = useCallback(async () => {
@@ -256,7 +258,7 @@ const Cart = () => {
                     </div>
                 </motion.div>
                 <Link
-                    onClick={() => dispatch(setOrder({delivery, discount, subTotal}))}
+                    onClick={() => dispatch(setOrder({...order, info: {delivery, discount, subTotal}}))}
                     href="/cart/order"
                     className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
                 >

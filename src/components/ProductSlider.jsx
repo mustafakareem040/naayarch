@@ -5,6 +5,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 const Slider = dynamic(() => import('react-slick'), { ssr: false });
 import Image from 'next/image';
+import Link from "next/link";
 const ProductSlider = () => {
     const sliderRef = useRef(null);
     const products = [
@@ -12,13 +13,15 @@ const ProductSlider = () => {
             id: 1,
             title: 'Beauty of Joseon\n Sunscreen',
             image: 'https://storage.naayiq.com/resources/cream.png',
-            price: '25.00 IQD',
+            price: '20.00 IQD',
+            href: 181,
         },
         {
             id: 2,
-            title: 'A test cream',
+            title: 'Foaming Cream',
             image: 'https://storage.naayiq.com/resources/korean.jpeg',
-            price: '0.00 IQD',
+            price: '35.000 IQD',
+            href: 680
         },
     ];
 
@@ -60,10 +63,11 @@ const ProductSlider = () => {
                                     <h2 className="mt-4 min-h-12 ml-2 max-w-52">{product.title}</h2>
                                     <p className="mt-2 min-h-12 self-end">{product.price}</p>
                                 </div>
-                                <button
+                                <Link
+                                    href={`/products/${product.href}`}
                                     className="w-full mb-6 py-1 mt-4 rounded-full font-serif text-2xl bg-[#3B5345] text-white">
                                     Add To Cart
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     ))}

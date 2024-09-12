@@ -6,9 +6,11 @@ import { ArrowLeft, Plus, FileText } from 'lucide-react';
 import Link from 'next/link';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
+import {useSelector} from "react-redux";
 
 const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
     const [note, setNote] = useState('');
+    const { shippingAddress } = useSelector(state => state.order);
     const router = useRouter()
     return (
         <>
@@ -20,22 +22,32 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
             </header>
             <div
-                className="font-serif container mx-auto max-w-md"
-            >
+                className="font-serif container mx-auto max-w-md">
 
-                <section
-                    className="mb-6"
-                >
+                <section className="mb-6">
                     <h2 className="text-xl font-sans font-medium mb-2">Shipping Address</h2>
-                    <Link
-                        href={{
-                            pathname: "/profile/address/add",
-                            query: {redirect: "/cart/order"}
-                        }}
-                        className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]">
-                        <Plus className="w-6 h-6 mr-3"/>
-                        <span className="text-base font-semibold">Add address</span>
-                    </Link>
+                    {shippingAddress ? ( <>
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
+                            <p>{shippingAddress.address}</p>
+                            <p>{shippingAddress.phone_number}</p>
+                        </div>
+                            <Link
+                                href="/cart/choose-address"
+                                className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                            >
+                                <span className="text-base font-semibold">Choose another address</span>
+                            </Link>
+                        </>
+                    ) : (
+                        <Link
+                            href="/cart/choose-address"
+                            prefetch={false}
+                            className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                        >
+                            <span className="text-base font-semibold">Choose address</span>
+                        </Link>
+                    )}
                 </section>
 
                 <section
@@ -93,11 +105,12 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                     </div>
                 </section>
 
-                <button
+                <Link
+                    href={"/cart/order/confirm"}
                     className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
                 >
                     Submit Order
-                </button>
+                </Link>
             </div>
         </>
     );
