@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from "next/dynamic";
@@ -16,6 +16,8 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
+const ITEMS_PER_PAGE = 20;
+
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
     const [displayedProducts, setDisplayedProducts] = useState([]);
@@ -25,8 +27,8 @@ export default function ProductList({ initialProducts }) {
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
-    const [first, setFirst] = useState(true)
     const [sc, setSc] = useState("");
+    const [isPending, startTransition] = useTransition();
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -41,40 +43,45 @@ export default function ProductList({ initialProducts }) {
     }, [searchParams]);
 
     const filterProducts = useCallback(() => {
-        let filtered = initialProducts;
+        startTransition(() => {
+            let filtered = initialProducts;
 
-        if (query) {
-            filtered = filtered.filter(product =>
-                product.name.toLowerCase().includes(query.toLowerCase())
-            );
-        }
+            if (query) {
+                const queryWords = query.toLowerCase().split(/\s+/);
+                filtered = filtered.filter(product => {
+                    const productWords = product.name.toLowerCase().split(/\s+/);
+                    return queryWords.every(queryWord =>
+                        productWords.some(productWord => productWord.startsWith(queryWord))
+                    );
+                });
+            }
 
-        if (c) {
-            filtered = filtered.filter(product => product.category === c);
-        }
+            if (c) {
+                filtered = filtered.filter(product => product.category === c);
+            }
 
-        if (sc) {
-            filtered = filtered.filter(product => product.subCategory === sc);
-        }
+            if (sc) {
+                filtered = filtered.filter(product => product.subCategory === sc);
+            }
 
-        setProducts(filtered);
-        setDisplayedProducts([]); // Reset displayed products
-        setPage(1);
-        setHasMore(true);
-        setFirst(false)
+            setProducts(filtered);
+            setDisplayedProducts([]);
+            setPage(1);
+            setHasMore(filtered.length > 0);
+        });
     }, [initialProducts, query, c, sc]);
 
     useEffect(() => {
         filterProducts();
-    }, [filterProducts, query, c, sc]); // Add query, c, and sc as dependencies
+    }, [filterProducts]);
 
     const loadMoreProducts = useCallback(() => {
         if (loading || !hasMore) return;
 
         setLoading(true);
 
-        const startIndex = (page - 1) * 10;
-        const endIndex = startIndex + 10;
+        const startIndex = (page - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
         const newProducts = products.slice(startIndex, endIndex);
 
         setDisplayedProducts(prev => [...prev, ...newProducts]);
@@ -99,15 +106,12 @@ export default function ProductList({ initialProducts }) {
             setShouldScroll(true);
         };
         window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
     useEffect(() => {
         if (shouldScroll) {
-            window.scrollTo(0, scroll.current)
+            window.scrollTo(0, scroll.current);
             setShouldScroll(false);
         }
     }, [shouldScroll]);
@@ -115,9 +119,16 @@ export default function ProductList({ initialProducts }) {
     useEffect(() => {
         if (path.length <= 10) {
             setDetail(null);
-            setShouldScroll(true)
+            setShouldScroll(true);
         }
     }, [path]);
+
+    const handleProductClick = useCallback((product) => {
+        scroll.current = window.scrollY;
+        setDetail(product);
+        const newURL = `/products/${product.id}`;
+        window.history.pushState({ path: newURL }, '', newURL);
+    }, []);
 
     return (
         <>
@@ -144,30 +155,25 @@ export default function ProductList({ initialProducts }) {
                                         id={product.id}
                                         name={product.name}
                                         product={product}
-                                        handleClick={() => {
-                                            scroll.current = window.scrollY
-                                            setDetail(product)
-                                            const newURL = `/products/${product.id}`;
-                                            window.history.pushState({ path: newURL }, '', newURL);
-                                        }}
+                                        handleClick={() => handleProductClick(product)}
                                         price={formatPrice(product.cheapestPrice)}
                                         imageUrl={product.images[0]}
                                     />
                                 ))}
                             </div>
                         </>
-                    ) : !loading && !first ? (
+                    ) : !loading && !isPending ? (
                         <NoProductsFound/>
                     ) : null}
-                    {(loading || first) && <ProductLoading/>}
-                    {(!loading || first) && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
+                    {(loading || isPending) && <ProductLoading/>}
+                    {(!loading || isPending) && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
                 </>
             )}
         </>
     );
 }
 
-function getCheapestPrice(product) {
+const getCheapestPrice = (product) => {
     const prices = [
         product.price !== "0.00" ? parseFloat(product.price) : Infinity,
         ...(product.sizes?.map(size => parseFloat(size.price)) || []),
@@ -178,18 +184,16 @@ function getCheapestPrice(product) {
     ].filter(price => !isNaN(price) && isFinite(price));
 
     return prices.length > 0 ? Math.min(...prices) : null;
-}
+};
 
-function formatPrice(price) {
+const formatPrice = (price) => {
     if (price == null) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
-}
+};
 
-function SearchComponentSkeleton() {
-    return (
-        <div className="flex mb-4 items-center space-x-2 animate-pulse">
-            <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>
-            <div className="h-10 w-[5.5rem] bg-gray-200 rounded-md"></div>
-        </div>
-    );
-}
+const SearchComponentSkeleton = () => (
+    <div className="flex mb-4 items-center space-x-2 animate-pulse">
+        <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>
+        <div className="h-10 w-[5.5rem] bg-gray-200 rounded-md"></div>
+    </div>
+);
