@@ -159,7 +159,7 @@ export default function ProductList({ initialProducts }) {
                         <NoProductsFound/>
                     ) : null}
                     {loading && <ProductLoading/>}
-                    {!loading && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
+                    {(!loading || first) && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
                 </>
             )}
         </>

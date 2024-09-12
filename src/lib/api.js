@@ -2,11 +2,11 @@ const API_URL = "https://api.naayiq.com";
 
 export async function fetchAllProducts() {
     try {
-        const response = await fetch(`${API_URL}/products?limit=1000`, {
+        const response = await fetch(`${API_URL}/products`, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            next: { revalidate: 3600 }, // Cache for 1 hour
+            next: { revalidate: 84600 },
         });
 
         if (!response.ok) {
