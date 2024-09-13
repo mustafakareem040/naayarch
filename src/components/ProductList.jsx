@@ -89,7 +89,7 @@ export default function ProductList({ initialProducts }) {
     }, [filterProducts]);
 
     const loadMoreProducts = useCallback(() => {
-        if (loading || !hasMore) return;
+        if ((loading || !hasMore) && !first) return;
 
         setLoading(true);
 
@@ -104,7 +104,7 @@ export default function ProductList({ initialProducts }) {
     }, [products, page, loading, hasMore]);
 
     useEffect(() => {
-        if (inView && hasMore) {
+        if ((inView && hasMore) || first) {
             loadMoreProducts();
         }
     }, [inView, loadMoreProducts, hasMore]);
@@ -175,11 +175,11 @@ export default function ProductList({ initialProducts }) {
                                 ))}
                             </div>
                         </>
-                    ) : !loading && !first ? (
+                    ) : (!loading && !first) ? (
                         <NoProductsFound/>
                     ) : null}
                     {(loading || first) && <ProductLoading/>}
-                    {(!loading || first) && hasMore && <div ref={ref} style={{height: '20px'}}></div>}
+                    {!loading && hasMore && <div ref={ref} style={{height: '20px'}}></div>}
                 </>
             )}
         </>
