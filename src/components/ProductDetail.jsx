@@ -40,11 +40,11 @@ export default function ProductDetail({ product }) {
             setSelectedSize(product.sizes[0]);
         }
         updatePrice();
-    }, [product]);
+    }, [product, updatePrice]);
 
     useEffect(() => {
         updatePrice();
-    }, [selectedColor, selectedSize]);
+    }, [selectedColor, selectedSize, updatePrice]);
 
     const updatePrice = () => {
         let price = product.price;

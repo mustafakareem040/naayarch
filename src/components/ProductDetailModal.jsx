@@ -14,7 +14,11 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
     const { addNotification } = useNotification();
 
     const product = productData.product;
-
+    const updateTotalPrice = useCallback(() => {
+        if (selectedSize) {
+            setTotalPrice(parseFloat(selectedSize.price) * quantity);
+        }
+    }, [selectedSize, quantity]);
     useEffect(() => {
         if (product && product.sizes && product.sizes.length > 0) {
             setSelectedSize(product.sizes[0]);
@@ -23,17 +27,13 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
 
     useEffect(() => {
         updateTotalPrice();
-    }, [selectedSize, quantity]);
+    }, [selectedSize, quantity, updateTotalPrice]);
 
     useEffect(() => {
         checkIfInCart();
-    }, [selectedSize]);
+    }, [selectedSize, checkIfInCart]);
 
-    const updateTotalPrice = useCallback(() => {
-        if (selectedSize) {
-            setTotalPrice(parseFloat(selectedSize.price) * quantity);
-        }
-    }, [selectedSize, quantity]);
+
 
     const checkIfInCart = useCallback(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -70,7 +70,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
             addNotification('success', 'Added to cart successfully');
             checkIfInCart();
         }
-    }, [product.id, selectedSize, quantity, addNotification]);
+    }, [product.id, selectedSize, quantity, addNotification, checkIfInCart]);
 
     if (!isOpen || !product) return null;
 

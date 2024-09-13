@@ -82,7 +82,7 @@ export default function ProductList({ initialProducts }) {
         setPage(1);
         setHasMore(filtered.length > 0);
         setFirst(false)
-    }, [initialProducts, query, c, sc]);
+    }, [initialProducts, query, c, sc, first]);
 
     useEffect(() => {
         filterProducts();
@@ -107,7 +107,7 @@ export default function ProductList({ initialProducts }) {
         if ((inView && hasMore) || first) {
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts, hasMore]);
+    }, [inView, loadMoreProducts, hasMore, first]);
 
     const memoizedProducts = useMemo(() => displayedProducts.map((product) => ({
         ...product,
