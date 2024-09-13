@@ -3,15 +3,17 @@ import React, { Suspense } from 'react';
 import ProductLoading from "@/components/ProductLoading";
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
-export const runtime = 'edge'
-export const revalidate = 84600; // Revalidate every hour
+export const experimental_ppr = true
+export const revalidate = 84600; // Revalidate every day
 
 async function fetchAllProducts() {
-    const response = await fetch('https://api.naayiq.com/products?limit=1000', {
+    const response = await fetch('https://api.naayiq.com/products', {
         headers: {
             'Content-Type': 'application/json',
         },
-        cache: 'force-cache',
+        next: {
+            revalidate: 84600
+        }
     });
 
     if (!response.ok) {
