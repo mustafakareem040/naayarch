@@ -19,6 +19,14 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
             setTotalPrice(parseFloat(selectedSize.price) * quantity);
         }
     }, [selectedSize, quantity]);
+    const checkIfInCart = useCallback(() => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const isItemInCart = cart.some(item =>
+            item.product_id === product.id &&
+            item.size_id === selectedSize?.id
+        );
+        setIsInCart(isItemInCart);
+    }, [product.id, selectedSize]);
     useEffect(() => {
         if (product && product.sizes && product.sizes.length > 0) {
             setSelectedSize(product.sizes[0]);
@@ -33,16 +41,6 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
         checkIfInCart();
     }, [selectedSize, checkIfInCart]);
 
-
-
-    const checkIfInCart = useCallback(() => {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const isItemInCart = cart.some(item =>
-            item.product_id === product.id &&
-            item.size_id === selectedSize?.id
-        );
-        setIsInCart(isItemInCart);
-    }, [product.id, selectedSize]);
 
     const handleAddToCart = useCallback(() => {
         if (selectedSize) {
