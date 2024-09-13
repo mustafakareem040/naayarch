@@ -28,6 +28,16 @@ export default function ProductDetail({ product }) {
     useEffect(() => {
         window.scrollTo(0, 0)
     }, []);
+    const updatePrice = () => {
+        let price = product.price;
+        if (selectedColor && selectedColor.price) {
+            price = selectedColor.price;
+        }
+        if (selectedSize && selectedSize.price) {
+            price = selectedSize.price;
+        }
+        setCurrentPrice(parseFloat(price));
+    };
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartItems(cart);
@@ -46,16 +56,7 @@ export default function ProductDetail({ product }) {
         updatePrice();
     }, [selectedColor, selectedSize, updatePrice]);
 
-    const updatePrice = () => {
-        let price = product.price;
-        if (selectedColor && selectedColor.price) {
-            price = selectedColor.price;
-        }
-        if (selectedSize && selectedSize.price) {
-            price = selectedSize.price;
-        }
-        setCurrentPrice(parseFloat(price));
-    };
+
 
     const handleColorChange = (color) => {
         setSelectedColor(color);

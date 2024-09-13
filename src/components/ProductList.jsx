@@ -101,7 +101,7 @@ export default function ProductList({ initialProducts }) {
         setPage(prev => prev + 1);
         setHasMore(endIndex < products.length);
         setLoading(false);
-    }, [products, page, loading, hasMore]);
+    }, [products, page, first, loading, hasMore]);
 
     useEffect(() => {
         if ((inView && hasMore) || first) {

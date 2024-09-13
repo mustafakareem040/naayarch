@@ -5,6 +5,7 @@ import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 import StoreProvider from "@/app/StoreProvider";
+export const runtime = 'edge';
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [
