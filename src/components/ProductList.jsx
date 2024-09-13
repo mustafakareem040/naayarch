@@ -1,7 +1,7 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useInView } from 'react-intersection-observer';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {usePathname, useSearchParams} from 'next/navigation';
+import {useInView} from 'react-intersection-observer';
 import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
 import ProductLoading from "@/components/ProductLoading";
@@ -9,14 +9,14 @@ import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
 import Link from "next/link";
 import Image from "next/image";
-import { NotificationProvider } from "@/components/NotificationContext";
+import {NotificationProvider} from "@/components/NotificationContext";
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />
 });
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 5;
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
@@ -28,7 +28,7 @@ export default function ProductList({ initialProducts }) {
     const [query, setQuery] = useState("");
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
-    const [isPending, startTransition] = useTransition();
+    const [first, setFirst] = useState(true)
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -43,32 +43,45 @@ export default function ProductList({ initialProducts }) {
     }, [searchParams]);
 
     const filterProducts = useCallback(() => {
-        startTransition(() => {
-            let filtered = initialProducts;
+        let filtered = initialProducts;
 
-            if (query) {
-                const queryWords = query.toLowerCase().split(/\s+/);
-                filtered = filtered.filter(product => {
-                    const productWords = product.name.toLowerCase().split(/\s+/);
-                    return queryWords.every(queryWord =>
-                        productWords.some(productWord => productWord.startsWith(queryWord))
-                    );
-                });
-            }
+        if (query) {
+            const queryWords = query.toLowerCase().split(/\s+/);
+            filtered = filtered.filter(product => {
+                const productWords = product.name.toLowerCase().split(/\s+/);
+                return queryWords.every(queryWord =>
+                    productWords.some(productWord => productWord.startsWith(queryWord))
+                );
+            });
 
-            if (c) {
-                filtered = filtered.filter(product => product.category === c);
-            }
+            filtered.sort((a, b) => {
+                const aIndex = a.name.toLowerCase().indexOf(query.toLowerCase());
+                const bIndex = b.name.toLowerCase().indexOf(query.toLowerCase());
 
-            if (sc) {
-                filtered = filtered.filter(product => product.subCategory === sc);
-            }
+                if (aIndex === -1 && bIndex === -1) return 0;
+                if (aIndex === -1) return 1;
+                if (bIndex === -1) return -1;
 
-            setProducts(filtered);
-            setDisplayedProducts([]);
-            setPage(1);
-            setHasMore(filtered.length > 0);
-        });
+                return aIndex - bIndex;
+            });
+        }
+
+        if (c) {
+            let r = c.toString()
+            filtered = filtered.filter(product => {
+                return product.categories.some(it => it.main_category_id?.toString() === r);
+            });
+        }
+
+        if (sc) {
+            filtered = filtered.filter(product => product.categories.some(it => it.id === sc));
+        }
+
+        setProducts(filtered);
+        setDisplayedProducts([]);
+        setPage(1);
+        setHasMore(filtered.length > 0);
+        setFirst(false)
     }, [initialProducts, query, c, sc]);
 
     useEffect(() => {
@@ -162,11 +175,11 @@ export default function ProductList({ initialProducts }) {
                                 ))}
                             </div>
                         </>
-                    ) : !loading && !isPending ? (
+                    ) : !loading && !first ? (
                         <NoProductsFound/>
                     ) : null}
-                    {(loading || isPending) && <ProductLoading/>}
-                    {(!loading || isPending) && hasMore && <div ref={ref} style={{height: '15px'}}></div>}
+                    {(loading || first) && <ProductLoading/>}
+                    {(!loading || first) && hasMore && <div ref={ref} style={{height: '20px'}}></div>}
                 </>
             )}
         </>
