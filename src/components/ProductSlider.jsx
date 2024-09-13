@@ -19,7 +19,7 @@ const ProductSlider = () => {
         {
             id: 2,
             title: 'Foaming Cream',
-            image: 'https://storage.naayiq.com/resources/korean.jpeg',
+            image: 'https://storage.naayiq.com/resources/korean2.webp',
             price: '35.000 IQD',
             href: 680
         },

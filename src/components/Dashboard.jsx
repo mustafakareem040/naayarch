@@ -19,7 +19,7 @@ export default function Dashboard() {
                 title="Our New Products"
                 subtitle="Fenty Lipgloss"
                 description="The ultimate lip gloss with shine that feels as good as it looks."
-                bigimg="/blackface.webp"
+                bigimg="/woman2.webp"
                 flower="/pingwing.webp"
             />
             <ProductCategorySlider />
