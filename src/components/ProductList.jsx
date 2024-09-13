@@ -16,7 +16,7 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 2;
 
 export default function ProductList({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts);
