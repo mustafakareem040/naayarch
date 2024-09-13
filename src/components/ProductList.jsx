@@ -82,7 +82,7 @@ export default function ProductList({ initialProducts }) {
         setPage(1);
         setHasMore(filtered.length > 0);
         setFirst(false)
-    }, [initialProducts, query, c, sc, first]);
+    }, [initialProducts, query, c, sc]);
 
     useEffect(() => {
         filterProducts();

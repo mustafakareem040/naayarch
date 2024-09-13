@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { ArrowLeft, Heart, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -28,7 +28,7 @@ export default function ProductDetail({ product }) {
     useEffect(() => {
         window.scrollTo(0, 0)
     }, []);
-    const updatePrice = () => {
+    const updatePrice = useCallback(() => {
         let price = product.price;
         if (selectedColor && selectedColor.price) {
             price = selectedColor.price;
@@ -37,7 +37,7 @@ export default function ProductDetail({ product }) {
             price = selectedSize.price;
         }
         setCurrentPrice(parseFloat(price));
-    };
+    }, [product, selectedColor, selectedSize]);
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartItems(cart);
