@@ -44,7 +44,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick }) =
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"
                         unoptimized={true}
                         onError={(e) => {
-                            e.target.src = "/noimage.png";
+                            e.target.src = "https://storage.naayiq.com/resources/noimage.webp";
                         }}
                         className="object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110"
                     />
