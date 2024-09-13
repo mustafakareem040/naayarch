@@ -12,13 +12,13 @@ const ProductCategorySlider = () => {
         {
             id: 1,
             title: 'Korean Products',
-            image: 'https://storage.naayiq.com/resources/korean.png',
+            image: 'https://storage.naayiq.com/resources/korean.webp',
             description: 'Providing our customers with the best Korean Skincare!',
         },
         {
             id: 2,
             title: 'Global Products',
-            image: 'https://storage.naayiq.com/resources/global.png',
+            image: 'https://storage.naayiq.com/resources/global.webp',
             description: 'Providing our customers with the best Korean Skincare!',
         },
     ];

@@ -16,7 +16,7 @@ export default function OrderDetails({orderID}) {
         status: 'Order Confirm',
         products: [
             {
-                image: '/water.png',
+                image: '/water.webp',
                 title: 'Rare Beauty Blush Liquid',
                 color: 'Happy',
                 size: '25 ml',
@@ -24,14 +24,14 @@ export default function OrderDetails({orderID}) {
                 price: '50,000 IQD'
             },
             {
-                image: '/cream.png',
+                image: '/cream.webp',
                 title: 'GISOU - Mini Honey Infused Hair Oil',
                 size: '25 ml',
                 qty: 1,
                 price: '43,000 IQD'
             },
             {
-                image: '/korean.png',
+                image: '/korean.webp',
                 title: 'Hairburst Shampoo & conditioner',
                 color: 'Happy',
                 qty: 1,
@@ -86,12 +86,12 @@ export default function OrderDetails({orderID}) {
             </div>
             <div className="border-t border-[#695C5C]/30 border-solid w-full absolute left-0 right-0"></div>
             <OrderedProducts products={[{
-                image: '/water.png',
+                image: '/water.webp',
                 name: 'Rare Beauty Blush Liquid',
                 details: ['Color: Happy', 'Size: 25 ml'],
                 price: '50,000',
             }, {
-                image: '/cream.png',
+                image: '/cream.webp',
                 name: 'Cream',
                 details: ['Color: Happy', 'Size: 25 ml'],
                 price: '50,000'

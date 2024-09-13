@@ -5,7 +5,7 @@ export default function Hero() {
     return (
         <div className="relative mb-12 font-sans w-full h-[550px] overflow-hidden rounded-lg">
             <Image
-                src="https://storage.naayiq.com/resources/water.png"
+                src="https://storage.naayiq.com/resources/water.webp"
                 alt="Ice texture"
                 fill
                 sizes="(max-width: 768px) 100vw, 768px"

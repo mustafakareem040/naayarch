@@ -19,16 +19,16 @@ export default function Dashboard() {
                 title="Our New Products"
                 subtitle="Fenty Lipgloss"
                 description="The ultimate lip gloss with shine that feels as good as it looks."
-                bigimg="/blackface.png"
-                flower="/pingwing.png"
+                bigimg="/blackface.webp"
+                flower="/pingwing.webp"
             />
             <ProductCategorySlider />
             <CustomProduct
                 title="Makeup Product"
                 subtitle="Best Product"
                 description="We are here to help our most popular product will help you to create best look"
-                bigimg="/woman.png"
-                flower="/whiteflower.png"
+                bigimg="/woman.webp"
+                flower="/whiteflower.webp"
             />
             <Footer />
         </div>

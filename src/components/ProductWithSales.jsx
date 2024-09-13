@@ -11,8 +11,8 @@ export function ProductWithSales() {
                 title="Special Offer"
                 subtitle="Don't Miss The Chance!"
                 description="Glow Up & Save! 20% off all products"
-                bigimg="/face.png"
-                flower="/pingwing.png"
+                bigimg="/face.webp"
+                flower="/pingwing.webp"
                 hideFlower={true}
             />
             <SaleBanner />

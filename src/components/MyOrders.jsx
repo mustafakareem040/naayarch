@@ -225,7 +225,7 @@ const MyOrders = () => {
             location: 'Baghdad arasat',
             price: 150000,
             quantity: 6,
-            productImages: ["/water.png", '/cream.png'],
+            productImages: ["/water.webp", '/cream.webp'],
         },
         {
             id: '1020000',

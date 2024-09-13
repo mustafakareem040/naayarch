@@ -12,7 +12,7 @@ const ProductSlider = () => {
         {
             id: 1,
             title: 'Beauty of Joseon\n Sunscreen',
-            image: 'https://storage.naayiq.com/resources/cream.png',
+            image: 'https://storage.naayiq.com/resources/cream.webp',
             price: '20.00 IQD',
             href: 181,
         },
