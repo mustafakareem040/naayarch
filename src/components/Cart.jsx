@@ -138,7 +138,7 @@ const Cart = () => {
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
                 exit={{opacity: 0}}
-                className="p-4 font-serif container mx-auto relative"
+                className="p-4 overflow-x-hideen font-serif container mx-auto relative"
             >
                 <AnimatePresence>
                     {showConfirmation && (

@@ -17,8 +17,7 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
             </header>
             <div
-                className="font-serif container mx-auto max-w-md">
-
+                className="font-serif overflow-x-hideen container mx-auto max-w-md">
                 <section className="mb-6">
                     <h2 className="text-xl font-sans font-medium mb-2">Shipping Address</h2>
                     {shippingAddress ? ( <>

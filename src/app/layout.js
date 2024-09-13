@@ -5,6 +5,7 @@ import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 import StoreProvider from "@/app/StoreProvider";
+import Head from "next/head";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [
@@ -31,10 +32,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-        <head>
+        <Head>
             <title>Naay Store</title>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        </head>
+        </Head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
             color="#3B5345"
