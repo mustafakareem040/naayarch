@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
-import { MapPin, Search, Copy, X, Check } from 'lucide-react';
+import {MapPin, Search, Copy, X, Check, CircleArrowLeft} from 'lucide-react';
 import Link from "next/link";
 
 const OrderCard = ({ id, status, productImages, price, quantity, orderDate, location }) => {
@@ -261,9 +261,7 @@ const MyOrders = () => {
     return (
         <div className="mt-2 px-4">
             <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={router.back}>
-                    <Image src="/arrow-left.svg" width={40} height={40} alt="left" />
-                </button>
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">My Orders</h1>
             </header>
             <div className="flex items-center mb-4">

@@ -10,7 +10,7 @@ export default function ProductLoading() {
                width={200}
                unoptimized={true}
                height={200}
-               className="m-auto text-center"
+               className="m-auto translate-y-12 text-center"
                alt={"Loading"}/>
     )
 }

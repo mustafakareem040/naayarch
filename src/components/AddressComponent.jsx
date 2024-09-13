@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import {useAppDispatch, useAppSelector} from "@/lib/hook";
 import {removeAddress, setAddresses} from "@/lib/features/addressesSlice";
+import {CircleArrowLeft} from "lucide-react";
 
 const AddressItem = ({ address, onEdit, onDelete }) => {
     return (
@@ -79,9 +80,7 @@ const ManageAddress = () => {
     return (
         <div>
             <header className="flex items-center mb-24">
-                <button className="relative z-20" onClick={router.back}>
-                    <Image unoptimized={true} src={"https://storage.naayiq.com/resources/arrow-left.svg"} width={40} height={40} alt={"left"}/>
-                </button>
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Manage Address</h1>
             </header>
 

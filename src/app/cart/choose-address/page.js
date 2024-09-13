@@ -3,8 +3,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { setOrder } from '@/lib/features/orderSlice';
-import Image from 'next/image';
 import Link from "next/link";
+import {CircleArrowLeft} from "lucide-react";
 
 const ChooseAddress = () => {
     const router = useRouter();
@@ -19,14 +19,7 @@ const ChooseAddress = () => {
     return (
         <div className="container mx-auto max-w-md font-serif">
             <header className="flex items-center mb-12">
-                <button className="relative z-20" onClick={() => router.back()}>
-                    <Image
-                        src="https://storage.naayiq.com/resources/arrow-left.svg"
-                        width={40}
-                        height={40}
-                        alt="back"
-                    />
-                </button>
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">
                     Choose Address
                 </h1>

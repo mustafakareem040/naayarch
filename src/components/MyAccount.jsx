@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, Mail, Phone, Lock } from 'lucide-react';
+import {ChevronLeft, Mail, Phone, Lock, CircleArrowLeft} from 'lucide-react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
@@ -105,9 +105,7 @@ const MyAccount = () => {
     return (
         <div className="bg-white min-h-screen p-6 flex flex-col">
             <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={() => router.back()}>
-                    <Image src="https://storage.naayiq.com/resources/arrow-left.svg" width={40} height={40} unoptimized={true} alt="left"/>
-                </button>
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                     My Account
                 </h1>

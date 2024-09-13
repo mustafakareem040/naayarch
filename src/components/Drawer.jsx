@@ -3,13 +3,14 @@ import React, { useEffect, useState, useCallback, memo } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
 import Cookies from 'js-cookie';
+import {CircleArrowRight, CircleArrowLeft} from "lucide-react";
 
 const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
     return (
         <div className="py-2" onClick={onClick}>
             <div className="flex justify-between items-center">
                 <span className="font-serif text-xl">{label}</span>
-                {hasChildren && <Image src="https://storage.naayiq.com/resources/navigate.svg" unoptimized={true} alt="Expand" width={24} height={24} />}
+                {hasChildren && <CircleArrowRight size={40} />}
             </div>
         </div>
     );
@@ -20,7 +21,7 @@ const SubcategoryView = memo(function SubcategoryView({ category, subcategories,
         <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="mr-4">
-                    <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} alt="Back" width={40} height={40} />
+                    <CircleArrowLeft size={40} strokeWidth={0.7} />
                 </button>
                 <h2 className="font-sans font-medium text-[1.775rem]">{category}</h2>
             </div>

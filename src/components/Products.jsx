@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import SearchComponent from "@/components/SearchComponent";
 import { useRouter } from "next/navigation";
 import ProductItem from "@/components/ProductItem";
+import {CircleArrowLeft} from "lucide-react";
 
 export default function Products({ initialData }) {
     const [query, setQuery] = useState("");
@@ -13,9 +14,7 @@ export default function Products({ initialData }) {
     return (
         <>
             <header className="flex items-center mb-6">
-                <button className="relative z-20" onClick={router.back}>
-                    <Image src="https://storage.naayiq.com/resources/arrow-left.svg" unoptimized={true} width={40} height={40} alt="left"/>
-                </button>
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
             </header>
             <SearchComponent query={query} setQuery={setQuery} />

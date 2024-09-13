@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { HomeIcon, PlusCircleIcon } from 'lucide-react';
+import {HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft} from 'lucide-react';
 import Image from "next/image";
 import {useRouter, useSearchParams} from "next/navigation";
 import {addAddress} from "@/lib/features/addressesSlice";
@@ -77,9 +77,7 @@ export default function AddAddress() {
     return (
         <div className="bg-white font-sans max-w-2xl mx-auto px-4">
             <header className="flex items-center justify-between mb-8">
-                <button onClick={() => router.back()} className="p-2">
-                    <Image src="/arrow-left.svg" width={40} height={40} alt="Go back" priority />
-                </button>
+                    <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2" />
                 <h1 className="text-2xl font-bold">Add Address</h1>
                 <div className="w-10"></div>
             </header>
@@ -95,7 +93,7 @@ export default function AddAddress() {
                             onClick={() => setAddressType(type)}
                         >
                             {type === 'home' && <HomeIcon className="mr-2 h-4 w-4" />}
-                            {type === 'work' && <Image src="https://storage.naayiq.com/resources/work.svg" width={16} height={16} className="mr-2" alt="work" />}
+                            {type === 'work' && <BriefcaseBusiness className="mr-2 h-4 w-4" />}
                             {type === 'other' && <PlusCircleIcon className="mr-2 h-4 w-4" />}
                             {type.charAt(0).toUpperCase() + type.slice(1)}
                         </button>

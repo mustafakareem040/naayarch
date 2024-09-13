@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import ProductLoading from "@/components/ProductLoading";
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
-
+export const experimental_ppr = true
 export const revalidate = 3600; // Revalidate every hour
 
 async function fetchAllProducts() {
