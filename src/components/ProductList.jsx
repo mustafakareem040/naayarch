@@ -48,7 +48,7 @@ export default function ProductList({ initialProducts }) {
         if (query) {
             filtered = filtered.filter(product => {
                 const normalizedName = product.name.normalize('NFC');
-                const normalizedQuery = query.normalize('NFC');
+                const normalizedQuery = query.normalize('NFC').toLowerCase();
 
                 // Remove hidden characters (like RLM) from the product name
                 const cleanName = normalizedName.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
