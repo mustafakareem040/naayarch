@@ -46,12 +46,18 @@ export default function ProductList({ initialProducts }) {
         let filtered = initialProducts;
 
         if (query) {
-            const queryWords = query.toLowerCase().split(/\s+/);
             filtered = filtered.filter(product => {
-                const productName = product.name.toLowerCase();
-                return query.toLowerCase().split(/\s+/).every(queryWord =>
-                    productName.includes(queryWord)
-                );
+                const normalizedName = product.name.normalize('NFC');
+                const normalizedQuery = query.normalize('NFC');
+
+                // Remove hidden characters (like RLM) from the product name
+                const cleanName = normalizedName.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
+
+                const productWords = cleanName.toLowerCase().trim().split(/\s+/);
+                return productWords.some(productWord => {
+                    const cleanWord = productWord.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
+                    return cleanWord.startsWith(normalizedQuery);
+                });
             });
 
             filtered.sort((a, b) => {
