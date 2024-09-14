@@ -48,9 +48,9 @@ export default function ProductList({ initialProducts }) {
         if (query) {
             const queryWords = query.toLowerCase().split(/\s+/);
             filtered = filtered.filter(product => {
-                const productWords = product.name.toLowerCase().split(/\s+/);
-                return queryWords.every(queryWord =>
-                    productWords.some(productWord => productWord.startsWith(queryWord))
+                const productName = product.name.toLowerCase();
+                return query.toLowerCase().split(/\s+/).every(queryWord =>
+                    productName.includes(queryWord)
                 );
             });
 
