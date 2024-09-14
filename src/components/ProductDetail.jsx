@@ -42,12 +42,13 @@ export default function ProductDetail({ product }) {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartItems(cart);
 
-        // Set initial color and size if available
         if (product.has_color && product.colors.length > 0) {
             setSelectedColor(product.colors[0]);
         }
         if (product.has_size && product.sizes.length > 0) {
             setSelectedSize(product.sizes[0]);
+        } else if (product.colors[0] && product.colors[0].sizes && product.colors[0].sizes.length > 0) {
+            setSelectedSize(product.colors[0].sizes[0]);
         }
         updatePrice();
     }, [product, updatePrice]);
@@ -217,9 +218,16 @@ export default function ProductDetail({ product }) {
                     <div className="mb-6 font-serif">
                         <select
                             value={selectedSize ? selectedSize.id : ''}
-                            onChange={(e) => setSelectedSize(product.sizes.find(size => size.id === parseInt(e.target.value)) || selectedColor.sizes.find(size => size.id === parseInt(e.target.value)))}
+                            onChange={(e) => {
+                                const sizeId = parseInt(e.target.value);
+                                const newSize = (selectedColor && selectedColor.sizes
+                                    ? selectedColor.sizes
+                                    : product.sizes).find(size => size.id === sizeId);
+                                setSelectedSize(newSize);
+                            }}
                             className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
                         >
+                            <option value="">Select Size</option>
                             {(selectedColor && selectedColor.sizes ? selectedColor.sizes : product.sizes).map((size) => (
                                 <option key={size.id} value={size.id}>
                                     Size: {size.name}
