@@ -52,7 +52,7 @@ export default function ProductDetail({ product }) {
             setSelectedSize(product.sizes[0]);
         }
         updatePrice();
-    }, [product, updatePrice]);
+    }, []);
 
     useEffect(() => {
         updatePrice();
