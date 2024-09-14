@@ -25,30 +25,31 @@ export default function ProductDetail({ product }) {
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
     const images = product.images.map(img => img.url || img);
+
     useEffect(() => {
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }, []);
+
     const updatePrice = useCallback(() => {
         let price = product.price;
-        if (selectedColor && selectedColor.price) {
-            price = selectedColor.price;
-        }
         if (selectedSize && selectedSize.price) {
             price = selectedSize.price;
+        } else if (selectedColor && selectedColor.price) {
+            price = selectedColor.price;
         }
         setCurrentPrice(parseFloat(price));
     }, [product, selectedColor, selectedSize]);
+
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         setCartItems(cart);
 
+        // Set initial color and size if available
         if (product.has_color && product.colors.length > 0) {
             setSelectedColor(product.colors[0]);
         }
         if (product.has_size && product.sizes.length > 0) {
             setSelectedSize(product.sizes[0]);
-        } else if (product.colors[0] && product.colors[0].sizes && product.colors[0].sizes.length > 0) {
-            setSelectedSize(product.colors[0].sizes[0]);
         }
         updatePrice();
     }, [product, updatePrice]);
@@ -56,8 +57,6 @@ export default function ProductDetail({ product }) {
     useEffect(() => {
         updatePrice();
     }, [selectedColor, selectedSize, updatePrice]);
-
-
 
     const handleColorChange = (color) => {
         setSelectedColor(color);
@@ -67,6 +66,14 @@ export default function ProductDetail({ product }) {
             setSelectedSize(null);
         }
     };
+
+    const handleSizeChange = (e) => {
+        const sizeId = parseInt(e.target.value);
+        const newSize = product.sizes.find(size => size.id === sizeId);
+        setSelectedSize(newSize);
+    };
+
+
 
     const isInCart = () => {
         return cartItems.some(item =>
@@ -218,16 +225,9 @@ export default function ProductDetail({ product }) {
                     <div className="mb-6 font-serif">
                         <select
                             value={selectedSize ? selectedSize.id : ''}
-                            onChange={(e) => {
-                                const sizeId = parseInt(e.target.value);
-                                const newSize = (selectedColor && selectedColor.sizes
-                                    ? selectedColor.sizes
-                                    : product.sizes).find(size => size.id === sizeId);
-                                setSelectedSize(newSize);
-                            }}
+                            onChange={handleSizeChange}
                             className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
                         >
-                            <option value="">Select Size</option>
                             {(selectedColor && selectedColor.sizes ? selectedColor.sizes : product.sizes).map((size) => (
                                 <option key={size.id} value={size.id}>
                                     Size: {size.name}
