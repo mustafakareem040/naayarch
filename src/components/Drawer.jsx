@@ -105,7 +105,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                 <div key={category.id} className="py-2">
                                     <div className="flex justify-between items-center">
                                         <Link prefetch={false} className="font-serif text-xl"
-                                              href={`/products?c=${category.id}`}>{category.name}</Link>
+                                              href={`/products?b=${category.id}`}>{category.name}</Link>
                                         <Image onClick={() => handleCategoryClick(category.name)}
                                                    src="https://storage.naayiq.com/resources/navigate.svg" alt="Expand" unoptimized={true} width={24} height={24}/>
                                     </div>
