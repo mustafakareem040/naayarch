@@ -4,7 +4,6 @@ import {usePathname, useSearchParams} from 'next/navigation';
 import {useInView} from 'react-intersection-observer';
 import dynamic from "next/dynamic";
 import ProductItem from './ProductItem';
-import {fetchProducts} from "@/lib/api";
 import ProductLoading from "@/components/ProductLoading";
 import NoProductsFound from "@/components/NoProductsFound";
 import ProductDetail from "@/components/ProductDetail";
@@ -17,110 +16,115 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
-export default function ProductList() {
-    const [products, setProducts] = useState([]);
+const ITEMS_PER_PAGE = 1;
+
+export default function ProductList({ initialProducts }) {
+    const [products, setProducts] = useState(initialProducts);
+    const [displayedProducts, setDisplayedProducts] = useState([]);
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
-    const [first, setFirst] = useState(true)
     const [c, setC] = useState("");
     const [sc, setSc] = useState("");
-    const prevSearch = useRef("");
-    const {ref, inView} = useInView({
+    const [first, setFirst] = useState(true)
+    const { ref, inView } = useInView({
         threshold: 0,
     });
     const [shouldScroll, setShouldScroll] = useState(false);
     const scroll = useRef(0);
     const path = usePathname()
-    const [paramsLoaded, setParamsLoaded] = useState(false);
-    const initialLoadDone = useRef(false);
     const [detail, setDetail] = useState(null);
+
     useEffect(() => {
         setC(searchParams.get("c") || "");
         setSc(searchParams.get("sc") || "");
-        setParamsLoaded(true);
     }, [searchParams]);
 
-    const loadMoreProducts = useCallback(async () => {
-        if (!paramsLoaded || (loading && !first) || !hasMore) return;
+    const filterProducts = useCallback(() => {
+        let filtered = initialProducts;
+
+        if (query) {
+            const queryWords = query.toLowerCase().split(/\s+/);
+            filtered = filtered.filter(product => {
+                const productWords = product.name.toLowerCase().split(/\s+/);
+                return queryWords.every(queryWord =>
+                    productWords.some(productWord => productWord.startsWith(queryWord))
+                );
+            });
+
+            filtered.sort((a, b) => {
+                const aIndex = a.name.toLowerCase().indexOf(query.toLowerCase());
+                const bIndex = b.name.toLowerCase().indexOf(query.toLowerCase());
+
+                if (aIndex === -1 && bIndex === -1) return 0;
+                if (aIndex === -1) return 1;
+                if (bIndex === -1) return -1;
+
+                return aIndex - bIndex;
+            });
+        }
+
+        if (c) {
+            let r = c.toString()
+            filtered = filtered.filter(product => {
+                return product.categories.some(it => it.main_category_id?.toString() === r);
+            });
+        }
+
+        if (sc) {
+            filtered = filtered.filter(product => product.categories.some(it => it.id === sc));
+        }
+
+        setProducts(filtered);
+        setDisplayedProducts([]);
+        setPage(1);
+        setHasMore(filtered.length > 0);
+        setFirst(false)
+    }, [initialProducts, query, c, sc]);
+
+    useEffect(() => {
+        filterProducts();
+    }, [filterProducts]);
+
+    const loadMoreProducts = useCallback(() => {
+        if ((loading || !hasMore) && !first) return;
 
         setLoading(true);
 
-        try {
-            const newProducts = await fetchProducts(page, query, c, sc);
-            if (newProducts.pagination.currentPage >= newProducts.pagination.totalPages) {
-                setHasMore(false);
-            }
-            setProducts(prev => {
-                return [...prev, ...newProducts.products].reduce((acc, current) => {
-                    const x = acc.find(item => item.id === current.id);
-                    if (!x) {
-                        return acc.concat([current]);
-                    } else {
-                        return acc;
-                    }
-                }, []);
-            });
-            setPage(prev => prev + 1);
-        } catch (error) {
-            console.error('Error fetching products:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [query, c, sc, page, loading, hasMore, paramsLoaded]);
+        const startIndex = (page - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const newProducts = products.slice(startIndex, endIndex);
 
-    const resetSearch = useCallback(() => {
-        setProducts([]);
-        setPage(1);
-        setHasMore(true);
-        prevSearch.current = query;
-        initialLoadDone.current = false;
-    }, [query]);
+        setDisplayedProducts(prev => [...prev, ...newProducts]);
+        setPage(prev => prev + 1);
+        setHasMore(endIndex < products.length);
+        setLoading(false);
+    }, [products, page, first, loading, hasMore]);
 
     useEffect(() => {
-        if (paramsLoaded && !initialLoadDone.current) {
-            resetSearch();
-            loadMoreProducts();
-            initialLoadDone.current = true;
-        }
-    }, [paramsLoaded, resetSearch, loadMoreProducts]);
-
-    useEffect(() => {
-        if (inView && paramsLoaded && (!loading || first) && hasMore && initialLoadDone.current) {
+        if ((inView && hasMore) || first) {
             loadMoreProducts();
         }
-    }, [inView, loadMoreProducts, paramsLoaded, loading, hasMore]);
+    }, [inView, loadMoreProducts, hasMore, first]);
 
-    useEffect(() => {
-        if (prevSearch.current !== query) {
-            resetSearch();
-        }
-    }, [query, resetSearch]);
-    useEffect(() => {
-        if (!loading)
-            setFirst(false)
-    }, [loading])
-    const memoizedProducts = useMemo(() => products.map((product) => ({
+    const memoizedProducts = useMemo(() => displayedProducts.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
-    })), [products]);
+    })), [displayedProducts]);
 
     useEffect(() => {
         const handlePopState = () => {
             setShouldScroll(true);
         };
         window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
     useEffect(() => {
         if (shouldScroll) {
-            window.scrollTo(0, scroll.current)
+            window.scrollTo(0, scroll.current);
             setShouldScroll(false);
         }
     }, [shouldScroll]);
@@ -128,9 +132,17 @@ export default function ProductList() {
     useEffect(() => {
         if (path.length <= 10) {
             setDetail(null);
-            setShouldScroll(true)
+            setShouldScroll(true);
         }
     }, [path]);
+
+    const handleProductClick = useCallback((product) => {
+        scroll.current = window.scrollY;
+        setDetail(product);
+        const newURL = `/products/${product.id}`;
+        window.history.pushState({ path: newURL }, '', newURL);
+    }, []);
+
     return (
         <>
             {detail ? (
@@ -149,38 +161,32 @@ export default function ProductList() {
                     <SearchComponent query={query} setQuery={setQuery}/>
                     {memoizedProducts.length > 0 ? (
                         <>
-                            <div
-                                className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                            <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                                 {memoizedProducts.map((product) => (
                                     <ProductItem
                                         key={product.id}
                                         id={product.id}
                                         name={product.name}
                                         product={product}
-                                        handleClick={() => {
-                                            scroll.current = window.scrollY
-                                            setDetail(product)
-                                            const newURL = `/products/${product.id}`;
-                                            window.history.pushState({ path: newURL }, '', newURL);
-                                        }}
+                                        handleClick={() => handleProductClick(product)}
                                         price={formatPrice(product.cheapestPrice)}
                                         imageUrl={product.images[0]}
                                     />
                                 ))}
                             </div>
                         </>
-                    ) : !loading ? (
+                    ) : (!loading && !first) ? (
                         <NoProductsFound/>
                     ) : null}
-                    {loading && <ProductLoading/>}
-                    {!loading && <div ref={ref} style={{height: '15px'}}></div>}
+                    {(loading || first) && <ProductLoading/>}
+                    {!loading && hasMore && <div ref={ref} style={{height: '20px'}}></div>}
                 </>
             )}
         </>
     );
 }
 
-function getCheapestPrice(product) {
+const getCheapestPrice = (product) => {
     const prices = [
         product.price !== "0.00" ? parseFloat(product.price) : Infinity,
         ...(product.sizes?.map(size => parseFloat(size.price)) || []),
@@ -191,18 +197,16 @@ function getCheapestPrice(product) {
     ].filter(price => !isNaN(price) && isFinite(price));
 
     return prices.length > 0 ? Math.min(...prices) : null;
-}
+};
 
-function formatPrice(price) {
+const formatPrice = (price) => {
     if (price == null) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
-}
+};
 
-function SearchComponentSkeleton() {
-    return (
-        <div className="flex mb-4 items-center space-x-2 animate-pulse">
-            <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>
-            <div className="h-10 w-[5.5rem] bg-gray-200 rounded-md"></div>
-        </div>
-    );
-}
+const SearchComponentSkeleton = () => (
+    <div className="flex mb-4 items-center space-x-2 animate-pulse">
+        <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>
+        <div className="h-10 w-[5.5rem] bg-gray-200 rounded-md"></div>
+    </div>
+);
