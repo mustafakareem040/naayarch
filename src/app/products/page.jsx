@@ -54,7 +54,8 @@ async function fetchProducts(page = 1, query = '', c = '', sc = '', b = '') {
         if (query) {
             const normalizedName = product.name.normalize('NFC').toLowerCase();
             const cleanName = normalizedName.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
-            return cleanName.split(/\s+/).some(word => word.startsWith(query));
+            const queryWords = query.toLowerCase().split(/\s+/);
+            return queryWords.every(word => cleanName.includes(word));
         }
         return true;
     };
