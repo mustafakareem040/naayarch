@@ -74,8 +74,10 @@ export default function ProductList({ initialProducts }) {
         }
 
         if (sc) {
-            filtered = filtered.filter(product => product.categories.some(it => it.id === sc));
-        }
+            let r = sc.toString()
+            filtered = filtered.filter(product => {
+                return product.categories.some(it => it.id?.toString() === r);
+            });}
 
         setProducts(filtered);
         setDisplayedProducts([]);
