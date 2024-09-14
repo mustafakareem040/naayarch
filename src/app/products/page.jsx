@@ -22,53 +22,42 @@ async function fetchProducts(page = 1, query = '', c = '', sc = '') {
         throw new Error('Failed to fetch products');
     }
 
-    let products = await response.json();
-    products = products.products;
+    let { products } = await response.json();
 
-    // Filter by category if specified
-    if (c) {
-        products = products.filter(product =>
-            product.categories.some(cat => cat.main_category_id?.toString() === c.toString())
-        );
-    }
-
-    // Filter by subcategory if specified
-    if (sc) {
-        products = products.filter(product =>
-            product.categories.some(cat => cat.id?.toString() === sc.toString())
-        );
-    }
-
-    // Search functionality
-    if (query) {
-        const normalizedQuery = query.normalize('NFC').toLowerCase();
-        products = products.filter(product => {
-            const normalizedName = product.name.normalize('NFC');
+    // Create filter function once
+    const filterProduct = (product) => {
+        if (c && !product.categories.some(cat => cat.main_category_id?.toString() === c)) {
+            return false;
+        }
+        if (sc && !product.categories.some(cat => cat.id?.toString() === sc)) {
+            return false;
+        }
+        if (query) {
+            const normalizedName = product.name.normalize('NFC').toLowerCase();
             const cleanName = normalizedName.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
-            const productWords = cleanName.toLowerCase().trim().split(/\s+/);
-            return productWords.some(productWord => {
-                const cleanWord = productWord.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
-                return cleanWord.startsWith(normalizedQuery);
-            });
-        });
+            return cleanName.split(/\s+/).some(word => word.startsWith(query));
+        }
+        return true;
+    };
 
+    // Apply all filters at once
+    products = products.filter(filterProduct);
+
+    if (query) {
+        const lowerQuery = query.toLowerCase();
         products.sort((a, b) => {
-            const aIndex = a.name.toLowerCase().indexOf(query.toLowerCase());
-            const bIndex = b.name.toLowerCase().indexOf(query.toLowerCase());
-            if (aIndex === -1 && bIndex === -1) return 0;
-            if (aIndex === -1) return 1;
-            if (bIndex === -1) return -1;
-            return aIndex - bIndex;
+            const aIndex = a.name.toLowerCase().indexOf(lowerQuery);
+            const bIndex = b.name.toLowerCase().indexOf(lowerQuery);
+            return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
         });
     }
 
-    const start = 0;
-    const end = (page - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE;
-    const paginatedProducts = products.slice(start, end);
     const totalProducts = products.length;
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
 
     return {
-        products: paginatedProducts,
+        products: products.slice(0, end),
         totalProducts,
         hasMore: end < totalProducts
     };
