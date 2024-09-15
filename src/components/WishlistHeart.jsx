@@ -23,11 +23,13 @@ const WishlistHeart = ({ productId }) => {
     const [showDialog, setShowDialog] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
 
-    const handleClick = async () => {
+    const handleClick = async (e) => {
+        e.stopPropagation()
         if (!isAuthenticated) {
             setShowDialog(true);
             return;
         }
+
 
         try {
             const method = wishlistItem ? "DELETE" : "POST";
@@ -85,7 +87,7 @@ const WishlistHeart = ({ productId }) => {
                 </motion.div>
             </div>
             <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-                <AlertDialogContent>
+                <AlertDialogContent className="z-50">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="font-sans font-medium">Sign in required</AlertDialogTitle>
                         <AlertDialogDescription className="font-serif">

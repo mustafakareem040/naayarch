@@ -137,7 +137,7 @@ export default function ProductDetail({ product }) {
     }));
 
     return (
-        <div className="flex overflow-x-hidden font-serif relative z-[99] font-medium flex-col -mt-4 -mx-4 bg-white">
+        <div className="flex overflow-x-hidden font-serif relative z-40 font-medium flex-col -mt-4 -mx-4 bg-white">
             <Slider {...sliderSettings} className="w-full mb-2 h-[55vh]">
                 {images.map((image, index) => (
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>

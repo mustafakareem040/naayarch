@@ -42,7 +42,7 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
 
     return (
         <>
-            <nav className="flex items-center z-50 justify-between p-5 absolute top-0 left-0 right-0"
+            <nav className="flex items-center z-30 justify-between p-5 absolute top-0 left-0 right-0"
                  style={{backgroundColor: bg}}>
                 <ImageCloseButton
                     src={isDrawerOpen ? "https://storage.naayiq.com/resources/close.svg" : "https://storage.naayiq.com/resources/menu.svg"}
@@ -50,7 +50,7 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
                     onClick={toggleDrawer}
                     isClose={true}
                 />
-                <Link className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
+                <Link className="absolute z-30 left-1/2 transform -translate-x-1/2" href="/">
                     <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Naay Logo" unoptimized={true} width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
