@@ -1,13 +1,16 @@
 'use client'
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 const Slider = dynamic(() => import('react-slick'), { ssr: false });
 import Image from 'next/image';
 import Link from "next/link";
+
 const ProductSlider = () => {
     const sliderRef = useRef(null);
+    const [loadedImages, setLoadedImages] = useState({});
+
     const products = [
         {
             id: 1,
@@ -37,10 +40,13 @@ const ProductSlider = () => {
         sliderRef.current.slickNext();
     };
 
+    const handleImageLoad = (id) => {
+        setLoadedImages(prev => ({ ...prev, [id]: true }));
+    };
+
     return (
         <>
-            <div
-                className="flex mb-12 p-4 flex-col justify-center items-center gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
+            <div className="flex mb-12 p-4 flex-col justify-center items-center gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
                 <div className="flex justify-between mb-6 items-center w-[95%]">
                     <h1 className="text-[#201E1C] font-sans font-medium text-3xl mb-6">Best Seller</h1>
                     <Link prefetch={false} href={"/products"} className="text-[#3B5345] font-serif text-xl font-medium">Show all</Link>
@@ -50,16 +56,19 @@ const ProductSlider = () => {
                         <div key={product.id} className="flex flex-col justify-center items-center">
                             <div className="flex flex-col gap-4 justify-center items-center w-full">
                                 <div className="w-full h-[400px] relative">
+                                    {!loadedImages[product.id] && (
+                                        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
+                                    )}
                                     <Image
                                         src={product.image}
                                         alt={product.title}
                                         fill={true}
                                         unoptimized={true}
-                                        className="object-cover rounded-lg"
+                                        className={`object-cover rounded-lg ${!loadedImages[product.id] ? 'invisible' : ''}`}
+                                        onLoad={() => handleImageLoad(product.id)}
                                     />
                                 </div>
-                                <div
-                                    className="flex text-2xl leading-5 font-medium font-serif justify-between w-full items-center">
+                                <div className="flex text-2xl leading-5 font-medium font-serif justify-between w-full items-center">
                                     <h2 className="mt-4 min-h-12 ml-2 max-w-52">{product.title}</h2>
                                     <p className="mt-2 min-h-12 self-end">{product.price}</p>
                                 </div>
@@ -87,7 +96,6 @@ const ProductSlider = () => {
                         fill="#4F463D"/>
                 </svg>
             </div>
-
         </>
     );
 };
