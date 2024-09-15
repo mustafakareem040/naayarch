@@ -2,7 +2,6 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import NextTopLoader from 'nextjs-toploader';
 import StoreProvider from "@/app/StoreProvider";
 import Head from "next/head";
@@ -47,7 +46,6 @@ export default function RootLayout({ children }) {
             speed={300}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
-        <SpeedInsights />
         <StoreProvider>
             {children}
         </StoreProvider>
