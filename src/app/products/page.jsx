@@ -5,7 +5,7 @@ import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
 export const revalidate = 84600; // Revalidate every day
-export const experimental_ppr = true
+export const runtime = "edge"
 const ITEMS_PER_PAGE = 15;
 async function fetchSubBrands() {
     const response = await fetch("https://api.naayiq.com/subcategories/brands",
