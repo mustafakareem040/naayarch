@@ -286,7 +286,6 @@ export default function ProductDetail({ product }) {
                     {isInCart() ? (
                         <Link
                             href="/cart"
-                            prefetch={false}
                             className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
                         >
                             <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">

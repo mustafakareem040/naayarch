@@ -11,7 +11,6 @@ const ImageButton = memo(function ImageButton({ src, alt, dest, isClose = false 
     return (
         <Link
             href={dest}
-            prefetch={false}
             className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
             <Image src={src} alt={alt} width={32} height={32} unoptimized={true} />
         </Link>
@@ -51,7 +50,7 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
                     onClick={toggleDrawer}
                     isClose={true}
                 />
-                <Link prefetch={false} className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
+                <Link className="absolute z-50 left-1/2 transform -translate-x-1/2" href="/">
                     <Image src="https://storage.naayiq.com/resources/logo.svg" alt="Naay Logo" unoptimized={true} width={53} height={37} />
                 </Link>
                 <div className="flex items-center space-x-2">
