@@ -2,6 +2,7 @@ import React, { useState, memo } from 'react';
 import Image from 'next/image';
 import ProductModal from "@/components/ProductDetailModal";
 import {NotificationProvider} from "@/components/NotificationContext";
+import WishlistHeart from "@/components/WishlistHeart";
 
 const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,26 +24,13 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick }) =
             <div className="rounded-lg" onClick={handleProductClick}>
                 <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                     <div className="absolute left-1 top-4 z-10 heart-icon" onClick={(e) => e.stopPropagation()}>
-                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="30" height="30" rx="15" fill="url(#paint0_linear_733_2359)"/>
-                            <path
-                                d="M10.5 7C8.0151 7 6 8.98817 6 11.4411C6 13.4212 6.7875 18.1206 14.5392 22.8712C14.6781 22.9555 14.8375 23 15 23C15.1625 23 15.3219 22.9555 15.4608 22.8712C23.2125 18.1206 24 13.4212 24 11.4411C24 8.98817 21.9849 7 19.5 7C17.0151 7 15 9.69156 15 9.69156C15 9.69156 12.9849 7 10.5 7Z"
-                                stroke="#C91C1C" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-                            <defs>
-                                <linearGradient id="paint0_linear_733_2359" x1="15" y1="0" x2="15" y2="30"
-                                                gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="white" stopOpacity="0.8"/>
-                                    <stop offset="1" stopColor="#F5F5F5" stopOpacity="0.8"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
+                        <WishlistHeart productId={id}/>
                     </div>
                     <Image
                         src={`https://storage.naayiq.com/resources/${imageUrl}`}
                         alt={name}
                         fill={true}
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"
-                        unoptimized={true}
                         onError={(e) => {
                             e.target.src = "https://storage.naayiq.com/resources/noimage.webp";
                         }}

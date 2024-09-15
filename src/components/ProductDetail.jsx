@@ -13,6 +13,7 @@ import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
 import { useNotification } from "@/components/NotificationContext";
 import Link from "next/link";
+import WishlistHeart from "@/components/WishlistHeart";
 
 export default function ProductDetail({ product }) {
     const [selectedColor, setSelectedColor] = useState(null);
@@ -185,8 +186,8 @@ export default function ProductDetail({ product }) {
             <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
             >
-                <Heart
-                    className="w-[1.85rem] h-[1.85rem] z-10 text-transparent stroke-1 stroke-[#C91C1C] hover:stroke-[#C91C1C] hover:text-[#C91C1C] fill-current"
+                <WishlistHeart
+                    productId={product.id}
                 />
             </button>
 
