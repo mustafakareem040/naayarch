@@ -4,6 +4,7 @@ import addressesReducer from './features/addressesSlice';
 import authReducer from './features/authSlice';
 import userReducer from './features/userSlice';
 import orderReducer from './features/orderSlice';
+import wishlistReducer from './features/wishlistSlice';
 
 export const makeStore = () => {
     return configureStore({
@@ -11,7 +12,8 @@ export const makeStore = () => {
             addresses: addressesReducer,
             auth: authReducer,
             user: userReducer,
-            order: orderReducer
+            order: orderReducer,
+            wishlist: wishlistReducer
         },
     });
 };

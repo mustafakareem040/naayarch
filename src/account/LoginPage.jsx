@@ -6,6 +6,8 @@ import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
 import Cookies from 'js-cookie';
 import setCookies, {login} from "@/components/loginAPIs";
+import {useDispatch} from "react-redux";
+import {setIsAuthenticated} from "@/lib/features/authSlice";
 
 
 export default function LoginPage() {
@@ -16,6 +18,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
+    const dispatch = useDispatch()
     const { addNotification } = useNotification();
 
     const onFinish = async (event) => {
@@ -30,6 +33,7 @@ export default function LoginPage() {
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
+                dispatch(setIsAuthenticated(true))
                 router.push("/");
             } else {
                 const errorData = await response.json();

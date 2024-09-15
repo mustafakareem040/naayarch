@@ -110,3 +110,9 @@ input[type="password"] {
 .staralign {
     left: calc(25% - 40px);
 }
+
+@layer base {
+  :root {
+        --radius: 0.5rem;
+    }
+}

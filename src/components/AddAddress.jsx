@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react';
 import {HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft} from 'lucide-react';
-import Image from "next/image";
 import {useRouter, useSearchParams} from "next/navigation";
 import {addAddress} from "@/lib/features/addressesSlice";
 import {useAppDispatch, useAppSelector} from "@/lib/hook";
