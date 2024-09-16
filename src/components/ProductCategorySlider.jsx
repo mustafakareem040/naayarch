@@ -16,12 +16,14 @@ const ProductCategorySlider = () => {
             title: 'Korean Products',
             image: 'https://storage.naayiq.com/resources/korean.webp',
             description: 'Providing our customers with the best Korean Skincare!',
+            link: "/products?b=10"
         },
         {
             id: 2,
             title: 'Global Products',
             image: 'https://storage.naayiq.com/resources/global.webp',
             description: 'Providing our customers with the best Korean Skincare!',
+            link: "/products?b=11"
         },
     ];
 
@@ -66,7 +68,7 @@ const ProductCategorySlider = () => {
                         <Link
                             prefetch={false}
                             className="w-full inline-block py-1 mb-6 text-center border-solid border-[1px] border-[#695C5C] rounded-full bg-transparent font-serif text-2xl"
-                            href="/products"
+                            href={product.link}
                         >
                             <span className="w-full inline-block">Show More</span>
                         </Link>
