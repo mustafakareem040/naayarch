@@ -256,7 +256,16 @@ const Cart = () => {
                     </div>
                 </motion.div>
                 <Link
-                    onClick={() => dispatch(setOrder({...order, info: {delivery, discount, subTotal}}))}
+                    onClick={() => dispatch(setOrder({
+                        ...order,
+                        items: cartItems.map(item => ({
+                            product_id: item.product_id,
+                            size_id: item.size_id || null,
+                            color_id: item.color_id || null,
+                            quantity: item.qty,
+                        })),
+                        info: { delivery, discount, subTotal },
+                    }))}
                     href="/cart/order"
                     className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
                 >

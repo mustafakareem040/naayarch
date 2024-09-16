@@ -5,11 +5,59 @@ import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
 import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
+import {useAppDispatch} from "@/lib/hook";
+import {setOrder} from "@/lib/features/orderSlice";
 
 const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
     const [note, setNote] = useState('');
     const { shippingAddress } = useSelector(state => state.order);
     const router = useRouter()
+    const dispatch = useAppDispatch()
+    const order = useSelector(state => state.order);
+    const handleSubmitOrder = async () => {
+        // Prepare the data to send to the backend
+        const orderData = {
+            notes: note,
+            full_name: shippingAddress?.full_name,
+            governorate: shippingAddress?.governorate,
+            city: shippingAddress?.city,
+            address: shippingAddress?.address,
+            closest_point: shippingAddress?.closest_point,
+            phone_number: shippingAddress?.phone_number,
+            type: shippingAddress?.type,
+            coupon_id: null, // Set this if you have a coupon applied
+            items: order.items.map(item => ({
+                product_id: item.product_id,
+                size_id: item.size_id || null,
+                color_id: item.color_id || null,
+                quantity: item.quantity,
+            })),
+        };
+
+        try {
+            const response = await fetch('https://api.naayiq.com/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Order placed successfully:', data);
+                localStorage.removeItem('cart');
+                dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
+                router.push('/order-confirmation');
+            } else {
+                const errorData = await response.json();
+                console.error('Error placing order:', errorData);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            // Handle network error
+        }
+    };
     return (
         <>
             <header className="flex items-center mb-12">
@@ -98,12 +146,12 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                         </div>
                     </div>
                 </section>
-                <Link
-                    href={"/cart/order/confirm"}
+                <button
+                    onClick={handleSubmitOrder}
                     className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
                 >
-                    <p className="w-full text-center">Submit Order</p>
-                </Link>
+                    Submit Order
+                </button>
             </div>
         </>
     );
