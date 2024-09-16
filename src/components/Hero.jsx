@@ -1,15 +1,18 @@
-import { Suspense } from 'react';
+'use client';
+
+import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const HeroImage = () => (
+const HeroImage = ({ onLoadingComplete }) => (
     <Image
         src="https://storage.naayiq.com/resources/water.png"
         alt="Ice texture"
         fill
         sizes="(max-width: 768px) 100vw, 768px"
-        priority={true}
+        priority
         className="object-cover"
+        onLoadingComplete={onLoadingComplete}
     />
 );
 
@@ -28,15 +31,20 @@ const HeroContent = () => (
 );
 
 const LoadingSkeleton = () => (
-    <div className="animate-pulse bg-gray-300 w-full h-full rounded-lg" />
+    <div className="absolute inset-0 animate-pulse bg-gray-300 rounded-lg" />
 );
 
 export default function Hero() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleLoadingComplete = useCallback(() => {
+        setIsLoading(false);
+    }, []);
+
     return (
         <div className="relative mb-12 font-sans w-full h-[550px] overflow-hidden rounded-lg">
-            <Suspense fallback={<LoadingSkeleton />}>
-                <HeroImage />
-            </Suspense>
+            <HeroImage onLoadingComplete={handleLoadingComplete} />
+            {isLoading && <LoadingSkeleton />}
             <HeroContent />
         </div>
     );
