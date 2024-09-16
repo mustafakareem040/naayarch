@@ -16,14 +16,12 @@ const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     loading: () => <SearchComponentSkeleton />
 });
 
-export default function ProductList({ initialProducts, totalProducts, hasMore, initialPage, initialQuery, initialC, initialSc }) {
+export default function ProductList({ initialProducts, hasMore, initialPage, initialQuery }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(initialPage);
     const [loading, setLoading] = useState(false);
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
-    const [c, setC] = useState(initialC);
-    const [sc, setSc] = useState(initialSc);
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -63,23 +61,14 @@ export default function ProductList({ initialProducts, totalProducts, hasMore, i
         setPage(initialPage);
         setNoMoreProducts(!hasMore);
         setQuery(initialQuery);
-        setC(initialC);
-        setSc(initialSc);
         setLoading(false);
-    }, [initialProducts, initialPage, hasMore, initialQuery, initialC, initialSc]);
+    }, [initialProducts, initialPage, hasMore, initialQuery]);
 
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
     })), [products]);
 
-    useEffect(() => {
-        const handlePopState = () => {
-            setShouldScroll(true);
-        };
-        window.addEventListener('popstate', handlePopState);
-        return () => window.removeEventListener('popstate', handlePopState);
-    }, []);
 
     useEffect(() => {
         if (shouldScroll) {

@@ -1,6 +1,6 @@
 'use client'
 import React, {useState, useEffect, useCallback} from 'react';
-import { ArrowLeft, Heart, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import '@/components/NotificationStyles.css';
