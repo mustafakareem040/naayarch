@@ -1,22 +1,30 @@
-'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+'use client';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 import ProductItem from './ProductItem';
-import ProductLoading from "@/components/ProductLoading";
-import NoProductsFound from "@/components/NoProductsFound";
-import ProductDetail from "@/components/ProductDetail";
-import Link from "next/link";
-import Image from "next/image";
-import { NotificationProvider } from "@/components/NotificationContext";
+import ProductLoading from '@/components/ProductLoading';
+import NoProductsFound from '@/components/NoProductsFound';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
-    loading: () => <SearchComponentSkeleton />
+    loading: () => <SearchComponentSkeleton />,
 });
 
-export default function ProductList({ initialProducts, hasMore, initialPage, initialQuery }) {
+export default function ProductList({
+                                        initialProducts,
+                                        hasMore,
+                                        initialPage,
+                                        initialQuery,
+                                    }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(initialPage);
     const [loading, setLoading] = useState(false);
@@ -25,10 +33,6 @@ export default function ProductList({ initialProducts, hasMore, initialPage, ini
     const { ref, inView } = useInView({
         threshold: 0,
     });
-    const [shouldScroll, setShouldScroll] = useState(false);
-    const scroll = useRef(0);
-    const path = usePathname();
-    const [detail, setDetail] = useState(null);
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -37,9 +41,9 @@ export default function ProductList({ initialProducts, hasMore, initialPage, ini
 
         setLoading(true);
         const nextPage = page + 1;
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(Array.from(searchParams.entries()));
         params.set('page', nextPage.toString());
-        router.push(`/products?${params.toString()}`, { scroll: false });
+        router.replace(`/products?${params.toString()}`, { scroll: false });
     }, [page, loading, noMoreProducts, searchParams, router]);
 
     useEffect(() => {
@@ -48,13 +52,16 @@ export default function ProductList({ initialProducts, hasMore, initialPage, ini
         }
     }, [inView, loadMoreProducts, noMoreProducts]);
 
-    const handleSearch = useCallback((newQuery) => {
-        setQuery(newQuery);
-        const params = new URLSearchParams(searchParams);
-        params.set('query', newQuery);
-        params.set('page', '1');
-        router.push(`/products?${params.toString()}`, { scroll: false });
-    }, [searchParams, router]);
+    const handleSearch = useCallback(
+        (newQuery) => {
+            setQuery(newQuery);
+            const params = new URLSearchParams(Array.from(searchParams.entries()));
+            params.set('query', newQuery);
+            params.set('page', '1');
+            router.replace(`/products?${params.toString()}`, { scroll: false });
+        },
+        [searchParams, router]
+    );
 
     useEffect(() => {
         setProducts(initialProducts);
@@ -64,71 +71,62 @@ export default function ProductList({ initialProducts, hasMore, initialPage, ini
         setLoading(false);
     }, [initialProducts, initialPage, hasMore, initialQuery]);
 
-    const memoizedProducts = useMemo(() => products.map((product) => ({
-        ...product,
-        cheapestPrice: getCheapestPrice(product),
-    })), [products]);
+    const memoizedProducts = useMemo(
+        () =>
+            products.map((product) => ({
+                ...product,
+                cheapestPrice: getCheapestPrice(product),
+            })),
+        [products]
+    );
 
-
-    useEffect(() => {
-        if (shouldScroll) {
-            window.scrollTo(0, scroll.current);
-            setShouldScroll(false);
-        }
-    }, [shouldScroll]);
-
-    useEffect(() => {
-        if (path.length <= 10) {
-            setDetail(null);
-            setShouldScroll(true);
-        }
-    }, [path]);
-
-    const handleProductClick = useCallback((product) => {
-        scroll.current = window.scrollY;
-        setDetail(product);
-        const newURL = `/products/${product.id}`;
-        window.history.pushState({ path: newURL }, '', newURL);
-    }, []);
+    const handleProductClick = useCallback(
+        (product) => {
+            router.push(`/products/${product.id}`, { shallow: true });
+        },
+        [router]
+    );
 
     return (
         <>
-            {detail ? (
-                <NotificationProvider>
-                    <ProductDetail product={detail}/>
-                </NotificationProvider>
-            ) : (
+            <header className="flex items-center mb-6">
+                <Link prefetch={false} className="relative z-20" href={'/'}>
+                    <Image
+                        src="https://storage.naayiq.com/resources/arrow-left.svg"
+                        width={40}
+                        unoptimized={true}
+                        height={40}
+                        alt="left"
+                        priority
+                    />
+                </Link>
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                    Products
+                </h1>
+            </header>
+            <SearchComponent query={query} setQuery={handleSearch} />
+            {memoizedProducts.length > 0 ? (
                 <>
-                    <header className="flex items-center mb-6">
-                        <Link prefetch={false} className="relative z-20" href={"/"}>
-                            <Image src="https://storage.naayiq.com/resources/arrow-left.svg" width={40}
-                                   unoptimized={true} height={40} alt="left" priority/>
-                        </Link>
-                        <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">Products</h1>
-                    </header>
-                    <SearchComponent query={query} setQuery={handleSearch}/>
-                    {memoizedProducts.length > 0 ? (
-                        <>
-                            <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                                {memoizedProducts.map((product) => (
-                                    <ProductItem
-                                        key={product.id}
-                                        id={product.id}
-                                        name={product.name}
-                                        product={product}
-                                        handleClick={() => handleProductClick(product)}
-                                        price={formatPrice(product.cheapestPrice)}
-                                        imageUrl={product.images[0]}
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <NoProductsFound/>
-                    )}
-                    {loading && <ProductLoading/>}
-                    {!loading && !noMoreProducts && <div ref={ref} style={{height: '20px'}}></div>}
+                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {memoizedProducts.map((product) => (
+                            <ProductItem
+                                key={product.id}
+                                id={product.id}
+                                name={product.name}
+                                product={product}
+                                handleClick={() => handleProductClick(product)}
+                                price={formatPrice(product.cheapestPrice)}
+                                imageUrl={product.images[0]}
+                            />
+                        ))}
+                    </div>
                 </>
+            ) : (
+                <NoProductsFound />
+            )}
+            {loading && <ProductLoading />}
+            {!loading && !noMoreProducts && (
+                <div ref={ref} style={{ height: '20px' }}></div>
             )}
         </>
     );
@@ -136,19 +134,21 @@ export default function ProductList({ initialProducts, hasMore, initialPage, ini
 
 const getCheapestPrice = (product) => {
     const prices = [
-        product.price !== "0.00" ? parseFloat(product.price) : Infinity,
-        ...(product.sizes?.map(size => parseFloat(size.price)) || []),
-        ...(product.colors?.flatMap(color => [
+        product.price && product.price !== '0.00'
+            ? parseFloat(product.price)
+            : Infinity,
+        ...(product.sizes?.map((size) => parseFloat(size.price)) || []),
+        ...(product.colors?.flatMap((color) => [
             parseFloat(color.price),
-            ...(color.sizes?.map(size => (size.price !== 0 && parseFloat(size.price))) || [])
-        ]) || [])
-    ].filter(price => !isNaN(price) && isFinite(price));
+            ...(color.sizes?.map((size) => parseFloat(size.price)) || []),
+        ]) || []),
+    ].filter((price) => !isNaN(price) && isFinite(price));
 
     return prices.length > 0 ? Math.min(...prices) : null;
 };
 
 const formatPrice = (price) => {
-    if (price == null) return 'N/A';
+    if (price == null || price === Infinity) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
 };
 
