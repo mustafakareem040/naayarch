@@ -85,7 +85,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 50, stiffness: 500 }}
+                    transition={{ type: "spring", damping: 30, stiffness: 500 }}
                     className="bg-white rounded-t-3xl w-full p-6 relative"
                     onClick={(e) => e.stopPropagation()}
                 >
