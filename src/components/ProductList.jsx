@@ -30,6 +30,7 @@ export default function ProductList({
     const [loading, setLoading] = useState(false);
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
+    const [isNavigating, setIsNavigating] = useState(false);
     const { ref, inView } = useInView({
         threshold: 0,
     });
@@ -82,10 +83,25 @@ export default function ProductList({
 
     const handleProductClick = useCallback(
         (product) => {
+            setIsNavigating(true);
             router.push(`/products/${product.id}`, { shallow: true });
         },
         [router]
     );
+
+    useEffect(() => {
+        const handleRouteChange = () => {
+            setIsNavigating(false);
+        };
+
+        router.events.on('routeChangeComplete', handleRouteChange);
+        router.events.on('routeChangeError', handleRouteChange);
+
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange);
+            router.events.off('routeChangeError', handleRouteChange);
+        };
+    }, [router]);
 
     return (
         <>
@@ -109,22 +125,31 @@ export default function ProductList({
                 <>
                     <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         {memoizedProducts.map((product) => (
-                            <ProductItem
+                            <Link
                                 key={product.id}
-                                id={product.id}
-                                name={product.name}
-                                product={product}
-                                handleClick={() => handleProductClick(product)}
-                                price={formatPrice(product.cheapestPrice)}
-                                imageUrl={product.images[0]}
-                            />
+                                href={`/products/${product.id}`}
+                                passHref
+                                prefetch={false}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleProductClick(product);
+                                }}
+                            >
+                                <ProductItem
+                                    id={product.id}
+                                    name={product.name}
+                                    product={product}
+                                    price={formatPrice(product.cheapestPrice)}
+                                    imageUrl={product.images[0]}
+                                />
+                            </Link>
                         ))}
                     </div>
                 </>
             ) : (
                 <NoProductsFound />
             )}
-            {loading && <ProductLoading />}
+            {(loading || isNavigating) && <ProductLoading />}
             {!loading && !noMoreProducts && (
                 <div ref={ref} style={{ height: '20px' }}></div>
             )}
