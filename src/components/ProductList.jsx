@@ -1,18 +1,15 @@
-'use client';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+'use client'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import Image from 'next/image';
 import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
-import Link from 'next/link';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import Loading from "@/components/Loading";
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
@@ -31,11 +28,10 @@ export default function ProductList({
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
     const [isNavigating, setIsNavigating] = useState(false);
-    const { ref, inView } = useInView({
-        threshold: 0,
-    });
+    const { ref, inView } = useInView({ threshold: 0 });
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
 
     const loadMoreProducts = useCallback(() => {
         if (loading || noMoreProducts) return;
@@ -44,7 +40,7 @@ export default function ProductList({
         const nextPage = page + 1;
         const params = new URLSearchParams(Array.from(searchParams.entries()));
         params.set('page', nextPage.toString());
-        router.replace(`/products?${params.toString()}`, { scroll: false });
+        router.push(`/products?${params.toString()}`, { scroll: false });
     }, [page, loading, noMoreProducts, searchParams, router]);
 
     useEffect(() => {
@@ -59,7 +55,7 @@ export default function ProductList({
             const params = new URLSearchParams(Array.from(searchParams.entries()));
             params.set('query', newQuery);
             params.set('page', '1');
-            router.replace(`/products?${params.toString()}`, { scroll: false });
+            router.push(`/products?${params.toString()}`, { scroll: false });
         },
         [searchParams, router]
     );
@@ -84,25 +80,18 @@ export default function ProductList({
     const handleProductClick = useCallback(
         (product) => {
             setIsNavigating(true);
-            router.push(`/products/${product.id}`, { shallow: true });
+            router.push(`/products/${product.id}`);
         },
         [router]
     );
 
     useEffect(() => {
-        const handleRouteChange = () => {
-            setIsNavigating(false);
-        };
-
-        router.events.on('routeChangeComplete', handleRouteChange);
-        router.events.on('routeChangeError', handleRouteChange);
-
-        return () => {
-            router.events.off('routeChangeComplete', handleRouteChange);
-            router.events.off('routeChangeError', handleRouteChange);
-        };
-    }, [router]);
-
+        // This effect will run when the pathname changes
+        setIsNavigating(false);
+    }, [pathname]);
+    if (isNavigating) {
+        return <Loading />
+    }
     return (
         <>
             <header className="flex items-center mb-6">
@@ -125,31 +114,27 @@ export default function ProductList({
                 <>
                     <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                         {memoizedProducts.map((product) => (
-                            <Link
+                            <div
                                 key={product.id}
-                                href={`/products/${product.id}`}
-                                passHref
-                                prefetch={false}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleProductClick(product);
-                                }}
+                                onClick={() => handleProductClick(product)}
+                                className="cursor-pointer"
                             >
                                 <ProductItem
                                     id={product.id}
                                     name={product.name}
                                     product={product}
+                                    handleClick={() => handleProductClick(product)}
                                     price={formatPrice(product.cheapestPrice)}
                                     imageUrl={product.images[0]}
                                 />
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 </>
             ) : (
                 <NoProductsFound />
             )}
-            {(loading || isNavigating) && <ProductLoading />}
+            {loading && <ProductLoading />}
             {!loading && !noMoreProducts && (
                 <div ref={ref} style={{ height: '20px' }}></div>
             )}
