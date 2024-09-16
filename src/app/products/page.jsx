@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import { unstable_cache } from 'next/cache';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
+import Loading from "@/components/Loading";
 
 export const revalidate = 84600; // Revalidate every day
 export const runtime = 'edge';
@@ -132,6 +133,7 @@ async function ProductsPage({ searchParams }) {
     return (
         <>
             <AsyncNavBar />
+            <Suspense fallback={<Loading />}>
             <ProductList
                 initialProducts={products}
                 totalProducts={totalProducts}
@@ -141,6 +143,7 @@ async function ProductsPage({ searchParams }) {
                 initialC={c}
                 initialSc={sc}
             />
+            </Suspense>
         </>
     );
 }

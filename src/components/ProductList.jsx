@@ -9,8 +9,7 @@ import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import { usePathname } from 'next/navigation';
-import Loading from "@/components/Loading";
-
+import Loading from "./Loading"
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />,
@@ -42,7 +41,6 @@ export default function ProductList({
         params.set('page', nextPage.toString());
         router.push(`/products?${params.toString()}`, { scroll: false });
     }, [page, loading, noMoreProducts, searchParams, router]);
-
     useEffect(() => {
         if (inView && !noMoreProducts) {
             loadMoreProducts();
