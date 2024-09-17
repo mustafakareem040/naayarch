@@ -18,6 +18,7 @@ const Cart = () => {
     const [delivery] = useState(5000);
     const [discount, setDiscount] = useState(0);
     const [coupon, setCoupon] = useState('');
+    const [appliedCouponId, setAppliedCouponId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
@@ -108,6 +109,7 @@ const Cart = () => {
             setConfirmationMessage(`Are you sure you want to remove the applied coupon?`);
             setConfirmAction(() => () => {
                 setAppliedCoupon(null);
+                setAppliedCouponId(null);
                 setDiscount(0);
                 setCoupon('');
                 setCouponMessage('');
@@ -120,7 +122,7 @@ const Cart = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ price: subTotal }) // Include the subTotal in the request body
+                    body: JSON.stringify({ price: subTotal })
                 });
                 const data = await response.json();
 
@@ -128,6 +130,7 @@ const Cart = () => {
                     const calculatedDiscount = calculateDiscount(data.coupon, subTotal);
                     setDiscount(calculatedDiscount);
                     setAppliedCoupon(data.coupon);
+                    setAppliedCouponId(data.coupon.id);
                     setCouponMessage(data.message || 'Coupon applied successfully!');
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");

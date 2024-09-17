@@ -21,7 +21,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         if (subTotal > 100000) {
             return 0; // Free delivery for orders over 100,000 IQD
         }
-        return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 5000 : 10000;
+        return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
     }, [subTotal, shippingAddress]);
 
     const handleSubmitOrder = useCallback(async () => {
@@ -34,7 +34,7 @@ const CartCheckout = ({ subTotal, discount }) => {
             closest_point: shippingAddress?.closest_point,
             phone_number: shippingAddress?.phone_number,
             type: shippingAddress?.type,
-            coupon_id: null,
+            coupon_id: shippingAddress?.couponId || null,
             items: items.map(item => ({
                 product_id: item.product_id,
                 size_id: item.size_id || null,
@@ -77,7 +77,6 @@ const CartCheckout = ({ subTotal, discount }) => {
             addNotification('error', 'A network error occurred. Please try again.');
         }
     }, [note, shippingAddress, items, dispatch, addNotification, router]);
-
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
     const renderShippingAddress = () => (
