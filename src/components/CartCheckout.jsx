@@ -1,20 +1,29 @@
 'use client'
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
-import {redirect, useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "@/lib/hook";
 import { setOrder } from "@/lib/features/orderSlice";
-import {useNotification} from "@/components/NotificationContext";
+import { useNotification } from "@/components/NotificationContext";
 import "./NotificationStyles.css"
-const CartCheckout = ({ subTotal, delivery, discount }) => {
+
+const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
     const { shippingAddress, items } = useSelector(state => state.order);
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const {addNotification} = useNotification()
+    const { addNotification } = useNotification();
+
+    // Calculate delivery fee based on governorate and subtotal
+    const delivery = useMemo(() => {
+        if (subTotal > 100000) {
+            return 0; // Free delivery for orders over 100,000 IQD
+        }
+        return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 5000 : 10000;
+    }, [subTotal, shippingAddress]);
+
     const handleSubmitOrder = useCallback(async () => {
         const orderData = {
             notes: note,
@@ -67,7 +76,7 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
             console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
         }
-    }, [note, shippingAddress, items, dispatch]);
+    }, [note, shippingAddress, items, dispatch, addNotification, router]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
