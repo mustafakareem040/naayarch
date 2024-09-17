@@ -46,8 +46,15 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.removeItem('cart');
-                dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
-                redirect(`/cart/order/confirm?id=${data.cart.id}`);
+                try {
+                    router.push(`/cart/order/confirm?id=${data.cart.id}`);
+                    setTimeout(() => {
+                        dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
+                    }, 3000)
+                } catch (error) {
+                    console.error('Navigation error:', error);
+                    addNotification('error', 'An error occurred while redirecting. Please check your order status.');
+                }
             } else {
                 const errorData = await response.json();
                 if (errorData.errors && errorData.errors.length > 0) {
@@ -60,7 +67,7 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
             console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
         }
-    }, [note, shippingAddress, items, dispatch, router]);
+    }, [note, shippingAddress, items, dispatch]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
@@ -151,8 +158,7 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
                 </section>
                 <button
                     onClick={handleSubmitOrder}
-                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
-                >
+                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg">
                     Submit Order
                 </button>
             </div>

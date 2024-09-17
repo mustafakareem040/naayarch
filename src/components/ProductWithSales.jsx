@@ -10,7 +10,7 @@ export function ProductWithSales() {
             <CustomProduct
                 title="Special Offer"
                 subtitle="Don't Miss The Chance!"
-                description="Glow Up & Save! 20% off all products"
+                description="Glow Up & Save! 10% off all products"
                 bigimg="/face.webp"
                 flower="/pingwing.webp"
                 hideFlower={true}
