@@ -10,7 +10,7 @@ const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
         <div className="py-2" onClick={onClick}>
             <div className="flex justify-between items-center">
                 <span className="font-serif text-xl">{label}</span>
-                {hasChildren && <CircleArrowRight size={40} />}
+                {hasChildren && <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>}
             </div>
         </div>
     );
@@ -92,8 +92,9 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                     <div className="flex justify-between items-center">
                                         <Link prefetch={false} className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
                                         {!category.is_brand &&
-                                            <Image onClick={() => handleCategoryClick(category.name)}
-                                                   src="https://storage.naayiq.com/resources/navigate.svg" unoptimized={true} alt="Expand" width={24} height={24}/>}
+                                            <button onClick={() => handleCategoryClick(category.name)}>
+                                                <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
+                                            </button>}
                                     </div>
                                 </div>
                             ))}
@@ -106,8 +107,10 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                     <div className="flex justify-between items-center">
                                         <Link prefetch={false} className="font-serif text-xl"
                                               href={`/products?b=${category.id}`}>{category.name}</Link>
-                                        <Image onClick={() => handleCategoryClick(category.name)}
-                                                   src="https://storage.naayiq.com/resources/navigate.svg" alt="Expand" unoptimized={true} width={24} height={24}/>
+                                        <button
+                                            onClick={() => handleCategoryClick(category.name)}>
+                                            <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
+                                        </button>
                                     </div>
                                 </div>
                             ))}

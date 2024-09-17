@@ -16,7 +16,7 @@ export default function Wishlist() {
                 </h1>
             </header>
             <main className="flex-grow flex flex-col items-center">
-                <div className="relative w-full h-[65vh]">
+                <div className="relative w-full h-[40vh]">
                     <Image
                         src="https://storage.naayiq.com/resources/empty_wishlist.gif"
                         alt="Empty cart"

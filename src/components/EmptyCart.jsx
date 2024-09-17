@@ -19,9 +19,9 @@ const EmptyCart = () => {
             </header>
 
             <main className="flex-grow flex flex-col items-center">
-                <div className="relative w-full h-[65vh]">
+                <div className="relative w-full h-[40vh]">
                     <Image
-                        src="https://storage.naayiq.com/resources/empty.png"
+                        src="https://storage.naayiq.com/resources/empty_cart.gif"
                         alt="Empty cart"
                         fill
                         unoptimized={true}

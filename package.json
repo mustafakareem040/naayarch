@@ -20,7 +20,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@vercel/speed-insights": "^1.0.12",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-de2cfda-20240912",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-23b8160-20240916",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
@@ -28,11 +28,11 @@
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.441.0",
-    "next": "15.0.0-canary.154",
+    "next": "15.0.0-canary.157",
     "nextjs-toploader": "^3.6.15",
     "npm": "^10.8.3",
-    "react": "19.0.0-rc-206df66e-20240912",
-    "react-dom": "19.0.0-rc-206df66e-20240912",
+    "react": "19.0.0-rc-f2df5694-20240916",
+    "react-dom": "19.0.0-rc-f2df5694-20240916",
     "react-fast-marquee": "^1.6.5",
     "react-intersection-observer": "^9.13.1",
     "react-loading-skeleton": "^3.4.0",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.0.0-canary.154",
+    "eslint-config-next": "15.0.0-canary.157",
     "postcss": "^8.4.45",
     "tailwindcss": "^3.4.11"
   }
