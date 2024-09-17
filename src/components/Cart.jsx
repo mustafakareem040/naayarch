@@ -117,6 +117,10 @@ const Cart = () => {
             try {
                 const response = await fetch(`https://api.naayiq.com/coupons/${encodeURIComponent(coupon)}/activate`, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ price: subTotal }) // Include the subTotal in the request body
                 });
                 const data = await response.json();
 
@@ -134,7 +138,6 @@ const Cart = () => {
             }
         }
     }, [appliedCoupon, coupon, subTotal, calculateDiscount]);
-
     useEffect(() => {
         if (appliedCoupon) {
             const newDiscount = calculateDiscount(appliedCoupon, subTotal);
