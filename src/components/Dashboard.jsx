@@ -23,13 +23,6 @@ export default function Dashboard() {
                 flower="/pingwing.webp"
             />
             <ProductCategorySlider />
-            <CustomProduct
-                title="Makeup Product"
-                subtitle="Best Product"
-                description="We are here to help our most popular product will help you to create best look"
-                bigimg="/woman.webp"
-                flower="/whiteflower.webp"
-            />
             <Footer />
         </div>
     );

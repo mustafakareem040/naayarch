@@ -16,7 +16,7 @@ const CustomProduct = memo(function CustomProduct({
 
     return (
         <div className="white rounded-lg p-4 mb-12">
-            <p className="text-center font-medium font-sans text-2xl md:text-3xl lg:text-[3em]">
+            <p className="text-center font-medium font-sans text-3xl">
                 {title}
             </p>
       {!hideFlower && flower && (

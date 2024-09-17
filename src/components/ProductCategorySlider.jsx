@@ -49,7 +49,7 @@ const ProductCategorySlider = () => {
                 {products.map((product) => (
                     <div key={product.id} className="flex flex-col justify-center items-center">
                         <div className="flex flex-col gap-6 justify-center items-center">
-                            <h1 className="text-[#201E1C] font-sans font-medium text-center w-full text-3xl sssm:text-4xl ssm2:text-[2.625rem] mb-6">{product.title}</h1>
+                            <h1 className="text-[#201E1C] font-sans font-medium text-center w-full text-3xl mb-6">{product.title}</h1>
                             <div className="w-full h-[364px] relative">
                                 {!loadedImages[product.id] && (
                                     <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-md" />
