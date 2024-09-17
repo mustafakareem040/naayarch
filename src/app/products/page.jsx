@@ -4,6 +4,7 @@ import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 export const runtime = 'edge';
 const ITEMS_PER_PAGE = 15;
+export const dynamic = "force-dynamic"
 
 const cachedFetchSubBrands = unstable_cache(
     async () => {
