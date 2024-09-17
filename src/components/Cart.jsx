@@ -245,7 +245,7 @@ const Cart = () => {
                                 onChange={(e) => setCoupon(e.target.value)}
                                 className="border rounded w-full p-2 mr-2"
                                 placeholder="Enter coupon"
-                                disabled={appliedCoupon !== null}
+                                disabled={!appliedCoupon}
                             />
                             <motion.button
                                 whileHover={{scale: 1.05}}
