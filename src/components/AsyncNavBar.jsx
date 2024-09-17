@@ -6,9 +6,7 @@ import { cache } from 'react';
 
 
 const fetchWithRevalidate = cache(async (url) => {
-    const res = await fetch(url, {
-        cache: "force-cache"
-    });
+    const res = await fetch(url);
     if (!res.ok) {
         throw new Error(`Failed to fetch data from ${url}`);
     }

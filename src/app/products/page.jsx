@@ -3,7 +3,7 @@ import { unstable_cache } from 'next/cache';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
-export const revalidate = 84600; // Revalidate every day
+export const revalidate = 3600; // Revalidate every day
 export const runtime = 'edge';
 const ITEMS_PER_PAGE = 15;
 
