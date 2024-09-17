@@ -1,9 +1,9 @@
+'use client'
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
 
 const OrderConfirmation = ({id}) => {
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
             <motion.div

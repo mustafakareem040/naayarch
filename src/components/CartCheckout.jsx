@@ -46,8 +46,8 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.removeItem('cart');
+                router.push(`/cart/order/confirm?id=${data.cart.id}`);
                 dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
-                router.push(`/cart/order/confirm?id=${data.cart.id}`)
             } else {
                 const errorData = await response.json();
                 if (errorData.errors && errorData.errors.length > 0) {
