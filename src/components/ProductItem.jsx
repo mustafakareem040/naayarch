@@ -36,9 +36,9 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick }) =
         <>
             <div className="rounded-lg" onClick={handleProductClick}>
                 <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
-                    <div className="absolute left-1 top-4 z-10 heart-icon" onClick={(e) => e.stopPropagation()}>
+                    <button className="absolute left-1 top-4 z-20 heart-icon" onClick={(e) => e.stopPropagation()}>
                         <WishlistHeart productId={id} />
-                    </div>
+                    </button>
                     {!imageLoaded && <ImageSkeleton />}
                     <Image
                         src={`https://storage.naayiq.com/resources/${imageUrl}`}
