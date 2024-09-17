@@ -78,7 +78,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed font-serif inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50"
+                className="fixed font-serif inset-0 bg-black bg-opacity-30 flex items-end justify-center z-[999999]"
                 onClick={onClose}
             >
                 <motion.div
