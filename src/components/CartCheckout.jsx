@@ -7,14 +7,11 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "@/lib/hook";
 import { setOrder } from "@/lib/features/orderSlice";
-import {useNotification} from "@/components/NotificationContext";
-import "./NotificationStyles.css"
 const CartCheckout = ({ subTotal, delivery, discount }) => {
     const [note, setNote] = useState('');
     const { shippingAddress, items } = useSelector(state => state.order);
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const {addNotification} = useNotification()
     const handleSubmitOrder = useCallback(async () => {
         const orderData = {
             notes: note,
@@ -51,14 +48,14 @@ const CartCheckout = ({ subTotal, delivery, discount }) => {
             } else {
                 const errorData = await response.json();
                 if (errorData.errors && errorData.errors.length > 0) {
-                    addNotification('error', errorData.errors[0].msg);
+                    // addNotification('error', errorData.errors[0].msg);
                 } else {
-                    addNotification('error', 'An error occurred while submitting the order');
+                    // addNotification('error', 'An error occurred while submitting the order');
                 }
             }
         } catch (error) {
             console.error('Network error:', error);
-            addNotification('error', 'A network error occurred. Please try again.');
+            // addNotification('error', 'A network error occurred. Please try again.');
         }
     }, [note, shippingAddress, items, dispatch, router]);
 
