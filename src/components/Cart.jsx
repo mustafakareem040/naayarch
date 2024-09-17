@@ -125,7 +125,7 @@ const Cart = () => {
                     const calculatedDiscount = calculateDiscount(data.coupon, subTotal);
                     setDiscount(calculatedDiscount);
                     setAppliedCoupon(data.coupon);
-                    setCouponMessage('Coupon applied successfully!');
+                    setCouponMessage(data.message || 'Coupon applied successfully!');
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");
                 }
@@ -133,7 +133,6 @@ const Cart = () => {
                 console.error('Error applying coupon:', error);
                 setCouponMessage("Error applying coupon. Please try again.");
             }
-            setTimeout(() => setCouponMessage(''), 3000);
         }
     }, [appliedCoupon, coupon, subTotal, calculateDiscount]);
 
@@ -231,9 +230,9 @@ const Cart = () => {
                 </AnimatePresence>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
+                    initial={{opacity: 0, y: 20}}
+                    animate={{opacity: 1, y: 0}}
+                    transition={{delay: 0.3}}
                     className="mt-8 bg-white rounded-lg shadow p-4"
                 >
                     <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
@@ -246,24 +245,30 @@ const Cart = () => {
                                 onChange={(e) => setCoupon(e.target.value)}
                                 className="border rounded w-full p-2 mr-2"
                                 placeholder="Enter coupon"
-                                disabled={appliedCoupon !== ''}
+                                disabled={appliedCoupon !== null}
                             />
                             <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                                whileHover={{scale: 1.05}}
+                                whileTap={{scale: 0.95}}
                                 onClick={handleApplyCoupon}
                                 className={`${appliedCoupon ? 'bg-red-500' : 'bg-[#3B5345]'} text-white px-8 py-2 rounded`}
                             >
                                 {appliedCoupon ? 'Remove' : 'Apply'}
                             </motion.button>
                         </div>
+                        {appliedCoupon && (
+                            <div className="text-sm mt-2">
+                                <p>Applied Coupon: {appliedCoupon.code}</p>
+                                <p>{appliedCoupon.description}</p>
+                            </div>
+                        )}
                         <AnimatePresence>
                             {couponMessage && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className={`text-sm mt-1 ${couponMessage === 'Applied!' ? 'text-green-500' : 'text-red-500'}`}
+                                    initial={{opacity: 0, y: -10}}
+                                    animate={{opacity: 1, y: 0}}
+                                    exit={{opacity: 0, y: -10}}
+                                    className={`text-sm mt-1 ${appliedCoupon ? 'text-green-500' : 'text-red-500'}`}
                                 >
                                     {couponMessage}
                                 </motion.div>
@@ -296,7 +301,7 @@ const Cart = () => {
                             color_id: item.color_id || null,
                             quantity: item.qty,
                         })),
-                        info: { delivery, discount, subTotal },
+                        info: {delivery, discount, subTotal},
                     }))}
                     href="/cart/order"
                     className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
