@@ -116,7 +116,7 @@ const Cart = () => {
             });
         } else {
             try {
-                const response = await fetch(`https://api.naayiq.com/coupons/${coupon}/activate`, {
+                const response = await fetch(`https://api.naayiq.com/coupons/${encodeURIComponent(coupon)}/activate`, {
                     method: 'POST',
                 });
                 const data = await response.json();
