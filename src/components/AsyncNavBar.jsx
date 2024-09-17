@@ -2,7 +2,7 @@ import { Suspense, memo } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+export const dynamic = "force-dynamic"
 
 const fetchWithRevalidate = async (url) => {
     const res = await fetch(url, {
