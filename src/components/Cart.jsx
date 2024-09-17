@@ -93,32 +93,64 @@ const Cart = () => {
         });
     }, []);
 
-    const handleApplyCoupon = useCallback(() => {
+    const calculateDiscount = useCallback((couponDetails, subtotal) => {
+        if (couponDetails.discount_percentage) {
+            const discountAmount = subtotal * (couponDetails.discount_percentage / 100);
+            return Math.min(discountAmount, couponDetails.max_discount_amount || Infinity);
+        } else if (couponDetails.discount_amount) {
+            return Math.min(couponDetails.discount_amount, subtotal);
+        }
+        return 0;
+    }, []);
+
+    const handleApplyCoupon = useCallback(async () => {
         if (appliedCoupon) {
             setShowConfirmation(true);
             setConfirmationMessage(`Are you sure you want to remove the applied coupon?`);
             setConfirmAction(() => () => {
-                setAppliedCoupon('');
+                setAppliedCoupon(null);
                 setDiscount(0);
                 setCoupon('');
                 setCouponMessage('');
                 setShowConfirmation(false);
             });
         } else {
-            if (coupon === "FREE") {
-                setDiscount(5000);
-                setAppliedCoupon(coupon);
-                setCouponMessage('Applied!');
-            } else {
-                setCouponMessage("Invalid coupon code");
-                setTimeout(() => setCouponMessage(''), 3000);
+            try {
+                const response = await fetch(`https://api.naayiq.com/coupons/${coupon}/activate`, {
+                    method: 'POST',
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    const calculatedDiscount = calculateDiscount(data.coupon, subTotal);
+                    setDiscount(calculatedDiscount);
+                    setAppliedCoupon(data.coupon);
+                    setCouponMessage('Coupon applied successfully!');
+                } else {
+                    setCouponMessage(data.message || "Invalid coupon code");
+                }
+            } catch (error) {
+                console.error('Error applying coupon:', error);
+                setCouponMessage("Error applying coupon. Please try again.");
             }
+            setTimeout(() => setCouponMessage(''), 3000);
         }
-    }, [appliedCoupon, coupon]);
+    }, [appliedCoupon, coupon, subTotal, calculateDiscount]);
+
+    useEffect(() => {
+        if (appliedCoupon) {
+            const newDiscount = calculateDiscount(appliedCoupon, subTotal);
+            setDiscount(newDiscount);
+        }
+    }, [subTotal, appliedCoupon, calculateDiscount]);
+
+    const totalPrice = useMemo(() => {
+        const discountedTotal = subTotal - discount;
+        return Math.max(discountedTotal, 0) + delivery;
+    }, [subTotal, discount, delivery]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
-    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
     if (isLoading) {
         return <Loading />;
