@@ -26,7 +26,6 @@ const Cart = () => {
     const dispatch = useAppDispatch();
     const order = useSelector(state => state.order);
     const router = useRouter();
-
     const fetchCartItems = useCallback(async () => {
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
         if (storedCart.length === 0) {
@@ -245,7 +244,7 @@ const Cart = () => {
                                 onChange={(e) => setCoupon(e.target.value)}
                                 className="border rounded w-full p-2 mr-2"
                                 placeholder="Enter coupon"
-                                disabled={!appliedCoupon}
+                                disabled={appliedCoupon}
                             />
                             <motion.button
                                 whileHover={{scale: 1.05}}
@@ -256,12 +255,6 @@ const Cart = () => {
                                 {appliedCoupon ? 'Remove' : 'Apply'}
                             </motion.button>
                         </div>
-                        {appliedCoupon && (
-                            <div className="text-sm mt-2">
-                                <p>Applied Coupon: {appliedCoupon.code}</p>
-                                <p>{appliedCoupon.description}</p>
-                            </div>
-                        )}
                         <AnimatePresence>
                             {couponMessage && (
                                 <motion.div
