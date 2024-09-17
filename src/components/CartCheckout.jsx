@@ -1,21 +1,21 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
-import {useRouter} from "next/navigation";
-import {useSelector} from "react-redux";
-import {useAppDispatch} from "@/lib/hook";
-import {setOrder} from "@/lib/features/orderSlice";
-
-const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "@/lib/hook";
+import { setOrder } from "@/lib/features/orderSlice";
+import {useNotification} from "@/components/NotificationContext";
+import "./NotificationStyles.css"
+const CartCheckout = ({ subTotal, delivery, discount }) => {
     const [note, setNote] = useState('');
-    const { shippingAddress } = useSelector(state => state.order);
-    const router = useRouter()
-    const dispatch = useAppDispatch()
-    const order = useSelector(state => state.order);
-    const handleSubmitOrder = async () => {
-        // Prepare the data to send to the backend
+    const { shippingAddress, items } = useSelector(state => state.order);
+    const router = useRouter();
+    const dispatch = useAppDispatch();
+    const {addNotification} = useNotification()
+    const handleSubmitOrder = useCallback(async () => {
         const orderData = {
             notes: note,
             full_name: shippingAddress?.full_name,
@@ -25,8 +25,8 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
             closest_point: shippingAddress?.closest_point,
             phone_number: shippingAddress?.phone_number,
             type: shippingAddress?.type,
-            coupon_id: null, // Set this if you have a coupon applied
-            items: order.items.map(item => ({
+            coupon_id: null,
+            items: items.map(item => ({
                 product_id: item.product_id,
                 size_id: item.size_id || null,
                 color_id: item.color_id || null,
@@ -45,56 +45,64 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Order placed successfully:', data);
                 localStorage.removeItem('cart');
                 dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
-                router.push('/order-confirmation');
+                router.push(`/cart/order/confirm?id=${data.cart.id}`)
             } else {
                 const errorData = await response.json();
-                console.error('Error placing order:', errorData);
+                if (errorData.errors && errorData.errors.length > 0) {
+                    addNotification('error', errorData.errors[0].msg);
+                } else {
+                    addNotification('error', 'An error occurred while submitting the order');
+                }
             }
         } catch (error) {
             console.error('Network error:', error);
-            // Handle network error
+            addNotification('error', 'A network error occurred. Please try again.');
         }
-    };
+    }, [note, shippingAddress, items, dispatch, router]);
+
+    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
+
+    const renderShippingAddress = () => (
+        shippingAddress ? (
+            <>
+                <div className="border border-gray-200 rounded-lg p-4">
+                    <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
+                    <p>{shippingAddress.address}</p>
+                    <p>{shippingAddress.phone_number}</p>
+                </div>
+                <Link
+                    href="/cart/choose-address"
+                    className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                >
+                    <span className="text-base font-semibold">Choose another address</span>
+                </Link>
+            </>
+        ) : (
+            <Link
+                href="/cart/choose-address"
+                prefetch={false}
+                className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+            >
+                <span className="text-base font-semibold">Choose address</span>
+            </Link>
+        )
+    );
+
     return (
         <>
             <header className="flex items-center mb-12">
                 <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
             </header>
-            <div
-                className="font-serif overflow-x-hideen container mx-auto max-w-md">
+            <div className="font-serif overflow-x-hidden container mx-auto max-w-md">
                 <section className="mb-6">
                     <h2 className="text-xl font-sans font-medium mb-2">Shipping Address</h2>
-                    {shippingAddress ? ( <>
-                        <div className="border border-gray-200 rounded-lg p-4">
-                            <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
-                            <p>{shippingAddress.address}</p>
-                            <p>{shippingAddress.phone_number}</p>
-                        </div>
-                            <Link
-                                href="/cart/choose-address"
-                                className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
-                            >
-                                <span className="text-base font-semibold">Choose another address</span>
-                            </Link>
-                        </>
-                    ) : (
-                        <Link
-                            href="/cart/choose-address"
-                            prefetch={false}
-                            className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
-                        >
-                            <span className="text-base font-semibold">Choose address</span>
-                        </Link>
-                    )}
+                    {renderShippingAddress()}
                 </section>
 
-                <section
-                    className="mb-6"
-                >
+                <section className="mb-6">
                     <h2 className="text-xl font-sans font-medium mb-2">Note</h2>
                     <p className="text-sm text-gray-600 mb-2">Write Any Additional Note</p>
                     <div className="relative">
@@ -109,22 +117,17 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                     </div>
                 </section>
 
-                <section
-                    className="mb-6"
-                >
+                <section className="mb-6">
                     <h2 className="text-xl font-sans font-medium mb-2">Payment Method</h2>
                     <div className="flex items-center">
-                        <div
-                            className="w-8 h-8 rounded-full border border-[#3B5345] flex items-center justify-center mr-3">
+                        <div className="w-8 h-8 rounded-full border border-[#3B5345] flex items-center justify-center mr-3">
                             <div className="w-5 h-5 rounded-full bg-[#97C86C]"></div>
                         </div>
                         <span>Cash On Delivery</span>
                     </div>
                 </section>
 
-                <section
-                    className="-mx-8 mb-6 bg-[#F6F3F1]/30 rounded-lg p-8"
-                >
+                <section className="-mx-8 mb-6 bg-[#F6F3F1]/30 rounded-lg p-8">
                     <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
                     <div className="h-[1px] w-full mb-6 bg-[#695C5C]/30"></div>
                     <div className="space-y-3">
@@ -142,7 +145,7 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
                         </div>
                         <div className="flex justify-between font-bold">
                             <span>Total Price</span>
-                            <span>{subTotal + delivery - discount} IQD</span>
+                            <span>{totalPrice} IQD</span>
                         </div>
                     </div>
                 </section>
@@ -157,4 +160,4 @@ const CartCheckout = ({ subTotal, delivery, discount, onBack }) => {
     );
 };
 
-export default CartCheckout;
+export default React.memo(CartCheckout);
