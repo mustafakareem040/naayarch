@@ -9,41 +9,21 @@ import Cookies from 'js-cookie';
 import { setIsAuthenticated } from "@/lib/features/authSlice";
 import { useSelector } from "react-redux";
 import Loading from "@/components/Loading";
-import {handleAuthResponse} from "@/components/isAuth";
 
 export default function ProfileClient() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { info } = useSelector(state => state.user);
+    const isAuthenticated = useSelector(state => state.isAuthenticated)
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function checkAuth() {
-            const accessToken = Cookies.get('token');
-            if (accessToken) {
-                try {
-                    const response = await fetch('https://api.naayiq.com/user/check-auth', {
-                        credentials: "include"
-                    });
-                    const data = await response.json();
-                    handleAuthResponse(data, dispatch);
-                    if (!data.isAuthenticated) {
-                        router.push('/login');
-                    }
-                } catch (error) {
-                    console.error('Error checking authentication:', error);
-                    router.push('/login');
-                }
-            } else {
-                dispatch(setIsAuthenticated(false));
-                router.push('/login');
+            if (!isAuthenticated) {
+                router.push("/login")
             }
-            setIsLoading(false);
         }
-
-        const timer = setTimeout(checkAuth, 500); // Small delay to ensure smooth loading
-        return () => clearTimeout(timer);
-    }, [dispatch, router]);
+    }, [isAuthenticated]);
 
     if (isLoading) {
         return <Loading />;

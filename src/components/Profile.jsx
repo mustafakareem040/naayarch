@@ -15,7 +15,7 @@ export function Profile() {
         if (!isAuthenticated) {
             const timer = setTimeout(() => {
                 router.push('/login');
-            }, 500); // Small delay to ensure state is checked
+            }, 1500); // Small delay to ensure state is checked
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);

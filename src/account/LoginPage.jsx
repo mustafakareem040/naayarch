@@ -35,7 +35,7 @@ export default function LoginPage() {
                 setHasError(false);
                 setDisabled(true);
                 handleAuthResponse(data, dispatch)
-                router.push("/");
+                setTimeout(() => router.push("/"), 3000);
             } else {
                 const errorData = await response.json();
                 addNotification('error', errorData.message || 'Login failed');
