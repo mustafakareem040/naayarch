@@ -14,7 +14,10 @@ import "yet-another-react-lightbox/styles.css";
 import { useNotification } from "@/components/NotificationContext";
 import Link from "next/link";
 import WishlistHeart from "@/components/WishlistHeart";
-
+const formatPrice = (price) => {
+    const formattedPrice = price >= 10000 ? price.toLocaleString('en-US') : price.toString();
+    return `${formattedPrice} IQD`;
+};
 export default function ProductDetail({ product }) {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
@@ -280,7 +283,7 @@ export default function ProductDetail({ product }) {
                     className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
                     <div className="flex justify-between items-center mb-6">
                         <span
-                            className="text-xl font-serif font-medium">{(currentPrice * quantity).toFixed(2)} IQD</span>
+                            className="text-xl font-serif font-medium">{formatPrice(currentPrice * quantity)}</span>
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
