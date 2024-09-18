@@ -39,9 +39,9 @@ export default function ProfileClient() {
 
     return (
         <>
-            <div className="relative left-0  -translate-y-[10%]  -m-4 right-0 min-h-[100vw] top-0 w-[100vw]">
+            <div className="relative left-0 -translate-y-[10%] -m-4 right-0 min-h-[100vw] top-0 w-[100vw]">
                 <div className="font-sans absolute top-1/2 z-10 left-0 right-0 text-center text-3xl">
-                    <p>Hi {info.name}!</p>
+                    <p>Hi {info?.name}!</p>
                     <p className="text-base font-serif">Let your beauty shine!</p>
                 </div>
                 <Image src={"https://storage.naayiq.com/resources/bg_flowers.png"} unoptimized={true} alt={"bg_flowers"} fill={true}
