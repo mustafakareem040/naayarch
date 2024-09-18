@@ -175,6 +175,7 @@ const ProductsPage = async ({ searchParams }) => {
     const maxPriceF = searchParams.maxPrice
     const availability = searchParams.availability || 'all';
     const sortBy = searchParams.sortBy || '';
+    const title = searchParams.title || '';
 
     try {
         const { products, totalProducts, hasMore, minPrice, maxPrice } = await getFilteredProducts(
@@ -203,7 +204,7 @@ const ProductsPage = async ({ searchParams }) => {
                     initialB={b}
                     minPrice={minPrice}
                     maxPrice={maxPrice}
-                    title={sortBy || "All Products"}
+                    title={sortBy || title || "All Products"}
                 />
             </>
         );

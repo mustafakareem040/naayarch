@@ -27,7 +27,7 @@ const SubcategoryView = memo(function SubcategoryView({ category, subcategories,
             </div>
             <div className="grid grid-cols-2 justify-center text-center items-center gap-4">
                 {subcategories.map((item) => (
-                    <Link prefetch={false} key={item.id} className="border border-[#3B5345] rounded-lg h-[4rem] flex justify-center leading-none items-center px-1" href={`/products?sc=${item.id}`}>
+                    <Link prefetch={false} key={item.id} className="border border-[#3B5345] rounded-lg h-[4rem] flex justify-center leading-none items-center px-1" href={`/products?sc=${item.id}&title=${item.name}`}>
                         <span className="font-serif text-[#545454] text-base">{item.name}</span>
                     </Link>
                 ))}
@@ -90,7 +90,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                             {productCategories.map(category => (
                                 <div key={category.id} className="py-2">
                                     <div className="flex justify-between items-center">
-                                        <Link prefetch={false} className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
+                                        <Link prefetch={false} className="font-serif text-xl" href={`/products?c=${category.id}&title=${category.name}`}>{category.name}</Link>
                                         {!category.is_brand &&
                                             <button onClick={() => handleCategoryClick(category.name)}>
                                                 <CircleArrowRight size={26} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
@@ -106,7 +106,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                 <div key={category.id} className="py-2">
                                     <div className="flex justify-between items-center">
                                         <Link prefetch={false} className="font-serif text-xl"
-                                              href={`/products?b=${category.id}`}>{category.name}</Link>
+                                              href={`/products?b=${category.id}&title=${category.name}`}>{category.name}</Link>
                                         <button
                                             onClick={() => handleCategoryClick(category.name)}>
                                             <CircleArrowRight size={26} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
