@@ -5,16 +5,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { debounce } from 'lodash';
 import FilterComponent from "@/components/FilterComponent";
 
-
-
-const SearchComponent = ({ query, setQuery, minPrice, maxPrice }) => {
-    const [localQuery, setLocalQuery] = useState(query);
+const SearchComponent = ({ query: initialQuery, setQuery, minPrice, maxPrice }) => {
+    const [localQuery, setLocalQuery] = useState(initialQuery);
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
-
-    useEffect(() => {
-        setLocalQuery(query);
-    }, [query]);
 
     const debouncedSearch = useMemo(
         () => debounce((value) => {
@@ -29,17 +23,22 @@ const SearchComponent = ({ query, setQuery, minPrice, maxPrice }) => {
         debouncedSearch(value);
     }, [debouncedSearch]);
 
+    const handleSubmit = useCallback((e) => {
+        e.preventDefault();
+        setQuery(localQuery);
+    }, [localQuery, setQuery]);
+
     const toggleFilter = useCallback(() => {
         setFilter(prev => !prev);
     }, []);
 
     const MemoizedFilterComponent = useMemo(() => (
         <FilterComponent minPrice={minPrice} maxPrice={maxPrice} modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
-    ), [filter]);
+    ), [filter, minPrice, maxPrice]);
 
     return (
         <>
-            <div className="flex mb-4 items-center space-x-2">
+            <form onSubmit={handleSubmit} className="flex mb-4 items-center space-x-2">
                 <div className="relative font-serif mr-4 flex-grow">
                     <input
                         type="text"
@@ -59,6 +58,7 @@ const SearchComponent = ({ query, setQuery, minPrice, maxPrice }) => {
                     />
                 </div>
                 <button
+                    type="button"
                     className="py-2 w-[5.5rem] font-sans border flex justify-around px-2 bg-[#3B5345] text-white items-center rounded-md"
                     onClick={toggleFilter}
                 >
@@ -72,7 +72,7 @@ const SearchComponent = ({ query, setQuery, minPrice, maxPrice }) => {
                     />
                     <span className="text-sm">Filter</span>
                 </button>
-            </div>
+            </form>
             <AnimatePresence>
                 {filter && (
                     <motion.div
