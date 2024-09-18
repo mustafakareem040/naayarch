@@ -14,7 +14,9 @@ const MyAccount = () => {
 
     const fetchUserInfo = useCallback(async () => {
         try {
-
+            const response = await fetch('https://api.naayiq.com/user/check-auth',
+                {credentials: "include"});
+            const data = await response.json();
             if (data.isAuthenticated) {
                 setUser(data);
                 if (data.dob) {
