@@ -29,7 +29,10 @@ export default function Wishlist() {
 
     const fetchWishlist = async () => {
         try {
-            const response = await fetch('https://api.naayiq.com/wishlist');
+            const response = await fetch('https://api.naayiq.com/wishlist',
+                {
+                    credentials: "include"
+                });
             if (!response.ok) {
                 throw new Error('Failed to fetch wishlist');
             }
