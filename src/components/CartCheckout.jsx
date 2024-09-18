@@ -27,7 +27,7 @@ const CartCheckout = ({ subTotal, discount }) => {
 
     const handleSubmitOrder = useCallback(async () => {
         const orderData = {
-            user_id: info.userId || null,
+            user_id: info?.userId || null,
             notes: note,
             full_name: shippingAddress?.full_name,
             governorate: shippingAddress?.governorate,
