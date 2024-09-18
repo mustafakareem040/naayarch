@@ -15,7 +15,7 @@ const CustomProduct = memo(function CustomProduct({
     const [isFlowerImgLoaded, setIsFlowerImgLoaded] = useState(false);
 
     return (
-        <div className="white rounded-lg p-4 mb-12">
+        <div className="white  rounded-lg p-4 mb-12">
             <p className="text-center font-medium font-sans text-3xl">
                 {title}
             </p>
@@ -37,14 +37,10 @@ const CustomProduct = memo(function CustomProduct({
             )}
 
             <div
-                className={`flex flex-col sm:flex-row gap-2 w-full justify-center place-content-baseline ${
-                    hideFlower ? 'mt-2 mb-16 ssm:mb-2' : 'mt-16'
-                }`}
+                className={`flex gap-2 w-full justify-center place-content-baseline ${hideFlower ? 'mt-2 mb-16 ssm:mb-2' : 'mt-16'}`}
             >
                 <div
-                    className={`flex mt-7 ssm:mt-10 ssm4:mt-16 flex-col w-full sm:w-[35%] justify-stretch items-baseline transform ${
-                        hideFlower ? '' : 'relative bottom-8'
-                    }`}
+                    className={`flex mt-7 ssm:mt-10 ssm4:mt-16 flex-col w-[35%] justify-stretch items-baseline transform ${hideFlower ? '' : 'relative bottom-8'}`}
                 >
                     <p className="inline font-sans mb-7 text-xl md:text-2xl lg:text-3xl">
                         {subtitle}
@@ -59,7 +55,7 @@ const CustomProduct = memo(function CustomProduct({
                     </Link>
                 </div>
 
-                <div className="relative w-full sm:w-[60%] h-[300px] sm:h-[400px] mt-4 sm:mt-0">
+                <div className="relative w-[60%] max-h-[400px] -translate-y-2 aspect-[3/4]">
                     {!isBigImgLoaded && (
                         <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg" />
                     )}
@@ -68,9 +64,7 @@ const CustomProduct = memo(function CustomProduct({
                         alt="Product Image"
                         fill={true}
                         unoptimized={true}
-                        className={`rounded-lg object-contain ${
-                            isBigImgLoaded ? 'opacity-100' : 'opacity-0'
-                        }`}
+                        className={`rounded-lg object-cover ${isBigImgLoaded ? 'opacity-100' : 'opacity-0'}`}
                         onLoad={() => setIsBigImgLoaded(true)}
                     />
                 </div>

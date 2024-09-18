@@ -4,10 +4,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
-import Cookies from 'js-cookie';
 import setCookies, {login} from "@/components/loginAPIs";
 import {useDispatch} from "react-redux";
-import {setIsAuthenticated} from "@/lib/features/authSlice";
 import {handleAuthResponse} from "@/components/isAuth";
 
 
