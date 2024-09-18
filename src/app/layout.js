@@ -26,15 +26,15 @@ const nnFont = localFont({
 });
 
 export const metadata = {
-    title: "Naay Store",
-    description: "An Iraqi store for makeups",
+    title: "NaayIraq",
+    description: "An Iraqi store for skin care products",
 };
 
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
         <Head>
-            <title>Naay Store</title>
+            <title>NaayIraq</title>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
         </Head>
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>

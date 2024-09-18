@@ -124,6 +124,12 @@ export default function ProductList({
 
     return (
         <>
+            <header className="flex mt-24 items-center mb-16 relative">
+                <h1
+                    className="text-3xl z-10 text-[#181717] font-sans text-center font-medium">
+                    {title || 'All Products'}
+                </h1>
+            </header>
             <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch}/>
             {memoizedProducts.length > 0 ? (
                 <div
