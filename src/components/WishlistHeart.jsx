@@ -15,45 +15,70 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-const WishlistHeart = ({ productId }) => {
+const WishlistHeart = ({ product  }) => {
     const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const wishlistItem = useAppSelector((state) => getWishlistByProductId(state, productId));
+    const wishlistItem = useAppSelector((state) => getWishlistByProductId(state, product.id));
     const dispatch = useAppDispatch();
     const router = useRouter();
     const [showDialog, setShowDialog] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false); // Loading state to prevent multiple clicks
     const handleClick = async (e) => {
-        e.stopPropagation()
+        e.stopPropagation();
+
+        if (isLoading) return; // Prevent multiple clicks
+
         if (!isAuthenticated) {
             setShowDialog(true);
             return;
         }
 
+        setIsLoading(true);
+
+        const method = wishlistItem ? "DELETE" : "POST";
+
+        // Prepare optimistic actions
+        if (wishlistItem) {
+            // Optimistically remove from wishlist
+            dispatch(deleteWishlist(wishlistItem.id));
+        } else {
+            // Optimistically add to wishlist with temporary ID or necessary fields
+            dispatch(addWishlist({
+                wishlist_id: Date.now(), // Temporary unique identifier
+                ...product
+            }));
+        }
 
         try {
-            const method = wishlistItem ? "DELETE" : "POST";
             const response = await fetch("https://api.naayiq.com/wishlist", {
-                method: method,
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 credentials: "include",
-                body: JSON.stringify({ productId }),
+                body: JSON.stringify({ productId: product.id }),
             });
 
             if (response.ok) {
-                if (wishlistItem) {
-                    dispatch(deleteWishlist(wishlistItem.id));
-                } else {
+                if (method === "POST") {
                     const newWishlistItem = await response.json();
-                    dispatch(addWishlist(newWishlistItem));
+                    // Replace the temporary wishlist item with the one from the server
+                    dispatch(deleteWishlist(Date.now())); // Remove temporary item
+                    dispatch(addWishlist(newWishlistItem)); // Add the confirmed item from server
                 }
+                // No action needed for DELETE if successful
             } else {
-                console.error('Failed to update wishlist');
+                throw new Error('Failed to update wishlist');
             }
         } catch (error) {
+            if (method === "DELETE") {
+                dispatch(addWishlist(wishlistItem)); // Re-add the removed item
+            } else {
+                dispatch(deleteWishlist(Date.now())); // Remove the optimistically added item
+            }
             console.error('Error updating wishlist:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 

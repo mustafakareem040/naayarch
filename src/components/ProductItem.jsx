@@ -42,7 +42,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
         <div className="rounded-lg" onClick={handleProductClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                 <button className="absolute left-1 top-4 z-20 heart-icon" onClick={(e) => e.stopPropagation()}>
-                    <WishlistHeart productId={id} />
+                    <WishlistHeart product={product} />
                 </button>
 
                 {!imageLoaded && <ImageSkeleton />}
