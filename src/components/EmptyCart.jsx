@@ -19,7 +19,7 @@ const EmptyCart = () => {
             </header>
 
             <main className="flex-grow flex flex-col items-center">
-                <div className="relative w-full h-[40vh]">
+                <div className="relative w-full h-[33vh]">
                     <Image
                         src="https://storage.naayiq.com/resources/empty_cart.gif"
                         alt="Empty cart"
