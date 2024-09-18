@@ -10,7 +10,7 @@ import AsyncNavBar from "@/components/AsyncNavBar";
 
 export default function Dashboard() {
     return (
-        <div className="overflow-x-hidden max-w-3xl">
+        <div className="overflow-x-hidden">
             <AsyncNavBar />
             <Hero />
             <ProductWithSales />
