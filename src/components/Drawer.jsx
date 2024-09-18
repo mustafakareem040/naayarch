@@ -43,8 +43,8 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
 
     useEffect(() => {
         const checkLoginStatus = () => {
-            const accessToken = Cookies.get('token');
-            setIsLoggedIn(!!accessToken);
+            `const accessToken = Cookies.get('token');
+            setIsLoggedIn(!!accessToken);`
         };
 
         checkLoginStatus();
