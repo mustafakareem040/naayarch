@@ -131,18 +131,18 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                             )}
                         </div>
 
-                        <div>
-                            <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>
-                            <div className="flex items-center space-x-3 mb-6 ">
-                                <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic" width={24} height={24}/>
-                                <span className="font-serif text-xl">Arabic</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true} alt="English" width={24} height={24}/>
-                                <span className="font-serif text-xl">English</span>
-                                <Image src="https://storage.naayiq.com/resources/checkmark.svg" unoptimized={true} alt="Selected" width={20} height={20} className="ml-auto"/>
-                            </div>
-                        </div>
+                        {/*<div>*/}
+                        {/*    <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>*/}
+                        {/*    <div className="flex items-center space-x-3 mb-6 ">*/}
+                        {/*        <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic" width={24} height={24}/>*/}
+                        {/*        <span className="font-serif text-xl">Arabic</span>*/}
+                        {/*    </div>*/}
+                        {/*    <div className="flex items-center space-x-3">*/}
+                        {/*        <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true} alt="English" width={24} height={24}/>*/}
+                        {/*        <span className="font-serif text-xl">English</span>*/}
+                        {/*        <Image src="https://storage.naayiq.com/resources/checkmark.svg" unoptimized={true} alt="Selected" width={20} height={20} className="ml-auto"/>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
 
                     <SubcategoryView
