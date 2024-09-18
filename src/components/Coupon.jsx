@@ -1,19 +1,9 @@
-'use client'
+'use client';
+
 import React, { useState } from 'react';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
-import {CircleArrowLeft} from "lucide-react";
-
-const coupons = [
-    { type: 'Mother Day Coupons', code: 'M-Day25', validTill: 'Valid Till-22 Mar 2025', image: '/mom.png', bgColor: 'bg-pink-50', buttonColor: 'bg-[#FF81AE]/5 border-[#FF81AE]' },
-    { type: 'Free Delivery Coupons', code: 'Free40', validTill: 'Valid Till-Today 12 am', image: '/car.png', bgColor: 'bg-blue-50', buttonColor: 'bg-[#90CAF9]/5 border-[#90CAF9]' },
-    // { type: 'Valentine Coupons', code: 'VA-Day', validTill: 'Valid Till-Today 12 am', image: '/valentine.png', bgColor: 'bg-red-50', buttonColor: 'text-red-500 border-red-500' },
-    // { type: 'Black Friday Coupons', code: 'B-Day', validTill: 'Valid Till-Today 12 am', image: '/black-friday.png', bgColor: 'bg-gray-100', buttonColor: 'text-gray-700 border-gray-700' },
-    // { type: 'Birthday Coupons', code: 'B-Day', validTill: 'Valid Till-Today 12 am', image: '/birthday.png', bgColor: 'bg-yellow-50', buttonColor: 'text-yellow-600 border-yellow-600' },
-    // { type: 'Christmas Coupons', code: 'CH-Day', validTill: 'Valid Till-Today 12 am', image: '/christmas.png', bgColor: 'bg-green-50', buttonColor: 'text-green-600 border-green-600' },
-    // { type: 'Discount Coupons', code: 'DI34', validTill: 'Valid Till-Today 12 am', image: '/discount.png', bgColor: 'bg-purple-50', buttonColor: 'text-purple-600 border-purple-600' },
-    // { type: 'Eid Coupons', code: 'EI34', validTill: 'Valid Till-Today 12 am', image: '/eid.png', bgColor: 'bg-indigo-50', buttonColor: 'text-indigo-600 border-indigo-600' },
-];
+import { useRouter } from "next/navigation";
+import { CircleArrowLeft } from "lucide-react";
 
 const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
     const [copied, setCopied] = useState(false);
@@ -25,7 +15,7 @@ const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
     };
 
     return (
-        <div className={`flex font-serif font-medium items-center p-6 mb-4 bg-[#F6F3F1]/30 shadow-md rounded-lg`}>
+        <div className={`flex font-serif font-medium items-center p-6 mb-4 ${bgColor} shadow-md rounded-lg`}>
             <div className="flex-1">
                 <p className="text-sm text-[#695C5C]">{type}</p>
                 <h3 className="text-black font-sans text-2xl">{code}</h3>
@@ -37,28 +27,48 @@ const CouponCard = ({ type, code, validTill, image, bgColor, buttonColor }) => {
                     {copied ? 'Copied!' : 'Copy Code'}
                 </button>
             </div>
-            <div className="w-24 h-24 ml-4">
-                <Image fill={true} src={image} alt={type} className="w-full h-full object-cover rounded-lg" />
+            <div className="w-24 h-24 ml-4 relative">
+                <Image
+                    src={image}
+                    alt={type}
+                    fill
+                    className="object-cover rounded-lg"
+                />
             </div>
         </div>
     );
 };
 
-const MyCoupons = () => {
-    const router = useRouter()
+
+
+const MyCoupons = ({ coupons }) => {
+    const router = useRouter();
     return (
         <div className="bg-white min-h-screen p-6">
             <header className="flex items-center mb-6">
-                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
-                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">My Coupons</h1>
+                <CircleArrowLeft
+                    size={52}
+                    strokeWidth={0.7}
+                    onClick={() => router.back()}
+                    className="p-2 cursor-pointer relative z-20"
+                />
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                    My Coupons
+                </h1>
             </header>
             <div className="space-y-4">
-                {coupons.map((coupon, index) => (
-                    <CouponCard key={index} {...coupon} />
-                ))}
+                {coupons.length > 0 ? (
+                    coupons.map((coupon, index) => (
+                        <CouponCard key={index} {...coupon} />
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500">No coupons available.</p>
+                )}
             </div>
         </div>
     );
 };
+
+
 
 export default MyCoupons;

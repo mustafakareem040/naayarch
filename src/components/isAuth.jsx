@@ -19,10 +19,10 @@ export default function IsAuth() {
         checkAuth();
     }, [dispatch]);
 
-    return null; // This component doesn't render anything
+    return null;
 }
 
-function handleAuthResponse(data, dispatch) {
+export function handleAuthResponse(data, dispatch) {
     if (data.isAuthenticated) {
         dispatch(setIsAuthenticated(true));
         dispatch(setAddresses(data.addresses));

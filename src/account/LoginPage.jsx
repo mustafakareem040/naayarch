@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import setCookies, {login} from "@/components/loginAPIs";
 import {useDispatch} from "react-redux";
 import {setIsAuthenticated} from "@/lib/features/authSlice";
+import {handleAuthResponse} from "@/components/isAuth";
 
 
 export default function LoginPage() {
@@ -33,7 +34,7 @@ export default function LoginPage() {
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
-                dispatch(setIsAuthenticated(true))
+                handleAuthResponse(data, dispatch)
                 router.push("/");
             } else {
                 const errorData = await response.json();

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
 import setCookies, {signUp} from "@/components/loginAPIs";
+import {handleAuthResponse} from "@/components/isAuth";
+import {useAppDispatch} from "@/lib/hook";
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
@@ -15,7 +17,7 @@ export default function SignUpPage() {
     const [phone, setPhone] = useState('');
     const router = useRouter();
     const { addNotification } = useNotification(); // Use the context
-
+    const dispatch = useAppDispatch()
     const onFinish = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -23,10 +25,11 @@ export default function SignUpPage() {
 
         try {
             const response = await signUp(fullName, email, password, phone);
-
+            const json = await response.json()
             if (response.ok) {
-                setCookies(await response.json(), false, true)
+                setCookies(json, true, true)
                 addNotification('success', 'Successfully signed up!');
+                handleAuthResponse(json, dispatch)
                 router.push('/');
             }
             else {
