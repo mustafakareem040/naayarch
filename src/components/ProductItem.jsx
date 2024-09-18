@@ -64,7 +64,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
                     </h3>
                     <div className="flex justify-between items-center mt-2">
                         {isOutOfStock ? (
-                            <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-red-600">
+                            <p className="font-medium font-serif text-lg leading-tight tracking-tight text-red-500">
                                 Out of stock
                             </p>
                         ) : (
