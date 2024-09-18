@@ -92,7 +92,7 @@ const Cart = () => {
             setShowConfirmation(false);
         });
     }, []);
-
+    const [isUpdatingOrder, setIsUpdatingOrder] = useState(false);
     const calculateDiscount = useCallback((couponDetails, subtotal) => {
         if (couponDetails.discount_percentage) {
             const discountAmount = subtotal * (couponDetails.discount_percentage / 100);
@@ -102,6 +102,14 @@ const Cart = () => {
         }
         return 0;
     }, []);
+    useEffect(() => {
+        if (isUpdatingOrder) {
+            const timer = setTimeout(() => {
+                router.push('/cart/order');
+            }, 100); // Small delay to ensure state update
+            return () => clearTimeout(timer);
+        }
+    }, [isUpdatingOrder, router]);
 
     const handleApplyCoupon = useCallback(async () => {
         if (appliedCoupon) {
@@ -154,8 +162,20 @@ const Cart = () => {
     }, [subTotal, discount, delivery]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
-
-
+    const handleProceed = useCallback(() => {
+        setIsUpdatingOrder(true);
+        dispatch(setOrder({
+            ...order,
+            coupon_id: appliedCouponId,
+            items: cartItems.map(item => ({
+                product_id: item.product_id,
+                size_id: item.size_id || null,
+                color_id: item.color_id || null,
+                quantity: item.qty,
+            })),
+            info: {delivery, discount, subTotal},
+        }));
+    }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch]);
     if (isLoading) {
         return <Loading />;
     }
@@ -291,23 +311,13 @@ const Cart = () => {
                         <span>{totalPrice} IQD</span>
                     </div>
                 </motion.div>
-                <Link
-                    onClick={() => dispatch(setOrder({
-                        ...order,
-                        coupon_id: appliedCouponId,
-                        items: cartItems.map(item => ({
-                            product_id: item.product_id,
-                            size_id: item.size_id || null,
-                            color_id: item.color_id || null,
-                            quantity: item.qty,
-                        })),
-                        info: {delivery, discount, subTotal},
-                    }))}
-                    href="/cart/order"
+                <button
+                    onClick={handleProceed}
                     className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
+                    disabled={isUpdatingOrder}
                 >
-                    Proceed
-                </Link>
+                    {isUpdatingOrder ? 'Updating...' : 'Proceed'}
+                </button>
             </motion.div>
         </>
     );
