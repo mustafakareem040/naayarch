@@ -10,8 +10,6 @@ import {setIsAuthenticated} from "@/lib/features/authSlice";
 import {useSelector} from "react-redux";
 import Loading from "@/components/Loading";
 
-
-
 export default function ProfileClient() {
     const router = useRouter();
     const dispatch = useAppDispatch();
