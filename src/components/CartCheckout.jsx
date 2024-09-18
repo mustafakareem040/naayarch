@@ -12,6 +12,7 @@ import "./NotificationStyles.css"
 const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
     const { shippingAddress, coupon_id, items } = useSelector(state => state.order);
+    const { info } = useSelector(state => state.user);
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { addNotification } = useNotification();
@@ -26,6 +27,7 @@ const CartCheckout = ({ subTotal, discount }) => {
 
     const handleSubmitOrder = useCallback(async () => {
         const orderData = {
+            user_id: info.userId || null,
             notes: note,
             full_name: shippingAddress?.full_name,
             governorate: shippingAddress?.governorate,
