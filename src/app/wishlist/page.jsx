@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft, X } from "lucide-react";
 import ShoppingBag from "@/components/ShoppingBag";
+import Loading from "@/components/Loading";
 
 const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
     const router = useRouter();
@@ -18,7 +19,6 @@ const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
             <Image src={imageUrl} unoptimized={true} alt={name} width={130} height={200} className="object-cover rounded-md" />
             <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
                 <h3 className="font-medium text-xl">{name}</h3>
-                <p className="text-xl">{price} IQD</p>
             </div>
             <div className="absolute top-2 right-2 flex items-center space-x-2">
                 <button onClick={() => onRemove(id)}>
@@ -87,7 +87,7 @@ export default function Wishlist() {
             </header>
             <main className="flex-grow flex flex-col items-center">
                 {isLoading ? (
-                    <p>Loading...</p>
+                    <Loading />
                 ) : wishlistItems.length === 0 ? (
                     <>
                         <div className="relative w-full h-[33vh]">
