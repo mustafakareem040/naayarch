@@ -5,7 +5,6 @@ import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { useNotification } from "@/components/NotificationContext";
 import '@/components/NotificationStyles.css';
 import Link from "next/link";
-import { createPortal } from 'react-dom';
 
 const ProductModal = ({ isOpen, onClose, productData }) => {
     const [selectedSize, setSelectedSize] = useState(null);
@@ -15,13 +14,11 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
     const { addNotification } = useNotification();
 
     const product = productData.product;
-
     const updateTotalPrice = useCallback(() => {
         if (selectedSize) {
             setTotalPrice(parseFloat(selectedSize.price) * quantity);
         }
     }, [selectedSize, quantity]);
-
     const checkIfInCart = useCallback(() => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const isItemInCart = cart.some(item =>
@@ -30,7 +27,6 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
         );
         setIsInCart(isItemInCart);
     }, [product.id, selectedSize]);
-
     useEffect(() => {
         if (product && product.sizes && product.sizes.length > 0) {
             setSelectedSize(product.sizes[0]);
@@ -44,6 +40,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
     useEffect(() => {
         checkIfInCart();
     }, [selectedSize, checkIfInCart]);
+
 
     const handleAddToCart = useCallback(() => {
         if (selectedSize) {
@@ -75,23 +72,20 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
 
     if (!isOpen || !product) return null;
 
-    // Ensure this code runs only in the browser
-    if (typeof window === 'undefined') return null;
-
-    return createPortal(
+    return (
         <AnimatePresence>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed font-serif inset-0 bg-black bg-opacity-30 flex items-end justify-center z-[999999]"
+                className="fixed font-serif inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50"
                 onClick={onClose}
             >
                 <motion.div
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 30, stiffness: 500 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 500 }}
                     className="bg-white rounded-t-3xl w-full p-6 relative"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -126,7 +120,9 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                                 {product.colors.map((color) => (
                                     <button
                                         key={color.id}
-                                        className={`w-20 h-20 rounded-full border-2 ${selectedSize && selectedSize.color_id === color.id ? 'border-[rgba(105,92,92,0.5)]' : 'border-transparent' } flex items-center justify-center`}
+                                        className={`w-20 h-20 rounded-full border-2 ${
+                                            selectedSize && selectedSize.color_id === color.id ? 'border-[rgba(105,92,92,0.5)]' : 'border-transparent'
+                                        } flex items-center justify-center`}
                                     >
                                         <div
                                             className="w-15 h-15 rounded-full"
@@ -168,6 +164,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                         {isInCart ? (
                             <Link
                                 href="/cart"
+                                prefetch={false}
                                 className="flex-1 font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-base md:text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
                             >
                                 <ShoppingCart className="mr-2" />
@@ -192,8 +189,7 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                     </div>
                 </motion.div>
             </motion.div>
-        </AnimatePresence>,
-        document.body
+        </AnimatePresence>
     );
 };
 

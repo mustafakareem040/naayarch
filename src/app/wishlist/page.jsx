@@ -106,7 +106,7 @@ export default function Wishlist() {
                                 id={item.id}
                                 name={item.name}
                                 price={item.price}
-                                imageUrl={`https://storage.naayiq.com/resources/${item.id}.webp`}
+                                imageUrl={`https://storage.naayiq.com/resources/${item.images[0]}.webp`}
                                 onRemove={handleRemoveItem}
                             />
                         ))}
