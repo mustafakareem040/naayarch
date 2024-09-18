@@ -5,6 +5,7 @@ const orderSlice = createSlice({
     initialState: {
         items: [],
         info: {},
+        coupon_id: null,
         shippingAddress: null,
         note: '',
         paymentMethod: 'Cash On Delivery'

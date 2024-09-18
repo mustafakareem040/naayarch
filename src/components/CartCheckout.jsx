@@ -11,7 +11,7 @@ import "./NotificationStyles.css"
 
 const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
-    const { shippingAddress, items } = useSelector(state => state.order);
+    const { shippingAddress, coupon_id, items } = useSelector(state => state.order);
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { addNotification } = useNotification();
@@ -34,7 +34,7 @@ const CartCheckout = ({ subTotal, discount }) => {
             closest_point: shippingAddress?.closest_point,
             phone_number: shippingAddress?.phone_number,
             type: shippingAddress?.type,
-            coupon_id: shippingAddress?.couponId || null,
+            coupon_id: coupon_id,
             items: items.map(item => ({
                 product_id: item.product_id,
                 size_id: item.size_id || null,

@@ -10,9 +10,17 @@ import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import { usePathname } from 'next/navigation';
 import Loading from "./Loading"
+import {NotificationProvider} from "@/components/NotificationContext";
+
+// Dynamically import the SearchComponent
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />,
+});
+
+// Dynamically import the ProductModal
+const ProductModal = dynamic(() => import("@/components/ProductDetailModal"), {
+    ssr: false
 });
 
 export default function ProductList({
@@ -27,6 +35,10 @@ export default function ProductList({
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
     const [isNavigating, setIsNavigating] = useState(false);
+
+    // New State: Manage the selected product for the modal
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     const { ref, inView } = useInView({ threshold: 0 });
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -41,6 +53,7 @@ export default function ProductList({
         params.set('page', nextPage.toString());
         router.push(`/products?${params.toString()}`, { scroll: false });
     }, [page, loading, noMoreProducts, searchParams, router]);
+
     useEffect(() => {
         if (inView && !noMoreProducts) {
             loadMoreProducts();
@@ -83,13 +96,28 @@ export default function ProductList({
         [router]
     );
 
+    // New Handler: Handle cart button click to open modal
+    const handleCartClick = useCallback(
+        (product) => {
+            setSelectedProduct(product);
+        },
+        []
+    );
+
+    // New Handler: Close the modal
+    const handleModalClose = useCallback(() => {
+        setSelectedProduct(null);
+    }, []);
+
     useEffect(() => {
         // This effect will run when the pathname changes
         setIsNavigating(false);
     }, [pathname]);
+
     if (isNavigating) {
         return <Loading />
     }
+
     return (
         <>
             <header className="flex items-center mb-6">
@@ -109,32 +137,41 @@ export default function ProductList({
             </header>
             <SearchComponent query={query} setQuery={handleSearch} />
             {memoizedProducts.length > 0 ? (
-                <>
-                    <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                        {memoizedProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                onClick={() => handleProductClick(product)}
-                                className="cursor-pointer"
-                            >
-                                <ProductItem
-                                    id={product.id}
-                                    name={product.name}
-                                    product={product}
-                                    handleClick={() => handleProductClick(product)}
-                                    price={formatPrice(product.cheapestPrice)}
-                                    imageUrl={product.images[0]}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </>
+                <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {memoizedProducts.map((product) => (
+                        <div
+                            key={product.id}
+                            onClick={() => handleProductClick(product)}
+                            className="cursor-pointer"
+                        >
+                            <ProductItem
+                                id={product.id}
+                                name={product.name}
+                                product={product}
+                                handleClick={() => handleProductClick(product)}
+                                price={formatPrice(product.cheapestPrice)}
+                                imageUrl={product.images[0]}
+                                onCartClick={handleCartClick} // Pass the handler
+                            />
+                        </div>
+                    ))}
+                </div>
             ) : (
                 <NoProductsFound />
             )}
             {loading && <ProductLoading />}
             {!loading && !noMoreProducts && (
                 <div ref={ref} style={{ height: '20px' }}></div>
+            )}
+            {/* Render Modal Here */}
+            {selectedProduct && (
+                <NotificationProvider>
+                    <ProductModal
+                        productData={{ product: selectedProduct }}
+                        isOpen={!!selectedProduct}
+                        onClose={handleModalClose}
+                    />
+                </NotificationProvider>
             )}
         </>
     );

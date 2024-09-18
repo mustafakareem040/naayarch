@@ -294,6 +294,7 @@ const Cart = () => {
                 <Link
                     onClick={() => dispatch(setOrder({
                         ...order,
+                        coupon_id: appliedCouponId,
                         items: cartItems.map(item => ({
                             product_id: item.product_id,
                             size_id: item.size_id || null,
