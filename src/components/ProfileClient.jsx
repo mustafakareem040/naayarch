@@ -7,8 +7,8 @@ import Footer from "@/components/Footer";
 import { Profile } from "@/components/Profile";
 import Image from "next/image";
 import { useAppDispatch } from "@/lib/hook";
-import { setIsAuthenticated } from './authSlice';
 import Cookies from 'js-cookie';
+import {setIsAuthenticated} from "@/lib/features/authSlice";
 
 export default function ProfileClient() {
     const router = useRouter();
