@@ -64,7 +64,7 @@ const CustomProduct = memo(function CustomProduct({
                     alt="Product Image"
                     fill={true}
                     unoptimized={true}
-                    className={`rounded-lg object-cover ${isBigImgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    className={`rounded-lg object-contain ${isBigImgLoaded ? 'opacity-100' : 'opacity-0'}`}
                     onLoad={() => setIsBigImgLoaded(true)}
                     />
                     </div>
