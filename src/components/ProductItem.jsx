@@ -1,9 +1,8 @@
 'use client'
-import React, { memo, useCallback, useState } from 'react';
+import React, {memo, useCallback, useMemo, useState} from 'react';
 import Image from 'next/image';
 import WishlistHeart from "@/components/WishlistHeart";
 
-// Ensure CartIcon is memoized and defined outside the component
 const CartIcon = memo(() => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="32" height="32" rx="16" fill="#3B5345"/>
@@ -21,22 +20,23 @@ const ImageSkeleton = () => (
 const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onCartClick }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    // Handles click on the product area
     const handleProductClick = useCallback((e) => {
         if (!e.target.closest('.heart-icon')) {
             handleClick();
         }
     }, [handleClick]);
 
-    // Handles click on the cart button
     const handleCartButtonClick = useCallback((e) => {
-        e.stopPropagation(); // Prevent triggering the product's onClick
-        onCartClick(product); // Notify parent to open modal
+        e.stopPropagation();
+        onCartClick(product);
     }, [onCartClick, product]);
 
     const handleImageLoad = useCallback(() => {
         setImageLoaded(true);
     }, []);
+    const isOutOfStock = useMemo(() => {
+        return product.sizes.every(size => !size.qty) && !product.qty && product.colors.every(color => !color.qty);
+    }, [product.sizes]);
 
     return (
         <div className="rounded-lg" onClick={handleProductClick}>
@@ -63,20 +63,27 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
                         {name}
                     </h3>
                     <div className="flex justify-between items-center mt-2">
-                        <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-[#181717]">
-                            {price}
-                        </p>
-                <button
-                    className="w-8 h-8 bg-[#3B5345] rounded-full flex items-center justify-center"
-                    onClick={handleCartButtonClick}
-                >
-                    <CartIcon />
-                </button>
+                        {isOutOfStock ? (
+                            <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-red-600">
+                                Out of stock
+                            </p>
+                        ) : (
+                            <p className="font-semibold font-serif text-lg leading-tight tracking-tight text-[#181717]">
+                                {price}
+                            </p>
+                        )}
+                        <button
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${isOutOfStock ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#3B5345]'}`}
+                            onClick={handleCartButtonClick}
+                            disabled={isOutOfStock}
+                        >
+                            <CartIcon />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-</div>
-</div>
-);
+    );
 });
 
 ProductItem.displayName = "ProductItem";

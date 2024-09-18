@@ -28,6 +28,8 @@ export default function ProductList({
                                         hasMore,
                                         initialPage,
                                         initialQuery,
+    minPrice,
+    maxPrice
                                     }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(initialPage);
@@ -135,7 +137,7 @@ export default function ProductList({
                     Products
                 </h1>
             </header>
-            <SearchComponent query={query} setQuery={handleSearch} />
+            <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch} />
             {memoizedProducts.length > 0 ? (
                 <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {memoizedProducts.map((product) => (

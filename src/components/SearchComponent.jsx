@@ -7,7 +7,7 @@ import FilterComponent from "@/components/FilterComponent";
 
 
 
-const SearchComponent = ({ query, setQuery }) => {
+const SearchComponent = ({ query, setQuery, minPrice, maxPrice }) => {
     const [localQuery, setLocalQuery] = useState(query);
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
@@ -34,7 +34,7 @@ const SearchComponent = ({ query, setQuery }) => {
     }, []);
 
     const MemoizedFilterComponent = useMemo(() => (
-        <FilterComponent modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
+        <FilterComponent minPrice={minPrice} maxPrice={maxPrice} modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
     ), [filter]);
 
     return (
