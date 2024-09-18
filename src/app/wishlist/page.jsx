@@ -8,7 +8,7 @@ import ShoppingBag from "@/components/ShoppingBag";
 
 const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => (
     <div className="bg-white rounded-lg p-4 flex items-center space-x-4 relative mb-4">
-        <Image src={imageUrl} alt={name} width={80} height={80} className="object-cover rounded-md" />
+        <Image src={`https://storage.naayiq.com/resources${imageUrl}`} alt={name} width={80} height={80} className="object-cover rounded-md" />
         <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
             <h3 className="font-medium text-xl">{name}</h3>
             <p className="text-xl">{price} IQD</p>
