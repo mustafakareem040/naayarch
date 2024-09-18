@@ -16,6 +16,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { addNotification } = useNotification();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Calculate delivery fee based on governorate and subtotal
     const delivery = useMemo(() => {
@@ -26,6 +27,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     }, [subTotal, shippingAddress]);
 
     const handleSubmitOrder = useCallback(async () => {
+        setIsSubmitting(true);
         const orderData = {
             user_id: info.userId || null,
             notes: note,
@@ -77,9 +79,10 @@ const CartCheckout = ({ subTotal, discount }) => {
         } catch (error) {
             console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     }, [note, shippingAddress, items, dispatch, addNotification, router]);
-    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
     const renderShippingAddress = () => (
         shippingAddress ? (
@@ -168,8 +171,12 @@ const CartCheckout = ({ subTotal, discount }) => {
                 </section>
                 <button
                     onClick={handleSubmitOrder}
-                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg">
-                    Submit Order
+                    disabled={isSubmitting}
+                    className={`w-full inline-block ${
+                        isSubmitting ? 'bg-gray-400' : 'bg-[#3B5345]'
+                    } text-white py-3 px-4 rounded-lg font-medium text-lg`}
+                >
+                    {isSubmitting ? 'Submitting...' : 'Submit Order'}
                 </button>
             </div>
         </>
