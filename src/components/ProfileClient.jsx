@@ -41,7 +41,7 @@ export default function ProfileClient() {
             setIsLoading(false);
         }
 
-        const timer = setTimeout(checkAuth, 100); // Small delay to ensure smooth loading
+        const timer = setTimeout(checkAuth, 500); // Small delay to ensure smooth loading
         return () => clearTimeout(timer);
     }, [dispatch, router]);
 
