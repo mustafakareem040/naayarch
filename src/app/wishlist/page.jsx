@@ -16,9 +16,9 @@ const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
 
     return (
         <div className="bg-white rounded-lg p-4 flex items-center space-x-4 relative mb-4">
-            <Image src={imageUrl} unoptimized={true} alt={name} width={130} height={200} className="object-cover rounded-md" />
+            <Image src={imageUrl} unoptimized={true} alt={name} width={60} height={90} className="object-cover rounded-md" />
             <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
-                <h3 className="font-medium text-xl">{name}</h3>
+                <h3 className="font-medium text-base">{name}</h3>
             </div>
             <div className="absolute top-2 right-2 flex items-center space-x-2">
                 <button onClick={() => onRemove(id)}>
