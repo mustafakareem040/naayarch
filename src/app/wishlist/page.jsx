@@ -15,17 +15,17 @@ const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg p-4 flex items-center space-x-4 relative mb-4">
+        <div className="bg-white rounded-lg p-4 flex items-center space-x-4 mb-4">
             <Image src={imageUrl} unoptimized={true} alt={name} width={60} height={90} className="object-cover rounded-md" />
-            <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
-                <h3 className="font-medium text-base">{name}</h3>
+            <div className="flex-grow font-serif">
+                <h3 className="font-medium text-base text-center">{name}</h3>
             </div>
-            <div className="absolute top-2 right-2 flex items-center space-x-2">
-                <button onClick={() => onRemove(id)}>
-                    <X size={20} />
+            <div className="flex flex-col items-center space-y-2">
+                <button onClick={() => onRemove(id)} className="p-1">
+                    <X size={24} />
                 </button>
                 <button onClick={handleShoppingBagClick} className="bg-[#3B5345] rounded-full p-2">
-                    <ShoppingBag width={20} height={20} />
+                    <ShoppingBag width={24} height={24} />
                 </button>
             </div>
         </div>
