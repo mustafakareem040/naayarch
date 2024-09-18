@@ -10,7 +10,7 @@ const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
         <div className="py-2" onClick={onClick}>
             <div className="flex justify-between items-center">
                 <span className="font-serif text-xl">{label}</span>
-                {hasChildren && <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>}
+                {hasChildren && <CircleArrowRight size={26} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>}
             </div>
         </div>
     );
@@ -18,7 +18,7 @@ const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
 
 const SubcategoryView = memo(function SubcategoryView({ category, subcategories, onBack, isVisible }) {
     return (
-        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full max-h-screen overflow-y-auto bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="mr-4">
                     <CircleArrowLeft size={40} strokeWidth={0.7} />
@@ -93,7 +93,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                         <Link prefetch={false} className="font-serif text-xl" href={`/products?c=${category.id}`}>{category.name}</Link>
                                         {!category.is_brand &&
                                             <button onClick={() => handleCategoryClick(category.name)}>
-                                                <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
+                                                <CircleArrowRight size={26} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
                                             </button>}
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                               href={`/products?b=${category.id}`}>{category.name}</Link>
                                         <button
                                             onClick={() => handleCategoryClick(category.name)}>
-                                            <CircleArrowRight size={24} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
+                                            <CircleArrowRight size={26} strokeWidth={1.5} className="stroke-[#3B5345] text-[#3B5345]"/>
                                         </button>
                                     </div>
                                 </div>
