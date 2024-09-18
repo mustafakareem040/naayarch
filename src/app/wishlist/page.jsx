@@ -50,6 +50,7 @@ export default function Wishlist() {
         try {
             const response = await fetch(`https://api.naayiq.com/wishlist/${id}`, {
                 method: 'DELETE',
+                credentials: "include"
             });
             if (!response.ok) {
                 throw new Error('Failed to delete item from wishlist');
