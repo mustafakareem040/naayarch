@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
 import { NotificationProvider } from "@/components/NotificationContext";
-export const dynamic = 'force-dynamic';
 export const revalidate = 84600
 async function fetchProduct(id) {
     const response = await fetch(`https://api.naayiq.com/products/${id}`, {cache: "force-cache"});

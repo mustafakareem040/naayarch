@@ -1,57 +1,52 @@
+
 import React from 'react';
-import { unstable_cache } from 'next/cache';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
+
 export const runtime = 'edge';
 const ITEMS_PER_PAGE = 15;
-export const dynamic = "force-dynamic"
+export const revalidate = 14400
+const REVALIDATE_SUBBRANDS = 14400;
+const REVALIDATE_PRODUCTS = 14400;
 
-const cachedFetchSubBrands = unstable_cache(
-    async () => {
-        const response = await fetch(
-            'https://api.naayiq.com/subcategories/brands',
-            {
-                headers: { 'Content-Type': 'application/json' },
-            }
-        );
-        if (response.status === 200) {
-            return await response.json();
-        }
-        throw new Error(response.statusText);
-    },
-    ['sub-brands']
-);
+const fetchSubBrands = async () => {
+    const response = await fetch('https://api.naayiq.com/subcategories/brands', {
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'force-cache', // Use 'force-cache' to leverage Data Cache
+        next: { revalidate: REVALIDATE_SUBBRANDS }, // Revalidate every 60 seconds
+    });
 
-const cachedFetchProducts = unstable_cache(
-    async () => {
-        const response = await fetch('https://api.naayiq.com/products', {
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch products');
-        }
+    if (response.status === 200) {
         return response.json();
-    },
-    ['products']
-);
+    }
+    throw new Error(`Failed to fetch sub-brands: ${response.statusText}`);
+};
 
-async function getFilteredProducts(
-    page = 1,
-    query = '',
-    c = '',
-    sc = '',
-    b = ''
-) {
-    const [{ products }, subBrands] = await Promise.all([
-        cachedFetchProducts(),
-        b ? cachedFetchSubBrands() : [{}],
+const fetchProducts = async () => {
+    const response = await fetch('https://api.naayiq.com/products', {
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'force-cache', // Use 'force-cache' to leverage Data Cache
+        next: { revalidate: REVALIDATE_PRODUCTS }, // Revalidate every 60 seconds
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch products');
+    }
+    return response.json();
+};
+
+const getFilteredProducts = async (page = 1, query = '', c = '', sc = '', b = '') => {
+    let [products, subBrands] = await Promise.all([
+        fetchProducts(),
+        b ? fetchSubBrands() : Promise.resolve([]), // Return an empty array if no sub-brands needed
     ]);
+    products = products.products
 
     const subCategories = b
         ? subBrands
             .filter((item) => item.category_id.toString() === b)
             .map((item) => item.id.toString())
-        : null;
+        : [];
 
     const filterProduct = (product) => {
         if (
@@ -69,7 +64,7 @@ async function getFilteredProducts(
             return false;
         if (
             b &&
-            !subCategories.some((b_id) => b_id === product?.brand_id.toString())
+            !subCategories.includes(product?.brand_id.toString())
         )
             return false;
         if (query) {
@@ -86,6 +81,7 @@ async function getFilteredProducts(
         return true;
     };
 
+    // Apply the filter
     let filteredProducts = products.filter(filterProduct);
 
     if (query) {
@@ -109,37 +105,42 @@ async function getFilteredProducts(
         totalProducts,
         hasMore: end < totalProducts,
     };
-}
+};
 
-async function ProductsPage({ searchParams }) {
+// The main ProductsPage component
+const ProductsPage = async ({ searchParams }) => {
     const page = parseInt(searchParams.page) || 1;
     const query = searchParams.query || '';
     const c = searchParams.c || '';
     const sc = searchParams.sc || '';
     const b = searchParams.b || '';
 
-    const { products, totalProducts, hasMore } = await getFilteredProducts(
-        page,
-        query,
-        c,
-        sc,
-        b
-    );
+    try {
+        const { products, totalProducts, hasMore } = await getFilteredProducts(
+            page,
+            query,
+            c,
+            sc,
+            b
+        );
 
-    return (
-        <>
-            <AsyncNavBar />
-            <ProductList
-                initialProducts={products}
-                totalProducts={totalProducts}
-                hasMore={hasMore}
-                initialPage={page}
-                initialQuery={query}
-                initialC={c}
-                initialSc={sc}
-            />
-        </>
-    );
-}
+        return (
+            <>
+                <AsyncNavBar />
+                <ProductList
+                    initialProducts={products}
+                    totalProducts={totalProducts}
+                    hasMore={hasMore}
+                    initialPage={page}
+                    initialQuery={query}
+                    initialC={c}
+                    initialSc={sc}
+                />
+            </>
+        );
+    } catch (error) {
+        return <div>Error: {error.message}</div>;
+    }
+};
 
 export default ProductsPage;

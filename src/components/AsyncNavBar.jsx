@@ -2,12 +2,14 @@ import { Suspense, memo } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-export const dynamic = "force-dynamic"
-
+export const revalidate = 14400
 const fetchWithRevalidate = async (url) => {
     const res = await fetch(url, {
         headers: {
-            'Content-Type': "application/json",
+            'Content-Type': "application/json"
+        },
+        next: {
+            revalidate: 14400
         }
     });
     if (!res.ok) {
