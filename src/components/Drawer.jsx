@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from "next/link";
 import Cookies from 'js-cookie';
 import {CircleArrowRight, CircleArrowLeft} from "lucide-react";
-
 const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
     return (
         <div className="py-2" onClick={onClick}>
