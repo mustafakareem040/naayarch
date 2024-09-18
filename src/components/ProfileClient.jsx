@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AsyncNavBar from "@/components/AsyncNavBar";
 import Footer from "@/components/Footer";
 import { Profile } from "@/components/Profile";
 import Image from "next/image";
