@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import '@/components/NotificationStyles.css';
 import 'slick-carousel/slick/slick-theme.css';
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Lightbox from "yet-another-react-lightbox";
