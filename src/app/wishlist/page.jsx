@@ -6,21 +6,33 @@ import { useRouter } from "next/navigation";
 import { CircleArrowLeft, X } from "lucide-react";
 import ShoppingBag from "@/components/ShoppingBag";
 
-const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => (
-    <div className="bg-white rounded-lg p-4 flex items-center space-x-4 relative mb-4">
-        <Image src={imageUrl} unoptimized={true} alt={name} width={80} height={80} className="object-cover rounded-md" />
-        <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
-            <h3 className="font-medium text-xl">{name}</h3>
-            <p className="text-xl">{price} IQD</p>
+const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
+    const router = useRouter();
+
+    const handleShoppingBagClick = () => {
+        router.push(`/products/${id}`);
+    };
+
+    return (
+        <div className="bg-white rounded-lg p-4 flex items-center space-x-4 relative mb-4">
+            <Image src={imageUrl} unoptimized={true} alt={name} width={130} height={200} className="object-cover rounded-md" />
+            <div className="flex-grow justify-center font-serif items-center text-center mx-auto">
+                <h3 className="font-medium text-xl">{name}</h3>
+                <p className="text-xl">{price} IQD</p>
+            </div>
+            <div className="absolute top-2 right-2 flex items-center space-x-2">
+                <button onClick={() => onRemove(id)}>
+                    <X size={20} />
+                </button>
+                <button onClick={handleShoppingBagClick} className="bg-[#3B5345] rounded-full p-2">
+                    <ShoppingBag width={20} height={20} />
+                </button>
+            </div>
         </div>
-        <button onClick={() => onRemove(id)} className="absolute top-2 right-2">
-            <X size={20} />
-        </button>
-        <button className="bg-[#3B5345] rounded-full p-2">
-            <ShoppingBag width={28} height={28} />
-        </button>
-    </div>
-);
+    );
+};
+
+
 
 export default function Wishlist() {
     const router = useRouter();
