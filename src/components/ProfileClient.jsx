@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from "@/components/Footer";
@@ -10,6 +9,8 @@ import Cookies from 'js-cookie';
 import {setIsAuthenticated} from "@/lib/features/authSlice";
 import {useSelector} from "react-redux";
 import Loading from "@/components/Loading";
+
+
 
 export default function ProfileClient() {
     const router = useRouter();
