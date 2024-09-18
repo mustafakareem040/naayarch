@@ -6,6 +6,7 @@ import AsyncNavBar from "@/components/AsyncNavBar";
 import Footer from "@/components/Footer";
 import {Profile} from "@/components/Profile";
 import Image from "next/image";
+import {useAppSelector} from "@/lib/hook";
 
 async function getUserData() {
     const response = await fetch('https://api.naayiq.com/user/check-auth', {
@@ -21,23 +22,12 @@ export default function ProfileClient() {
     const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 
     useEffect(() => {
-        getUserData()
-            .then(data => {
-                if (!data.isAuthenticated) {
-                    router.push('/login');
-                } else {
-                    setUserData(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
+            if (!isAuthenticated) {
                 router.push('/login');
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            }
     }, [router]);
 
     return useMemo(() => {
