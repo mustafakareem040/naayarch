@@ -196,7 +196,7 @@ export default function ProductDetail({ product }) {
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
             >
                 <WishlistHeart
-                    productId={product.id}
+                    product={product}
                 />
             </button>
 
