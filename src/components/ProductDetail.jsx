@@ -1,5 +1,5 @@
-'use client'
-import React, {useState, useEffect, useCallback} from 'react';
+'use client';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Minus, Plus } from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -74,8 +74,6 @@ export default function ProductDetail({ product }) {
         setSelectedSize(newSize);
     };
 
-
-
     const isInCart = () => {
         return cartItems.some(item =>
             item.product_id === product.id &&
@@ -116,7 +114,7 @@ export default function ProductDetail({ product }) {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        customPaging: function(i) {
+        customPaging: function (i) {
             return (
                 <div
                     style={{
@@ -134,7 +132,18 @@ export default function ProductDetail({ product }) {
 
     const lightboxSlides = images.map(src => ({
         src: `https://storage.naayiq.com/resources/${src}`
-    }));
+}));
+
+    // Determine if the product is out of stock
+    const isOutOfStock = (() => {
+        if (product.has_size && selectedSize) {
+            return selectedSize.qty === 0;
+        } else if (product.has_color && selectedColor) {
+            return selectedColor.qty === 0;
+        } else {
+            return product.qty === 0;
+        }
+    })();
 
     return (
         <div className="flex overflow-x-hidden font-serif relative z-40 font-medium flex-col -mt-4 -mx-4 bg-white">
@@ -143,45 +152,45 @@ export default function ProductDetail({ product }) {
                     <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
                         <Image
                             src={`https://storage.naayiq.com/resources/${image}`}
-                            alt={`Product image ${index + 1}`}
-                            fill={true}
-                            unoptimized={true}
-                            className="w-full object-cover cursor-pointer"
-                            priority={index === 0}
-                        />
-                    </div>
-                ))}
-            </Slider>
+                                alt={`Product image ${index + 1}`}
+                                fill={true}
+                                unoptimized={true}
+                                className="w-full object-cover cursor-pointer"
+                                priority={index === 0}
+                                />
+                                </div>
+                                ))}
+                    </Slider>
 
-            <Lightbox
-                open={lightboxOpen}
-                close={() => setLightboxOpen(false)}
-                index={lightboxIndex}
-                slides={lightboxSlides}
-                plugins={[Zoom, Fullscreen]}
-                carousel={{
-                    finite: images.length <= 1,
-                    navigationDisabled: images.length <= 1
-                }}
-                animation={{ zoom: 500 }}
-                zoom={{
-                    maxZoomPixelRatio: 5,
-                    zoomInMultiplier: 2,
-                    doubleTapDelay: 300,
-                    doubleClickDelay: 300,
-                    doubleClickMaxStops: 2,
-                    keyboardMoveDistance: 50,
-                    wheelZoomDistanceFactor: 100,
-                    pinchZoomDistanceFactor: 100,
-                    scrollToZoom: true,
-                }}
+                    <Lightbox
+                    open={lightboxOpen}
+                    close={() => setLightboxOpen(false)}
+                    index={lightboxIndex}
+                    slides={lightboxSlides}
+                    plugins={[Zoom, Fullscreen]}
+                    carousel={{
+                        finite: images.length <= 1,
+                        navigationDisabled: images.length <= 1
+                    }}
+                    animation={{ zoom: 500 }}
+                    zoom={{
+                        maxZoomPixelRatio: 5,
+                        zoomInMultiplier: 2,
+                        doubleTapDelay: 300,
+                        doubleClickDelay: 300,
+                        doubleClickMaxStops: 2,
+                        keyboardMoveDistance: 50,
+                        wheelZoomDistanceFactor: 100,
+                        pinchZoomDistanceFactor: 100,
+                        scrollToZoom: true,
+                    }}
             />
 
             <button
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
                 onClick={router.back}
             >
-                <ArrowLeft width={30} height={30} strokeWidth={1}/>
+                <ArrowLeft width={30} height={30} strokeWidth={1} />
             </button>
             <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
@@ -191,9 +200,14 @@ export default function ProductDetail({ product }) {
                 />
             </button>
 
-            <div className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
+            <div
+                className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
                 <h1 className="text-xl font-semibold mb-1 capitalize">{product.name}</h1>
+
+                {isOutOfStock && (
+                    <p className="text-red-500 mt-2 text-lg font-semibold">Out of Stock</p>
+                )}
 
                 {product.has_color && product.colors.length > 0 && (
                     <div className="mb-10 mt-6">
@@ -204,6 +218,7 @@ export default function ProductDetail({ product }) {
                                     <button
                                         className={`w-20 h-20 rounded-full border-2 ${selectedColor?.id === color.id ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden`}
                                         onClick={() => handleColorChange(color)}
+                                        disabled={color.qty === 0}
                                     >
                                         {color.images && color.images.length > 0 && (
                                             <Image
@@ -230,8 +245,8 @@ export default function ProductDetail({ product }) {
                             className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
                         >
                             {(selectedColor && selectedColor.sizes ? selectedColor.sizes : product.sizes).map((size) => (
-                                <option key={size.id} value={size.id}>
-                                    Size: {size.name}
+                                <option key={size.id} value={size.id} disabled={size.qty === 0}>
+                                    Size: {size.name} {size.qty === 0 && '(Out of Stock)'}
                                 </option>
                             ))}
                         </select>
@@ -254,7 +269,7 @@ export default function ProductDetail({ product }) {
                                 } else {
                                     return `<p>${item}</p>`;
                                 }
-                            }).join('').replace(/(<li>.*?<\/li>)+/g, function (match) {
+                            }).join('').replace(/(<li>.?<\/li>)+/g, function (match) {
                                 return `<ul class="list-disc pl-5 mb-2">${match}</ul>`;
                             })
                         }}
@@ -270,6 +285,7 @@ export default function ProductDetail({ product }) {
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                 className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                disabled={isOutOfStock}
                             >
                                 <Minus className="w-4 h-4 text-[#3B5345]"/>
                             </button>
@@ -277,38 +293,60 @@ export default function ProductDetail({ product }) {
                             <button
                                 onClick={() => setQuantity(quantity + 1)}
                                 className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                disabled={isOutOfStock}
                             >
                                 <Plus className="w-4 h-4 text-[#3B5345]"/>
                             </button>
                         </div>
                     </div>
 
-                    {isInCart() ? (
-                        <Link
-                            href="/cart"
-                            className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
-                        >
-                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z" stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M18.8318 14.0001H18.8423" stroke="#3B5345" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M10.6638 14.0001H10.6743" stroke="#3B5345" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Buy Now
-                        </Link>
-                    ) : (
-                        <button
-                            onClick={handleAddToCart}
-                            className="w-full font-serif bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
-                        >
-                            <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Add To Cart
-                        </button>
+                    {/* Conditionally render the Add to Cart or Buy Now button based on stock status */}
+                    {!isOutOfStock && (
+                        isInCart() ? (
+                            <Link
+                                href="/cart"
+                                className="w-full font-serif bg-[rgba(59,83,69,0.05)] text-[#3B5345] py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300 border border-[#3B5345]"
+                            >
+                                <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
+                                        stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path
+                                        d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
+                                        stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path d="M18.8318 14.0001H18.8423" stroke="#3B5345" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M10.6638 14.0001H10.6743" stroke="#3B5345" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Buy Now
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleAddToCart}
+                                className="w-full font-serif bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg flex items-center justify-center transition duration-300"
+                            >
+                                <svg className="mr-2" width="29" height="28" viewBox="0 0 29 28" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
+                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path
+                                        d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
+                                        stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
+                                        strokeLinejoin="round"/>
+                                    <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
+                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Add To Cart
+                            </button>
+                        )
                     )}
                 </footer>
             </div>
