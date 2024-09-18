@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useOptimistic } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft, X } from "lucide-react";
@@ -40,12 +40,15 @@ const WishlistItem = ({ id, name, price, imageUrl, onRemove }) => {
     );
 };
 
-
-
 export default function Wishlist() {
     const router = useRouter();
     const [wishlistItems, setWishlistItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [optimisticWishlist, addOptimisticWishlistItem] = useOptimistic(
+        wishlistItems,
+        (state, newItem) => [...state, newItem]
+    );
 
     const fetchWishlist = async () => {
         try {
@@ -70,6 +73,10 @@ export default function Wishlist() {
     }, []);
 
     const handleRemoveItem = async (id) => {
+        // Optimistically remove the item from the UI
+        const updatedItems = optimisticWishlist.filter(item => item.id !== id);
+        addOptimisticWishlistItem(updatedItems);
+
         try {
             const response = await fetch(`https://api.naayiq.com/wishlist/${id}`, {
                 method: 'DELETE',
@@ -78,10 +85,12 @@ export default function Wishlist() {
             if (!response.ok) {
                 throw new Error('Failed to delete item from wishlist');
             }
-            // Refresh the wishlist after successful deletion
-            await fetchWishlist();
+            // Update the actual state after successful deletion
+            setWishlistItems(updatedItems);
         } catch (error) {
             console.error('Error removing item from wishlist:', error);
+            // Revert the optimistic update if the server request fails
+            await fetchWishlist();
         }
     };
 
@@ -96,7 +105,7 @@ export default function Wishlist() {
             <main className="flex-grow flex flex-col items-center">
                 {isLoading ? (
                     <Loading />
-                ) : wishlistItems.length === 0 ? (
+                ) : optimisticWishlist.length === 0 ? (
                     <>
                         <div className="relative w-full h-[33vh]">
                             <Image
@@ -120,14 +129,14 @@ export default function Wishlist() {
                     </>
                 ) : (
                     <div className="w-full max-w-md">
-                        {wishlistItems.map(item => (
+                        {optimisticWishlist.map(item => (
                             <WishlistItem
                                 key={item.id}
                                 id={item.id}
                                 name={item.name}
                                 price={item.price}
                                 imageUrl={`https://storage.naayiq.com/resources/${item.images[0]}`}
-                                onRemove={() => handleRemoveItem(item.id)}
+                                onRemove={handleRemoveItem}
                             />
                         ))}
                     </div>
