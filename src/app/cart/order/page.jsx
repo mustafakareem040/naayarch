@@ -18,8 +18,9 @@ export default function OrderNow() {
 
     useEffect(() => {
         if (!isOrderDataPresent) {
-            setTimeout(() => router.push('/cart'), 500);
+            router.push('/cart');
         }
+        // No timeout; rely on state presence
     }, [isOrderDataPresent, router]);
 
     if (!isOrderDataPresent) {
