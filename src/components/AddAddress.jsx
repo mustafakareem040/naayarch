@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from "next/navigation";
 import { addAddress } from "@/lib/features/addressesSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/hook";
+import { useAppDispatch } from "@/lib/hook";
 
 export default function AddAddress() {
     const dispatch = useAppDispatch();
-    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
     const [addressType, setAddressType] = useState('');
     const [formData, setFormData] = useState({
         full_name: '',

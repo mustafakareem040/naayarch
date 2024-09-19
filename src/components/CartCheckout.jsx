@@ -19,7 +19,6 @@ const CartCheckout = ({ subTotal, discount }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        // Load order data and user info from local storage
         const storedOrder = JSON.parse(localStorage.getItem('order') || '{}');
         const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         setOrderData(storedOrder);
@@ -106,7 +105,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 router.push(`/cart/order/confirm?id=${data.cart.id}`);
             } else {
                 const errorData = await response.json();
-                if (errorData.errors && errorData.errors.length > 0) {
+                if (errorData.errors) {
                     addNotification('error', errorData.errors[0].msg);
                 } else {
                     addNotification('error', 'An error occurred while submitting the order.');
@@ -116,10 +115,9 @@ const CartCheckout = ({ subTotal, discount }) => {
             console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
         } finally {
-            setIsSubmitting(false); // Reset submitting state
+            setIsSubmitting(false);
         }
-    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);
-    return (
+    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);    return (
         <>
             <header className="flex items-center mb-12">
                 <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
@@ -181,7 +179,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 <button
                     onClick={handleSubmitOrder}
                     className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
-                    disabled={isSubmitting} // Disable the button during submission
+                    disabled={isSubmitting}
                 >
                     {isSubmitting ? 'Submitting...' : 'Submit Order'}
                 </button>
