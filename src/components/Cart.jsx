@@ -195,7 +195,6 @@ const Cart = () => {
         // Dispatch the setOrder action
         dispatch(setOrder(orderData));
 
-        // Set the flag to indicate order has been set
         setIsOrderSet(true);
     }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch]);
 
@@ -203,9 +202,10 @@ const Cart = () => {
     useEffect(() => {
         if (isOrderSet) {
             console.log('Order has been set. Navigating to /cart/order');
-            router.push('/cart/order');
-            // Reset the flag to prevent redundant navigation
-            setIsOrderSet(false);
+            setTimeout(() => {
+                router.push('/cart/order');
+                setIsOrderSet(false);
+            }, 3000)
         }
     }, [isOrderSet, router]);
 

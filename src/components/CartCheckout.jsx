@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/lib/hook';
-import { setOrder } from '@/lib/features/orderSlice';
 import { useNotification } from '@/components/NotificationContext';
 import './NotificationStyles.css';
 
@@ -18,10 +17,9 @@ const CartCheckout = ({ subTotal, discount }) => {
     const { addNotification } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false); // New State
 
-    // Calculate delivery fee based on governorate and subtotal
     const delivery = useMemo(() => {
         if (subTotal > 100000) {
-            return 0; // Free delivery for orders over 100,000 IQD
+            return 0;
         }
         return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
     }, [subTotal, shippingAddress]);

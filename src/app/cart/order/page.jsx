@@ -11,18 +11,15 @@ export default function OrderNow() {
     const { subTotal, delivery, discount } = useAppSelector(state => state.order.info);
     const router = useRouter();
 
-    // Determine if the necessary data is available
     const isOrderDataPresent = (
         typeof subTotal === "number" &&
-        typeof delivery === "number" &&
         typeof discount === "number"
     );
 
     useEffect(() => {
         if (!isOrderDataPresent) {
-            router.push('/cart');
+            setTimeout(() => router.push('/cart'), 500);
         }
-        // No timeout; rely on state presence
     }, [isOrderDataPresent, router]);
 
     if (!isOrderDataPresent) {
