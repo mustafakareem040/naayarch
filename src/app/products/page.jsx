@@ -3,7 +3,6 @@ import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
-export const runtime = 'edge';
 const ITEMS_PER_PAGE = 15;
 export const revalidate = 14400
 const REVALIDATE_SUBBRANDS = 14400;
