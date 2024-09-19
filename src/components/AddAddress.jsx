@@ -1,9 +1,9 @@
 'use client'
-import React, { useState } from 'react';
-import {HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft} from 'lucide-react';
-import {useRouter, useSearchParams} from "next/navigation";
-import {addAddress} from "@/lib/features/addressesSlice";
-import {useAppDispatch, useAppSelector} from "@/lib/hook";
+import React, { useState, useEffect } from 'react';
+import { HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft } from 'lucide-react';
+import { useRouter, useSearchParams } from "next/navigation";
+import { addAddress } from "@/lib/features/addressesSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hook";
 
 export default function AddAddress() {
     const dispatch = useAppDispatch();
@@ -22,6 +22,10 @@ export default function AddAddress() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    useEffect(() => {
+        const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+    }, []);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -34,11 +38,16 @@ export default function AddAddress() {
 
         const newAddress = { ...formData, type: addressType };
 
-        if (!isAuthenticated) {
-            dispatch(addAddress(newAddress));
-            handleRedirect();
-            return;
-        }
+        // Save to local storage
+        const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+        const updatedAddresses = [...storedAddresses, newAddress];
+        localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
+
+        // Dispatch to Redux store
+        dispatch(addAddress(newAddress));
+
+        handleRedirect();
+        return;
 
         try {
             const response = await fetch('https://api.naayiq.com/addresses', {
@@ -55,10 +64,16 @@ export default function AddAddress() {
                 throw new Error(errorData.message || 'Failed to add address');
             }
 
-            dispatch(addAddress(newAddress));
             handleRedirect();
         } catch (err) {
             setError(err.message);
+            // If there's an error, remove the address from local storage
+            const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+            const filteredAddresses = storedAddresses.filter(addr =>
+                addr.full_name !== newAddress.full_name ||
+                addr.phone_number !== newAddress.phone_number
+            );
+            localStorage.setItem('addresses', JSON.stringify(filteredAddresses));
         } finally {
             setIsLoading(false);
         }
