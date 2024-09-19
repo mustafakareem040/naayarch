@@ -84,13 +84,13 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
 
     useEffect(() => {
         if (filter) {
-            document.addEventListener('mousedown', handleOutsideClick);
+            document.addEventListener('click', handleOutsideClick);
         } else {
-            document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('click', handleOutsideClick);
         }
 
         return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('click', handleOutsideClick);
         };
     }, [handleOutsideClick, filter]);
 
