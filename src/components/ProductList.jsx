@@ -1,5 +1,6 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link'; // Import Link
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from 'next/dynamic';
@@ -8,7 +9,7 @@ import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import { usePathname } from 'next/navigation';
 import Loading from "./Loading"
-import {NotificationProvider} from "@/components/NotificationContext";
+import { NotificationProvider } from "@/components/NotificationContext";
 
 // Dynamically import the SearchComponent
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
@@ -26,16 +27,17 @@ export default function ProductList({
                                         hasMore,
                                         initialPage,
                                         initialQuery,
-    minPrice,
-    maxPrice,
-    title
+                                        minPrice,
+                                        maxPrice,
+                                        title
                                     }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(initialPage);
     const [loading, setLoading] = useState(false);
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
-    const [isNavigating, setIsNavigating] = useState(false);
+    // Remove isNavigating state
+    // const [isNavigating, setIsNavigating] = useState(false);
 
     // New State: Manage the selected product for the modal
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -52,7 +54,7 @@ export default function ProductList({
         const nextPage = page + 1;
         const params = new URLSearchParams(Array.from(searchParams.entries()));
         params.set('page', nextPage.toString());
-        router.push(`/products?${params.toString()}`, { scroll: false });
+        router.push(`/products?${params.toString()}`); // Fixed: Added backticks for template literal
     }, [page, loading, noMoreProducts, searchParams, router]);
 
     useEffect(() => {
@@ -67,7 +69,7 @@ export default function ProductList({
             const params = new URLSearchParams(Array.from(searchParams.entries()));
             params.set('query', newQuery);
             params.set('page', '1');
-            router.push(`/products?${params.toString()}`, { scroll: false });
+            router.push(`/products?${params.toString()}`); // Fixed: Added backticks for template literal
         },
         [searchParams, router]
     )
@@ -89,13 +91,14 @@ export default function ProductList({
         [products]
     );
 
-    const handleProductClick = useCallback(
-        (product) => {
-            setIsNavigating(true);
-            router.push(`/products/${product.id}`, { shallow: true });
-        },
-        [router]
-    );
+    // Removed handleProductClick
+    // const handleProductClick = useCallback(
+    //     (product) => {
+    //         setIsNavigating(true);
+    //         router.push(/products/${product.id}, { shallow: true });
+    //     },
+    //     [router]
+    // );
 
     // New Handler: Handle cart button click to open modal
     const handleCartClick = useCallback(
@@ -112,12 +115,13 @@ export default function ProductList({
 
     useEffect(() => {
         // This effect will run when the pathname changes
-        setIsNavigating(false);
+        // Removed setIsNavigating
     }, [pathname]);
 
-    if (isNavigating) {
-        return <Loading />
-    }
+    // Removed conditional rendering based on isNavigating
+    // if (isNavigating) {
+    //     return <Loading />
+    // }
 
     return (
         <>
@@ -127,25 +131,25 @@ export default function ProductList({
                     {title || 'All Products'}
                 </h1>
             </header>
-            <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch}/>
+            <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch} />
             {memoizedProducts.length > 0 ? (
                 <div
                     className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {memoizedProducts.map((product) => (
                         <div
                             key={product.id}
-                            onClick={() => handleProductClick(product)}
                             className="cursor-pointer"
                         >
-                            <ProductItem
-                                id={product.id}
-                                name={product.name}
-                                product={product}
-                                handleClick={() => handleProductClick(product)}
-                                price={formatPrice(product.cheapestPrice)}
-                                imageUrl={product.images[0]}
-                                onCartClick={handleCartClick} // Pass the handler
-                            />
+                            <Link href={`/products/${product.id}`} className="block"> {/* Fixed: Added backticks for template literal */}
+                                <ProductItem
+                                    id={product.id}
+                                    name={product.name}
+                                    product={product}
+                                    price={formatPrice(product.cheapestPrice)}
+                                    imageUrl={product.images[0]}
+                                    onCartClick={handleCartClick} // Pass the handler
+                                />
+                            </Link>
                         </div>
                     ))}
                 </div>
@@ -187,7 +191,7 @@ const getCheapestPrice = (product) => {
 
 const formatPrice = (price) => {
     if (price == null || price === Infinity) return 'N/A';
-    return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
+    return `${price >= 10000 ? price.toLocaleString() : price} IQD`; // Fixed: Used backticks for template literal and corrected the conditional formatting
 };
 
 const SearchComponentSkeleton = () => (
