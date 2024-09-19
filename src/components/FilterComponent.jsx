@@ -33,7 +33,8 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
         }
     }, [handleFilterClose, modalRef]);
 
-    const handleApplyFilter = () => {
+    const handleApplyFilter = (e) => {
+        e.preventDefault(); // Prevent default form submission
         const params = new URLSearchParams(searchParams);
         params.set('minPrice', priceRange[0]);
         params.set('maxPrice', priceRange[1]);
@@ -51,7 +52,8 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
         handleFilterClose();
     };
 
-    const handleResetFilter = () => {
+    const handleResetFilter = (e) => {
+        e.preventDefault(); // Prevent default button behavior
         setPriceRange([minPrice, maxPrice]);
         setInStock(true);
         setSortBy('');
@@ -84,24 +86,28 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
 
     useEffect(() => {
         if (filter) {
-            document.addEventListener('click', handleOutsideClick);
+            document.addEventListener('mousedown', handleOutsideClick);
+            document.addEventListener('touchstart', handleOutsideClick);
         } else {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('touchstart', handleOutsideClick);
         }
 
         return () => {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('touchstart', handleOutsideClick);
         };
     }, [handleOutsideClick, filter]);
 
     return (
-        <>
+        <form onSubmit={handleApplyFilter}>
             <div className="flex justify-center mb-2">
                 <div className="w-10 h-1 bg-black rounded-full"></div>
             </div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-medium font-sans">Filter Products</h2>
                 <button
+                    type="button"
                     onClick={handleResetFilter}
                     className="text-[#97C86C] font-sans text-sm font-medium"
                 >
@@ -110,6 +116,7 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
             </div>
 
             <div className="space-y-6">
+                {/* Price Range section */}
                 <div>
                     <h3 className="text-lg font-medium font-sans mb-4">Price Range</h3>
                     <ThemeProvider theme={theme}>
@@ -167,10 +174,13 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
                         </div>
                     </ThemeProvider>
                 </div>
+
+                {/* Availability section */}
                 <div>
                     <h3 className="text-lg font-sans font-medium mb-4">Availability</h3>
                     <div className="flex font-sans items-center space-x-4">
                         <button
+                            type="button"
                             onClick={() => setInStock(true)}
                             className={`flex items-center text-black`}
                         >
@@ -183,6 +193,7 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
                             In Stock
                         </button>
                         <button
+                            type="button"
                             onClick={() => setInStock(false)}
                             className={`flex items-center text-black`}
                         >
@@ -197,11 +208,13 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
                     </div>
                 </div>
 
+                {/* Sort by section */}
                 <div>
                     <h3 className="text-lg font-sans font-medium  mb-4">Sort by</h3>
                     <div className="grid font-serif font-medium text-xs ssm:text-base grid-cols-2 gap-9">
                         {['Price: Low to High', 'Name: Z to A', 'Price: High to Low', 'Best Selling', 'Name: A to Z', 'Newest Arrivals'].map((option) => (
                             <button
+                                type="button"
                                 key={option}
                                 onClick={() => setSortBy(option)}
                                 className={`py-6 px-1 rounded-md border ${
@@ -218,12 +231,12 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
             </div>
 
             <button
-                onClick={handleApplyFilter}
+                type="submit"
                 className="w-full bg-[#3B5345] font-sans text-white py-3 rounded-lg mt-6 text-lg font-medium"
             >
                 Apply Filter
             </button>
-        </>
+        </form>
     );
 };
 
