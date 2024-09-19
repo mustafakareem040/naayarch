@@ -92,7 +92,7 @@ export default function ProductList({
     const handleProductClick = useCallback(
         (product) => {
             setIsNavigating(true);
-            router.push(`/products/${product.id}`, {shallow: true});
+            router.push(`/products/${product.id}`, { shallow: true });
         },
         [router]
     );
