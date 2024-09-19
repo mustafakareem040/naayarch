@@ -1,40 +1,48 @@
 'use client';
-import React, {useState, useCallback, useMemo, useEffect} from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/lib/hook';
 import { useNotification } from '@/components/NotificationContext';
 import './NotificationStyles.css';
 
 const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
-    const { shippingAddress, coupon_id, items } = useSelector(state => state.order);
-    const { info } = useSelector(state => state.user);
+    const [orderData, setOrderData] = useState({
+        shippingAddress: null,
+        coupon_id: null,
+        items: [],
+    });
+    const [userInfo, setUserInfo] = useState({ userId: null });
     const router = useRouter();
-    const dispatch = useAppDispatch();
     const { addNotification } = useNotification();
-    const [isSubmitting, setIsSubmitting] = useState(false); // New State
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        // Load order data and user info from local storage
+        const storedOrder = JSON.parse(localStorage.getItem('order') || '{}');
+        const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        setOrderData(storedOrder);
+        setUserInfo(storedUserInfo);
+        router.prefetch("/cart/order/confirm");
+    }, []);
 
     const delivery = useMemo(() => {
         if (subTotal > 100000) {
             return 0; // Free delivery for orders over 100,000 IQD
         }
-        return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
-    }, [subTotal, shippingAddress]);
+        return orderData.shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
+    }, [subTotal, orderData.shippingAddress]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
-    useEffect(() => {
-        router.prefetch("/cart/order/confirm")
-    }, []);
+
     const renderShippingAddress = () => (
-        shippingAddress ? (
+        orderData.shippingAddress ? (
             <>
                 <div className="border border-gray-200 rounded-lg p-4">
-                    <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
-                    <p>{shippingAddress.address}</p>
-                    <p>{shippingAddress.phone_number}</p>
+                    <p>{orderData.shippingAddress.governorate}, {orderData.shippingAddress.city}</p>
+                    <p>{orderData.shippingAddress.address}</p>
+                    <p>{orderData.shippingAddress.phone_number}</p>
                 </div>
                 <Link
                     href="/cart/choose-address"
@@ -57,26 +65,25 @@ const CartCheckout = ({ subTotal, discount }) => {
     const handleSubmitOrder = useCallback(async () => {
         if (isSubmitting) return; // Prevent multiple submissions
 
-        // Optionally, validate shippingAddress and items before submission
-        if (!shippingAddress) {
+        if (!orderData.shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
             return;
         }
 
         setIsSubmitting(true);
 
-        const orderData = {
-            user_id: info?.userId || null,
+        const submitData = {
+            user_id: userInfo.userId || null,
             notes: note,
-            full_name: shippingAddress?.full_name,
-            governorate: shippingAddress?.governorate,
-            city: shippingAddress?.city,
-            address: shippingAddress?.address,
-            closest_point: shippingAddress?.closest_point,
-            phone_number: shippingAddress?.phone_number,
-            type: shippingAddress?.type,
-            coupon_id: coupon_id,
-            items: items.map(item => ({
+            full_name: orderData.shippingAddress?.full_name,
+            governorate: orderData.shippingAddress?.governorate,
+            city: orderData.shippingAddress?.city,
+            address: orderData.shippingAddress?.address,
+            closest_point: orderData.shippingAddress?.closest_point,
+            phone_number: orderData.shippingAddress?.phone_number,
+            type: orderData.shippingAddress?.type,
+            coupon_id: orderData.coupon_id,
+            items: orderData.items.map(item => ({
                 product_id: item.product_id,
                 size_id: item.size_id || null,
                 color_id: item.color_id || null,
@@ -91,7 +98,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(orderData),
+                body: JSON.stringify(submitData),
             });
 
             if (response.ok) {
@@ -111,8 +118,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         } finally {
             setIsSubmitting(false); // Reset submitting state
         }
-    }, [note, shippingAddress, items, dispatch, addNotification, router, coupon_id, info?.userId, isSubmitting]);
-
+    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);
     return (
         <>
             <header className="flex items-center mb-12">
