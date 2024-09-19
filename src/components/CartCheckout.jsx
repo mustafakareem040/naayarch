@@ -58,7 +58,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         if (isSubmitting) return; // Prevent multiple submissions
 
         // Optionally, validate shippingAddress and items before submission
-        if (!shippingAddress || items.length === 0) {
+        if (!shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
             return;
         }
