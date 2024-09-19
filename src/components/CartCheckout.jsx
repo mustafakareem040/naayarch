@@ -8,8 +8,8 @@ import './NotificationStyles.css';
 
 const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
-    const [address, setAddress] = useState(null);
     const [orderData, setOrderData] = useState({
+        shippingAddress: null,
         coupon_id: null,
         items: [],
     });
@@ -21,10 +21,8 @@ const CartCheckout = ({ subTotal, discount }) => {
     useEffect(() => {
         const storedOrder = JSON.parse(localStorage.getItem('orderData') || '{}');
         const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        const storedAddress = JSON.parse(localStorage.getItem('selectedAddress') || 'null');
         setOrderData(storedOrder);
         setUserInfo(storedUserInfo);
-        setAddress(storedAddress);
         router.prefetch("/cart/order/confirm");
     }, []);
 
@@ -32,18 +30,18 @@ const CartCheckout = ({ subTotal, discount }) => {
         if (subTotal > 100000) {
             return 0; // Free delivery for orders over 100,000 IQD
         }
-        return address?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
-    }, [subTotal, address]);
+        return orderData.shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
+    }, [subTotal, orderData.shippingAddress]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
     const renderShippingAddress = () => (
-        address ? (
+        orderData.shippingAddress ? (
             <>
                 <div className="border border-gray-200 rounded-lg p-4">
-                    <p>{address.governorate}, {address.city}</p>
-                    <p>{address.address}</p>
-                    <p>{address.phone_number}</p>
+                    <p>{orderData.shippingAddress.governorate}, {orderData.shippingAddress.city}</p>
+                    <p>{orderData.shippingAddress.address}</p>
+                    <p>{orderData.shippingAddress.phone_number}</p>
                 </div>
                 <Link
                     href="/cart/choose-address"
@@ -64,7 +62,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     );
 
     const handleSubmitOrder = useCallback(async () => {
-        if (!address) {
+        if (!orderData.shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
             return;
         }
@@ -74,13 +72,13 @@ const CartCheckout = ({ subTotal, discount }) => {
         const submitData = {
             user_id: userInfo.userId || null,
             notes: note,
-            full_name: address?.full_name,
-            governorate: address?.governorate,
-            city: address?.city,
-            address: address?.address,
-            closest_point: address?.closest_point,
-            phone_number: address?.phone_number,
-            type: address?.type,
+            full_name: orderData.shippingAddress?.full_name,
+            governorate: orderData.shippingAddress?.governorate,
+            city: orderData.shippingAddress?.city,
+            address: orderData.shippingAddress?.address,
+            closest_point: orderData.shippingAddress?.closest_point,
+            phone_number: orderData.shippingAddress?.phone_number,
+            type: orderData.shippingAddress?.type,
             coupon_id: orderData.coupon_id,
             items: orderData.items.map(item => ({
                 product_id: item.product_id,
@@ -117,10 +115,8 @@ const CartCheckout = ({ subTotal, discount }) => {
         } finally {
             setIsSubmitting(false);
         }
-    }, [note, orderData, userInfo, address, addNotification, router]);
-
-    return (
-        <>
+    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);
+    return (<>
             <header className="flex items-center mb-12">
                 <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>

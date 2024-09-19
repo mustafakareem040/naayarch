@@ -12,7 +12,7 @@ const ChooseAddress = () => {
     useEffect(() => {
         // Load addresses and order from local storage
         const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
-        const storedOrder = JSON.parse(localStorage.getItem('order') || '{}');
+        const storedOrder = JSON.parse(localStorage.getItem('orderData') || '{}');
         setAddresses(storedAddresses);
         setOrder(storedOrder);
     }, []);
@@ -21,7 +21,7 @@ const ChooseAddress = () => {
         const updatedOrder = { ...order, shippingAddress: address };
         setOrder(updatedOrder);
         // Save updated order to local storage
-        localStorage.setItem('order', JSON.stringify(updatedOrder));
+        localStorage.setItem('orderData', JSON.stringify(updatedOrder));
         router.push('/cart/order');
     };
 
