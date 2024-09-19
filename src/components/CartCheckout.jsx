@@ -1,13 +1,13 @@
-'use client'
+'use client';
 import React, { useState, useCallback, useMemo } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "@/lib/hook";
-import { setOrder } from "@/lib/features/orderSlice";
-import { useNotification } from "@/components/NotificationContext";
-import "./NotificationStyles.css"
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/lib/hook';
+import { setOrder } from '@/lib/features/orderSlice';
+import { useNotification } from '@/components/NotificationContext';
+import './NotificationStyles.css';
 
 const CartCheckout = ({ subTotal, discount }) => {
     const [note, setNote] = useState('');
@@ -16,6 +16,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { addNotification } = useNotification();
+    const [isSubmitting, setIsSubmitting] = useState(false); // New State
 
     // Calculate delivery fee based on governorate and subtotal
     const delivery = useMemo(() => {
@@ -25,7 +26,45 @@ const CartCheckout = ({ subTotal, discount }) => {
         return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
     }, [subTotal, shippingAddress]);
 
+    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
+
+    const renderShippingAddress = () => (
+        shippingAddress ? (
+            <>
+                <div className="border border-gray-200 rounded-lg p-4">
+                    <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
+                    <p>{shippingAddress.address}</p>
+                    <p>{shippingAddress.phone_number}</p>
+                </div>
+                <Link
+                    href="/cart/choose-address"
+                    className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                >
+                    <span className="text-base font-semibold">Choose another address</span>
+                </Link>
+            </>
+        ) : (
+            <Link
+                href="/cart/choose-address"
+                prefetch={false}
+                className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+            >
+                <span className="text-base font-semibold">Choose address</span>
+            </Link>
+        )
+    );
+
     const handleSubmitOrder = useCallback(async () => {
+        if (isSubmitting) return; // Prevent multiple submissions
+
+        // Optionally, validate shippingAddress and items before submission
+        if (!shippingAddress || items.length === 0) {
+            addNotification('error', 'Please provide a shipping address.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
         const orderData = {
             user_id: info?.userId || null,
             notes: note,
@@ -58,60 +97,29 @@ const CartCheckout = ({ subTotal, discount }) => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.removeItem('cart');
-                try {
-                    router.push(`/cart/order/confirm?id=${data.cart.id}`);
-                    setTimeout(() => {
-                        dispatch(setOrder({ items: [], shippingAddress: null, note: '', info: {} }));
-                    }, 3000)
-                } catch (error) {
-                    console.error('Navigation error:', error);
-                    addNotification('error', 'An error occurred while redirecting. Please check your order status.');
-                }
+                router.push(`/cart/order/confirm?id=${data.cart.id}`);
+                // Reset the order state immediately after navigation
+                dispatch(setOrder({ items: [], shippingAddress: null, coupon_id: null, note: '', info: {} }));
             } else {
                 const errorData = await response.json();
                 if (errorData.errors && errorData.errors.length > 0) {
                     addNotification('error', errorData.errors[0].msg);
                 } else {
-                    addNotification('error', 'An error occurred while submitting the order');
+                    addNotification('error', 'An error occurred while submitting the order.');
                 }
             }
         } catch (error) {
             console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
+        } finally {
+            setIsSubmitting(false); // Reset submitting state
         }
-    }, [note, shippingAddress, items, dispatch, addNotification, router]);
-    const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
-
-    const renderShippingAddress = () => (
-        shippingAddress ? (
-            <>
-                <div className="border border-gray-200 rounded-lg p-4">
-                    <p>{shippingAddress.governorate}, {shippingAddress.city}</p>
-                    <p>{shippingAddress.address}</p>
-                    <p>{shippingAddress.phone_number}</p>
-                </div>
-                <Link
-                    href="/cart/choose-address"
-                    className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
-                >
-                    <span className="text-base font-semibold">Choose another address</span>
-                </Link>
-            </>
-        ) : (
-            <Link
-                href="/cart/choose-address"
-                prefetch={false}
-                className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
-            >
-                <span className="text-base font-semibold">Choose address</span>
-            </Link>
-        )
-    );
+    }, [note, shippingAddress, items, dispatch, addNotification, router, coupon_id, info?.userId, isSubmitting]);
 
     return (
         <>
             <header className="flex items-center mb-12">
-                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
             </header>
             <div className="font-serif overflow-x-hidden container mx-auto max-w-md">
@@ -124,7 +132,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                     <h2 className="text-xl font-sans font-medium mb-2">Note</h2>
                     <p className="text-sm text-gray-600 mb-2">Write Any Additional Note</p>
                     <div className="relative">
-                        <FileText className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+                        <FileText className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
                             value={note}
@@ -169,8 +177,10 @@ const CartCheckout = ({ subTotal, discount }) => {
                 </section>
                 <button
                     onClick={handleSubmitOrder}
-                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg">
-                    Submit Order
+                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
+                    disabled={isSubmitting} // Disable the button during submission
+                >
+                    {isSubmitting ? 'Submitting...' : 'Submit Order'}
                 </button>
             </div>
         </>
