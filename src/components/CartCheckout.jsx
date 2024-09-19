@@ -13,9 +13,9 @@ const CartCheckout = ({ subTotal, discount }) => {
         coupon_id: null,
         items: [],
     });
-    const [userInfo, setUserInfo] = useState({ userId: null });
+    const [userInfo, setUserInfo] = useState({userId: null});
     const router = useRouter();
-    const { addNotification } = useNotification();
+    const {addNotification} = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -62,10 +62,13 @@ const CartCheckout = ({ subTotal, discount }) => {
     );
 
     const handleSubmitOrder = useCallback(async () => {
-
         if (!orderData.shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
             return;
+        }
+
+        if (isSubmitting) {
+            return; // Prevent multiple submissions
         }
 
         setIsSubmitting(true);
@@ -116,8 +119,8 @@ const CartCheckout = ({ subTotal, discount }) => {
         } finally {
             setIsSubmitting(false);
         }
-    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);    return (
-        <>
+    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);
+    return (<>
             <header className="flex items-center mb-12">
                 <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
                 <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
