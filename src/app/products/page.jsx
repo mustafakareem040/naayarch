@@ -2,42 +2,60 @@
 import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
+import { unstable_cache } from 'next/cache';
 
 const ITEMS_PER_PAGE = 15;
-export const revalidate = 14400
-const REVALIDATE_SUBBRANDS = 14400;
-const REVALIDATE_PRODUCTS = 14400;
+export const revalidate = 14400; // 4 hours
 
-const fetchSubBrands = async () => {
+const REVALIDATE_SUBBRANDS = 14400; // 4 hours
+const REVALIDATE_PRODUCTS = 14400; // 4 hours
+
+// Wrap fetchSubBrands with unstable_cache
+const fetchSubBrands = unstable_cache(async () => {
     const response = await fetch('https://api.naayiq.com/subcategories/brands', {
         headers: { 'Content-Type': 'application/json' },
-        next: { revalidate: REVALIDATE_SUBBRANDS }, // Revalidate every 60 seconds
     });
 
     if (response.status === 200) {
         return response.json();
     }
     throw new Error(`Failed to fetch sub-brands: ${response.statusText}`);
-};
+}, {
+    // Revalidate every 4 hours
+    revalidate: REVALIDATE_SUBBRANDS,
+});
 
-const fetchProducts = async () => {
+// Wrap fetchProducts with unstable_cache
+const fetchProducts = unstable_cache(async () => {
     const response = await fetch('https://api.naayiq.com/products', {
         headers: { 'Content-Type': 'application/json' },
-        next: { revalidate: REVALIDATE_PRODUCTS }, // Revalidate every 60 seconds
     });
 
     if (!response.ok) {
         throw new Error('Failed to fetch products');
     }
     return response.json();
-};
+}, {
+    // Revalidate every 4 hours
+    revalidate: REVALIDATE_PRODUCTS,
+});
 
-const getFilteredProducts = async (page = 1, query = '', c = '', sc = '', b = '', minPriceA = 0, maxPriceA = Infinity, availability = 'all', sortBy = '') => {
-    let [products, subBrands] = await Promise.all([
-        fetchProducts(),
-        b ? fetchSubBrands() : Promise.resolve([]),
+const getFilteredProducts = async (
+    page = 1,
+    query = '',
+    c = '',
+    sc = '',
+    b = '',
+    minPriceA = 0,
+    maxPriceA = Infinity,
+    availability = 'all',
+    sortBy = ''
+) => {
+    let [productsData, subBrands] = await Promise.all([
+        fetchProducts(), // Uses unstable_cache
+        b ? fetchSubBrands() : Promise.resolve([]), // Uses unstable_cache if 'b' is truthy
     ]);
-    products = products.products;
+    let products = productsData.products;
 
     const subCategories = b
         ? subBrands
@@ -77,16 +95,19 @@ const getFilteredProducts = async (page = 1, query = '', c = '', sc = '', b = ''
             return false;
 
         // Price range filter
-            const productPrices = product.sizes.map(size => parseFloat(size.price));
-            const productMinPrice = Math.min(...productPrices);
-            const productMaxPrice = Math.max(...productPrices);
+        const productPrices = product.sizes.map(size => parseFloat(size.price));
+        const productMinPrice = Math.min(...productPrices);
+        const productMaxPrice = Math.max(...productPrices);
 
-            if (productMinPrice < minPriceA || productMaxPrice > maxPriceA) {
-                return false;
-            }
+        if (productMinPrice < minPriceA || productMaxPrice > maxPriceA) {
+            return false;
+        }
         if (availability !== 'all') {
             const inStock = product.sizes.some(size => size.qty > 0);
-            if ((availability === 'in_stock' && !inStock) || (availability === 'out_of_stock' && inStock)) {
+            if (
+                (availability === 'in_stock' && !inStock) ||
+                (availability === 'out_of_stock' && inStock)
+            ) {
                 return false;
             }
         }
@@ -134,7 +155,7 @@ const getFilteredProducts = async (page = 1, query = '', c = '', sc = '', b = ''
             filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             break;
         default:
-            // Default sorting (you can choose any default sorting method)
+            // Default sorting (optional)
             break;
     }
 
@@ -170,8 +191,8 @@ const ProductsPage = async ({ searchParams }) => {
     const c = searchParams.c || '';
     const sc = searchParams.sc || '';
     const b = searchParams.b || '';
-    const minPriceF = searchParams.minPrice
-    const maxPriceF = searchParams.maxPrice
+    const minPriceF = parseFloat(searchParams.minPrice) || 0;
+    const maxPriceF = parseFloat(searchParams.maxPrice) || Infinity;
     const availability = searchParams.availability || 'all';
     const sortBy = searchParams.sortBy || '';
     const title = searchParams.title || '';
