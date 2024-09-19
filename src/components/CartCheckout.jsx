@@ -19,7 +19,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        const storedOrder = JSON.parse(localStorage.getItem('order') || '{}');
+        const storedOrder = JSON.parse(localStorage.getItem('orderData') || '{}');
         const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
         setOrderData(storedOrder);
         setUserInfo(storedUserInfo);
@@ -65,10 +65,6 @@ const CartCheckout = ({ subTotal, discount }) => {
         if (!orderData.shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
             return;
-        }
-
-        if (isSubmitting) {
-            return; // Prevent multiple submissions
         }
 
         setIsSubmitting(true);

@@ -325,6 +325,10 @@ const Cart = () => {
                             <span>{subTotal} IQD</span>
                         </div>
                         <div className="flex justify-between mb-2">
+                            <span>Delivery</span>
+                            <span>{delivery} IQD</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
                             <span>Discount</span>
                             <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
                         </div>
