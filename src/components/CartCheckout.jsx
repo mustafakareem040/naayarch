@@ -19,7 +19,7 @@ const CartCheckout = ({ subTotal, discount }) => {
 
     const delivery = useMemo(() => {
         if (subTotal > 100000) {
-            return 0;
+            return 0; // Free delivery for orders over 100,000 IQD
         }
         return shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
     }, [subTotal, shippingAddress]);
