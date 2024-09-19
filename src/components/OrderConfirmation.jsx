@@ -9,7 +9,8 @@ import { setOrder } from '@/lib/features/orderSlice';
 const OrderConfirmation = ({ id }) => {
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(setOrder({ items: [], shippingAddress: null, coupon_id: null, note: '', info: {} }));
+        localStorage.removeItem('cart');
+        dispatch(setOrder({items: [], shippingAddress: null, coupon_id: null, note: '', info: {}}))
     }, [dispatch]);
 
     return (

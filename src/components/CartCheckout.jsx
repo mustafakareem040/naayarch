@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,9 @@ const CartCheckout = ({ subTotal, discount }) => {
     }, [subTotal, shippingAddress]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
-
+    useEffect(() => {
+        router.prefetch("/cart/order/confirm")
+    }, []);
     const renderShippingAddress = () => (
         shippingAddress ? (
             <>
@@ -96,9 +98,7 @@ const CartCheckout = ({ subTotal, discount }) => {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.removeItem('cart');
                 router.push(`/cart/order/confirm?id=${data.cart.id}`);
-                dispatch(setOrder({ items: [], shippingAddress: null, coupon_id: null, note: '', info: {} }));
             } else {
                 const errorData = await response.json();
                 if (errorData.errors && errorData.errors.length > 0) {
