@@ -25,46 +25,7 @@ const Cart = () => {
     const dispatch = useAppDispatch();
     const order = useAppSelector(state => state.order);
     const router = useRouter();
-    const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleProceed = useCallback(async () => {
-        setIsProcessing(true);
-        // Prepare the order data
-        const orderData = {
-            ...order,
-            coupon_id: appliedCouponId,
-            items: cartItems.map(item => ({
-                product_id: item.product_id,
-                size_id: item.size_id || null,
-                color_id: item.color_id || null,
-                quantity: item.qty || 1,
-            })),
-            info: { delivery, discount, subTotal },
-        };
-        console.log('Dispatching setOrder with data:', orderData);
-
-        // Dispatch the setOrder action
-        await dispatch(setOrder(orderData));
-
-        // Check if the order was successfully set
-        const updatedOrder = useAppSelector(state => state.order);
-        if (updatedOrder.items.length > 0) {
-            console.log('Order has been set successfully. Navigating to /cart/order');
-            router.push('/cart/order');
-        } else {
-            console.error('Failed to set order. Retrying...');
-            await dispatch(setOrder(orderData));
-            const retryOrder = useAppSelector(state => state.order);
-            if (retryOrder.items.length > 0) {
-                console.log('Order has been set successfully after retry. Navigating to /cart/order');
-                router.push('/cart/order');
-            } else {
-                console.error('Failed to set order after retry.');
-                // Handle the error, perhaps by showing a message to the user
-            }
-        }
-        setIsProcessing(false);
-    }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch, router]);
     const fetchCartItems = useCallback(async () => {
         console.log('Fetching cart items...');
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -216,15 +177,35 @@ const Cart = () => {
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
+    const handleProceed = useCallback(() => {
+        // Prepare the order data
+        const orderData = {
+            ...order,
+            coupon_id: appliedCouponId,
+            items: cartItems.map(item => ({
+                product_id: item.product_id,
+                size_id: item.size_id || null,
+                color_id: item.color_id || null,
+                quantity: item.qty || 1,
+            })),
+            info: { delivery, discount, subTotal },
+        };
+        console.log('Dispatching setOrder with data:', orderData);
+
+        // Dispatch the setOrder action
+        dispatch(setOrder(orderData));
+
+        // Set the flag to indicate order has been set
+        setIsOrderSet(true);
+    }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch]);
 
     // Listen for the flag and navigate when it's set
     useEffect(() => {
         if (isOrderSet) {
             console.log('Order has been set. Navigating to /cart/order');
-            setTimeout(() => {
-                router.push('/cart/order');
-                setIsOrderSet(false);
-            }, 3000)
+            router.push('/cart/order');
+            // Reset the flag to prevent redundant navigation
+            setIsOrderSet(false);
         }
     }, [isOrderSet, router]);
 
@@ -365,10 +346,10 @@ const Cart = () => {
                     </motion.div>
                     <button
                         onClick={handleProceed}
-                        disabled={isProcessing}
+                        disabled={isOrderSet}
                         className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
                     >
-                        {isProcessing ? "Processing..." : "Proceed"}
+                        {isOrderSet ? "Processing..." : "Proceed"}
                     </button>
                 </motion.div>
             </>
