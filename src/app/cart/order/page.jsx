@@ -1,30 +1,29 @@
 'use client'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CartCheckout from "@/components/CartCheckout";
-import { useAppSelector } from "@/lib/hook";
 import { NotificationProvider } from "@/components/NotificationContext";
 import Loading from "@/components/Loading";
 
 export default function OrderNow() {
-    const { subTotal, delivery, discount } = useAppSelector(state => state.order.info);
+    const [orderData, setOrderData] = useState(null);
     const router = useRouter();
 
-    const isOrderDataPresent = (
-        typeof subTotal === "number" &&
-        typeof discount === "number"
-    );
-
     useEffect(() => {
-        if (!isOrderDataPresent) {
+        const storedOrderData = localStorage.getItem('orderData');
+        if (storedOrderData) {
+            const parsedOrderData = JSON.parse(storedOrderData);
+            setOrderData(parsedOrderData);
+        } else {
             router.push('/cart');
         }
-        // No timeout; rely on state presence
-    }, [isOrderDataPresent, router]);
+    }, [router]);
 
-    if (!isOrderDataPresent) {
+    if (!orderData) {
         return <Loading />;
     }
+
+    const { subTotal, delivery, discount } = orderData.info;
 
     return (
         <NotificationProvider>

@@ -10,6 +10,7 @@ const OrderConfirmation = ({ id }) => {
     const dispatch = useAppDispatch();
     useEffect(() => {
         localStorage.removeItem('cart');
+        localStorage.removeItem('orderData');
         dispatch(setOrder({items: [], shippingAddress: null, coupon_id: null, note: '', info: {}}))
     }, [dispatch]);
 

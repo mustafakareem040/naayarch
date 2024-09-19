@@ -178,9 +178,7 @@ const Cart = () => {
     const [confirmAction, setConfirmAction] = useState(() => {});
 
     const handleProceed = useCallback(() => {
-        // Prepare the order data
         const orderData = {
-            ...order,
             coupon_id: appliedCouponId,
             items: cartItems.map(item => ({
                 product_id: item.product_id,
@@ -190,24 +188,19 @@ const Cart = () => {
             })),
             info: { delivery, discount, subTotal },
         };
-        console.log('Dispatching setOrder with data:', orderData);
+        console.log('Storing order data in localStorage:', orderData);
 
-        // Dispatch the setOrder action
-        dispatch(setOrder(orderData));
+        localStorage.setItem('orderData', JSON.stringify(orderData));
+        setIsOrderSet(true)
 
-        // Set the flag to indicate order has been set
-        setIsOrderSet(true);
-    }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch]);
-
-    // Listen for the flag and navigate when it's set
+    }, [appliedCouponId, cartItems, delivery, discount, subTotal, router]);
     useEffect(() => {
         if (isOrderSet) {
             console.log('Order has been set. Navigating to /cart/order');
             router.push('/cart/order');
-            // Reset the flag to prevent redundant navigation
             setIsOrderSet(false);
         }
-    }, [isOrderSet, router]);
+    }, [isOrderSet]);
 
     if (isLoading) {
         console.log('Loading is true. Rendering <Loading /> component.');
