@@ -62,7 +62,6 @@ const CartCheckout = ({ subTotal, discount }) => {
     );
 
     const handleSubmitOrder = useCallback(async () => {
-        if (isSubmitting) return; // Prevent multiple submissions
 
         if (!orderData.shippingAddress) {
             addNotification('error', 'Please provide a shipping address.');
@@ -93,7 +92,6 @@ const CartCheckout = ({ subTotal, discount }) => {
         try {
             const response = await fetch('https://api.naayiq.com/cart', {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
