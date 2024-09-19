@@ -98,7 +98,6 @@ const CartCheckout = ({ subTotal, discount }) => {
                 const data = await response.json();
                 localStorage.removeItem('cart');
                 router.push(`/cart/order/confirm?id=${data.cart.id}`);
-                // Reset the order state immediately after navigation
                 dispatch(setOrder({ items: [], shippingAddress: null, coupon_id: null, note: '', info: {} }));
             } else {
                 const errorData = await response.json();
