@@ -3,15 +3,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import Image from 'next/image';
 import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import { usePathname } from 'next/navigation';
 import Loading from "./Loading"
 import {NotificationProvider} from "@/components/NotificationContext";
-import {CircleArrowLeft} from "lucide-react";
 
 // Dynamically import the SearchComponent
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
@@ -95,7 +92,7 @@ export default function ProductList({
     const handleProductClick = useCallback(
         (product) => {
             setIsNavigating(true);
-            router.push(`/products/${product.id}`);
+            router.push(`/products/${product.id}`, {shallow: true});
         },
         [router]
     );
