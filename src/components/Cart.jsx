@@ -25,7 +25,7 @@ const Cart = () => {
     const dispatch = useAppDispatch();
     const order = useAppSelector(state => state.order);
     const router = useRouter();
-    const [isNavigating, setIsNavigating] = useState(false)
+
     const fetchCartItems = useCallback(async () => {
         console.log('Fetching cart items...');
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -77,9 +77,6 @@ const Cart = () => {
     useEffect(() => {
         fetchCartItems();
     }, [fetchCartItems]);
-    useEffect(() => {
-        router.prefetch("/cart/order")
-    })
 
     useEffect(() => {
         const total = cartItems.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
@@ -175,8 +172,8 @@ const Cart = () => {
 
     const totalPrice = useMemo(() => {
         const discountedTotal = subTotal - discount;
-        return Math.max(discountedTotal, 0);
-    }, [subTotal, discount]);
+        return Math.max(discountedTotal, 0) + delivery;
+    }, [subTotal, discount, delivery]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
@@ -195,8 +192,10 @@ const Cart = () => {
         };
         console.log('Dispatching setOrder with data:', orderData);
 
+        // Dispatch the setOrder action
         dispatch(setOrder(orderData));
 
+        // Set the flag to indicate order has been set
         setIsOrderSet(true);
     }, [order, appliedCouponId, cartItems, delivery, discount, subTotal, dispatch]);
 
@@ -205,7 +204,7 @@ const Cart = () => {
         if (isOrderSet) {
             console.log('Order has been set. Navigating to /cart/order');
             router.push('/cart/order');
-            setIsNavigating(true)
+            // Reset the flag to prevent redundant navigation
             setIsOrderSet(false);
         }
     }, [isOrderSet, router]);
@@ -333,6 +332,10 @@ const Cart = () => {
                             <span>{subTotal} IQD</span>
                         </div>
                         <div className="flex justify-between mb-2">
+                            <span>Delivery</span>
+                            <span>{delivery} IQD</span>
+                        </div>
+                        <div className="flex justify-between mb-2">
                             <span>Discount</span>
                             <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
                         </div>
@@ -343,10 +346,10 @@ const Cart = () => {
                     </motion.div>
                     <button
                         onClick={handleProceed}
-                        disabled={isOrderSet || isNavigating}
+                        disabled={isOrderSet}
                         className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
                     >
-                        {isOrderSet || isNavigating ? "Processing..." : "Proceed"}
+                        {isOrderSet ? "Processing..." : "Proceed"}
                     </button>
                 </motion.div>
             </>
