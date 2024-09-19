@@ -3,7 +3,6 @@ import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 import { unstable_cache } from 'next/cache';
-export const runtime = "edge"
 const ITEMS_PER_PAGE = 15;
 export const revalidate = 14400; // 4 hours
 
