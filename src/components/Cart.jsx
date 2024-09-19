@@ -172,8 +172,8 @@ const Cart = () => {
 
     const totalPrice = useMemo(() => {
         const discountedTotal = subTotal - discount;
-        return Math.max(discountedTotal, 0) + delivery;
-    }, [subTotal, discount, delivery]);
+        return Math.max(discountedTotal, 0);
+    }, [subTotal, discount]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
@@ -323,10 +323,6 @@ const Cart = () => {
                         <div className="flex justify-between mb-2">
                             <span>Sub-total</span>
                             <span>{subTotal} IQD</span>
-                        </div>
-                        <div className="flex justify-between mb-2">
-                            <span>Delivery</span>
-                            <span>{delivery} IQD</span>
                         </div>
                         <div className="flex justify-between mb-2">
                             <span>Discount</span>
