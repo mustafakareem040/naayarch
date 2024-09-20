@@ -117,7 +117,7 @@ export default function ProductList({
                 </NotificationProvider>
             ) : (
                 <>
-                    <header className="flex relative mt-24 items-center mb-16">
+                    <header className="flex justify-center relative mt-20 mb-4">
                         <h1
                             className="text-3xl z-10 text-[#181717] font-sans text-center font-medium">
                             {title || 'All Products'}

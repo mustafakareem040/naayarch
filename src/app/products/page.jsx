@@ -60,7 +60,6 @@ const getFilteredProducts = unstable_cache(async (
     availability = 'all',
     sortBy = ''
 ) => {
-    // Fetch products and subbrands; these are cached via unstable_cache
     const [productsData, subBrands] = await Promise.all([
         fetchProducts(), // Uses unstable_cache: fetched once every 4 hours
         b ? fetchSubBrands() : Promise.resolve([]), // Uses unstable_cache: fetched once every 4 hours if 'b' is truthy
