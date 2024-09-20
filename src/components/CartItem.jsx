@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { Plus, Minus } from 'lucide-react';
-
 const CartItem = ({ id, title, color, image, size, qty, originalPrice, discountedPrice, onUpdateQuantity, onRemove }) => {
     const handleIncrement = () => {
         onUpdateQuantity(id, qty + 1);
