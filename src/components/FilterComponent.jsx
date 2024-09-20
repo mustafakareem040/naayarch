@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Slider, ThemeProvider, createTheme } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
-
+import "./NotificationStyles.css"
 const theme = createTheme({
     palette: {
         primary: {

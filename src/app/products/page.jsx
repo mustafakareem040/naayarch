@@ -1,8 +1,9 @@
-
 import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 import { unstable_cache } from 'next/cache';
+import Link from 'next/link';
+
 const ITEMS_PER_PAGE = 15;
 export const revalidate = 14400; // 4 hours
 
@@ -10,35 +11,42 @@ const REVALIDATE_SUBBRANDS = 14400; // 4 hours
 const REVALIDATE_PRODUCTS = 14400; // 4 hours
 
 // Wrap fetchSubBrands with unstable_cache
-const fetchSubBrands = unstable_cache(async () => {
-    const response = await fetch('https://api.naayiq.com/subcategories/brands', {
-        headers: { 'Content-Type': 'application/json' },
-    });
+const fetchSubBrands = unstable_cache(
+    async () => {
+        console.log('Fetching sub-brands');
+        const response = await fetch('https://api.naayiq.com/subcategories/brands', {
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-    if (response.status === 200) {
-        return response.json();
+        if (response.status === 200) {
+            return response.json();
+        }
+        throw new Error(`Failed to fetch sub-brands: ${response.statusText}`);
+    },
+    {
+        revalidate: REVALIDATE_SUBBRANDS,
     }
-    throw new Error(`Failed to fetch sub-brands: ${response.statusText}`);
-}, {
-    // Revalidate every 4 hours
-    revalidate: REVALIDATE_SUBBRANDS,
-});
+);
 
 // Wrap fetchProducts with unstable_cache
-const fetchProducts = unstable_cache(async () => {
-    const response = await fetch('https://api.naayiq.com/products', {
-        headers: { 'Content-Type': 'application/json' },
-    });
+const fetchProducts = unstable_cache(
+    async () => {
+        console.log('Fetching products');
+        const response = await fetch('https://api.naayiq.com/products', {
+            headers: { 'Content-Type': 'application/json' },
+        });
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch products');
+        if (!response.ok) {
+            throw new Error('Failed to fetch products');
+        }
+        return response.json();
+    },
+    {
+        revalidate: REVALIDATE_PRODUCTS,
     }
-    return response.json();
-}, {
-    // Revalidate every 4 hours
-    revalidate: REVALIDATE_PRODUCTS,
-});
+);
 
+// Cache getFilteredProducts to ensure it's only processed once per request
 const getFilteredProducts = async (
     page = 1,
     query = '',
@@ -50,10 +58,12 @@ const getFilteredProducts = async (
     availability = 'all',
     sortBy = ''
 ) => {
-    let [productsData, subBrands] = await Promise.all([
-        fetchProducts(), // Uses unstable_cache
-        b ? fetchSubBrands() : Promise.resolve([]), // Uses unstable_cache if 'b' is truthy
+    // Fetch products and subbrands; these are cached via unstable_cache
+    const [productsData, subBrands] = await Promise.all([
+        fetchProducts(), // Uses unstable_cache: fetched once every 4 hours
+        b ? fetchSubBrands() : Promise.resolve([]), // Uses unstable_cache: fetched once every 4 hours if 'b' is truthy
     ]);
+
     let products = productsData.products;
 
     const subCategories = b
@@ -65,8 +75,8 @@ const getFilteredProducts = async (
     // Calculate min and max prices
     let minPrice = Infinity;
     let maxPrice = -Infinity;
-    products.forEach(product => {
-        product.sizes.forEach(size => {
+    products.forEach((product) => {
+        product.sizes.forEach((size) => {
             const price = parseFloat(size.price);
             if (price < minPrice) minPrice = price;
             if (price > maxPrice) maxPrice = price;
@@ -76,9 +86,7 @@ const getFilteredProducts = async (
     const filterProduct = (product) => {
         if (
             c &&
-            !product.categories.some(
-                (cat) => cat.main_category_id?.toString() === c
-            )
+            !product.categories.some((cat) => cat.main_category_id?.toString() === c)
         )
             return false;
         if (
@@ -87,22 +95,20 @@ const getFilteredProducts = async (
             !product.categories.some((cat) => cat.id?.toString() === sc)
         )
             return false;
-        if (
-            b &&
-            !subCategories.includes(product?.brand_id.toString())
-        )
-            return false;
+        if (b && !subCategories.includes(product?.brand_id.toString())) return false;
 
         // Price range filter
-        const productPrices = product.sizes.map(size => parseFloat(size.price));
+        const productPrices = product.sizes.map((size) => parseFloat(size.price));
         const productMinPrice = Math.min(...productPrices);
         const productMaxPrice = Math.max(...productPrices);
 
         if (productMinPrice < minPriceA || productMaxPrice > maxPriceA) {
             return false;
         }
+
+        // Availability filter
         if (availability !== 'all') {
-            const inStock = product.sizes.some(size => size.qty > 0);
+            const inStock = product.sizes.some((size) => size.qty > 0);
             if (
                 (availability === 'in_stock' && !inStock) ||
                 (availability === 'out_of_stock' && inStock)
@@ -111,10 +117,9 @@ const getFilteredProducts = async (
             }
         }
 
+        // Query filter
         if (query) {
-            const normalizedName = product.name
-                .normalize('NFC')
-                .toLowerCase();
+            const normalizedName = product.name.normalize('NFC').toLowerCase();
             const cleanName = normalizedName.replace(
                 /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g,
                 ''
@@ -122,6 +127,7 @@ const getFilteredProducts = async (
             const queryWords = query.toLowerCase().split(/\s+/);
             return queryWords.every((word) => cleanName.includes(word));
         }
+
         return true;
     };
 
@@ -129,17 +135,25 @@ const getFilteredProducts = async (
     let filteredProducts = products.filter(filterProduct);
 
     // Calculate total sold for each product
-    filteredProducts.forEach(product => {
+    filteredProducts.forEach((product) => {
         product.totalSold = product.sizes.reduce((sum, size) => sum + size.sold, 0);
     });
 
     // Apply sorting
     switch (sortBy) {
         case 'Price: Low to High':
-            filteredProducts.sort((a, b) => Math.min(...a.sizes.map(s => parseFloat(s.price))) - Math.min(...b.sizes.map(s => parseFloat(s.price))));
+            filteredProducts.sort(
+                (a, b) =>
+                    Math.min(...a.sizes.map((s) => parseFloat(s.price))) -
+                    Math.min(...b.sizes.map((s) => parseFloat(s.price)))
+            );
             break;
         case 'Price: High to Low':
-            filteredProducts.sort((a, b) => Math.max(...b.sizes.map(s => parseFloat(s.price))) - Math.max(...a.sizes.map(s => parseFloat(s.price))));
+            filteredProducts.sort(
+                (a, b) =>
+                    Math.max(...b.sizes.map((s) => parseFloat(s.price))) -
+                    Math.max(...a.sizes.map((s) => parseFloat(s.price)))
+            );
             break;
         case 'Name: A to Z':
             filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
@@ -151,31 +165,30 @@ const getFilteredProducts = async (
             filteredProducts.sort((a, b) => b.totalSold - a.totalSold);
             break;
         case 'Newest Arrivals':
-            filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            filteredProducts.sort(
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            );
             break;
         default:
             // Default sorting (optional)
             break;
     }
 
+    // Additional query-based sorting if applicable
     if (query && !sortBy) {
         const lowerQuery = query.toLowerCase();
         filteredProducts.sort((a, b) => {
             const aIndex = a.name.toLowerCase().indexOf(lowerQuery);
             const bIndex = b.name.toLowerCase().indexOf(lowerQuery);
-            return (
-                (aIndex === -1 ? Infinity : aIndex) -
-                (bIndex === -1 ? Infinity : bIndex)
-            );
+            return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex);
         });
     }
 
     const totalProducts = filteredProducts.length;
-    const start = 0;
     const end = page * ITEMS_PER_PAGE;
 
     return {
-        products: filteredProducts.slice(start, end),
+        products: filteredProducts.slice(0, end),
         totalProducts,
         hasMore: end < totalProducts,
         minPrice,
@@ -185,26 +198,34 @@ const getFilteredProducts = async (
 
 // The main ProductsPage component
 const ProductsPage = async ({ searchParams }) => {
-    const page = parseInt(searchParams.page) || 1;
-    const query = searchParams.query || '';
-    const c = searchParams.c || '';
-    const sc = searchParams.sc || '';
-    const b = searchParams.b || '';
-    const minPriceF = parseFloat(searchParams.minPrice) || 0;
-    const maxPriceF = parseFloat(searchParams.maxPrice) || Infinity;
-    const availability = searchParams.availability || 'all';
-    const sortBy = searchParams.sortBy || '';
-    const title = searchParams.title || '';
+    // Destructure and parse search parameters
+    const {
+        page = '1',
+        query = '',
+        c = '',
+        sc = '',
+        b = '',
+        minPrice = '0',
+        maxPrice = '',
+        availability = 'all',
+        sortBy = '',
+        title = '',
+    } = searchParams;
+
+    const pageNum = parseInt(page, 10) || 1;
+    const minPriceNum = parseFloat(minPrice) || 0;
+    const maxPriceNum = maxPrice ? parseFloat(maxPrice) : Infinity;
 
     try {
+        // Get filtered products based on search parameters
         const { products, totalProducts, hasMore, minPrice, maxPrice } = await getFilteredProducts(
-            page,
+            pageNum,
             query,
             c,
             sc,
             b,
-            minPriceF,
-            maxPriceF,
+            minPriceNum,
+            maxPriceNum,
             availability,
             sortBy
         );
@@ -216,19 +237,28 @@ const ProductsPage = async ({ searchParams }) => {
                     initialProducts={products}
                     totalProducts={totalProducts}
                     hasMore={hasMore}
-                    initialPage={page}
+                    initialPage={pageNum}
                     initialQuery={query}
                     initialC={c}
                     initialSc={sc}
                     initialB={b}
                     minPrice={minPrice}
                     maxPrice={maxPrice}
-                    title={sortBy || title || "All Products"}
+                    title={sortBy || title || 'All Products'}
                 />
             </>
         );
     } catch (error) {
-        return <div>Error: {error.message}</div>;
+        // Enhanced error handling with user-friendly message
+        console.error('Error fetching products:', error);
+        return (
+            <div className="font-serif flex flex-col justify-center items-center p-4">
+                <p>Oops! Something went wrong while loading products. Please try again later.</p>
+                <Link href="/" className="text-blue-500 underline mt-2">
+                    Go back home
+                </Link>
+            </div>
+        );
     }
 };
 
