@@ -8,7 +8,7 @@ import Loading from "@/components/Loading";
 import EmptyCart from "@/components/EmptyCart";
 import { CircleArrowLeft } from "lucide-react";
 import { useNotification } from '@/components/NotificationContext';
-
+import "./NotificationStyles.css"
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [subTotal, setSubTotal] = useState(0);
