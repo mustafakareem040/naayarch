@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from 'next/dynamic';
@@ -87,7 +87,7 @@ export default function ProductList({
         }
     }, [shouldScroll]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (pathname === '/products') {
             setDetail(null);
             setShouldScroll(true);
