@@ -117,18 +117,16 @@ export default function ProductList({
                 </NotificationProvider>
             ) : (
                 <>
-                    <header className="flex items-center mb-6">
-                        <Link prefetch={false} className="relative z-20" href="/">
-                            <Image src="https://storage.naayiq.com/resources/arrow-left.svg" width={40}
-                                   unoptimized={true} height={40} alt="left" priority/>
-                        </Link>
-                        <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                    <header className="flex mt-24 items-center mb-16">
+                        <h1
+                            className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
                             {title || 'All Products'}
                         </h1>
                     </header>
                     <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch}/>
                     {memoizedProducts.length > 0 ? (
-                        <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        <div
+                            className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                             {memoizedProducts.map((product) => (
                                 <ProductItem
                                     key={product.id}
