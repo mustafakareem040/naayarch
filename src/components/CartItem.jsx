@@ -27,7 +27,7 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, originalPrice
                 />
             </div>
 
-            <div className="flex flex-col items-start gap-3 w-[120px]">
+            <div className="flex flex-col items-center gap-3 w-[120px]">
                 <h3 className="font-semibold text-sm text-center leading-tight">{title}</h3>
                 {color !== 'N/A' && <p className="text-sm text-center">Color: {color}</p>}
                 {size !== 'N/A' && <p className="text-sm text-center">Size: {size}</p>}
