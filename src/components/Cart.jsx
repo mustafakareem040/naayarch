@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAppDispatch, useAppSelector } from "@/lib/hook";
-import { setOrder } from "@/lib/features/orderSlice";
 import EmptyCart from "@/components/EmptyCart";
 import { CircleArrowLeft } from "lucide-react";
 
@@ -22,8 +21,6 @@ const Cart = () => {
     const [couponMessage, setCouponMessage] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const [isOrderSet, setIsOrderSet] = useState(false);
-    const dispatch = useAppDispatch();
-    const order = useAppSelector(state => state.order);
     const router = useRouter();
 
     const fetchCartItems = useCallback(async () => {
@@ -170,10 +167,47 @@ const Cart = () => {
         }
     }, [subTotal, appliedCoupon, calculateDiscount]);
 
+    const applyDiscountToItems = useCallback(() => {
+        if (!appliedCoupon) {
+            // If no coupon is applied, use original prices
+            setDiscountedCartItems(cartItems);
+            return;
+        }
+
+        let updatedItems = [...cartItems];
+
+        if (appliedCoupon.discount_percentage) {
+            const percentage = appliedCoupon.discount_percentage / 100;
+            updatedItems = updatedItems.map(item => ({
+                ...item,
+                originalPrice: item.price,
+                discountedPrice: Math.round(item.price * percentage),
+            }));
+        } else if (appliedCoupon.discount_amount) {
+            const total = cartItems.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+            updatedItems = updatedItems.map(item => {
+                const itemTotal = item.price * (item.qty || 1);
+                const itemDiscount = Math.round((itemTotal / total) * discount);
+                return {
+                    ...item,
+                    originalPrice: item.price,
+                    discountedPrice: Math.max(item.price - itemDiscount, 0),
+                };
+            });
+        }
+
+        setDiscountedCartItems(updatedItems);
+    }, [appliedCoupon, cartItems, discount]);
+
+    useEffect(() => {
+        applyDiscountToItems();
+    }, [applyDiscountToItems]);
+
+
     const totalPrice = useMemo(() => {
-        const discountedTotal = subTotal - discount;
-        return Math.max(discountedTotal, 0);
-    }, [subTotal, discount]);
+        const discountedTotal = discountedCartItems.reduce((sum, item) => sum + (item.discountedPrice * (item.qty || 1)), 0);
+        return Math.max(discountedTotal + delivery - discount, 0);
+    }, [discountedCartItems, delivery, discount]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
@@ -234,19 +268,19 @@ const Cart = () => {
                                     initial={{ scale: 0.9 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0.9 }}
-                                    className="bg-white p-4 rounded-lg shadow-lg"
+                                    className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full"
                                 >
-                                    <p className="mb-4">{confirmationMessage}</p>
+                                    <p className="mb-6 text-lg">{confirmationMessage}</p>
                                     <div className="flex justify-end">
                                         <button
                                             onClick={() => setShowConfirmation(false)}
-                                            className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+                                            className="bg-gray-300 text-black px-4 py-2 rounded mr-3 hover:bg-gray-400 transition"
                                         >
                                             Cancel
                                         </button>
                                         <button
                                             onClick={confirmAction}
-                                            className="bg-red-500 text-white px-4 py-2 rounded"
+                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                                         >
                                             Confirm
                                         </button>
@@ -257,7 +291,7 @@ const Cart = () => {
                     </AnimatePresence>
 
                     <AnimatePresence>
-                        {cartItems.map(item => (
+                        {discountedCartItems.map(item => (
                             <motion.div
                                 key={item.product_id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -272,7 +306,8 @@ const Cart = () => {
                                     image={item.image}
                                     size={item.size}
                                     qty={item.qty}
-                                    price={item.price}
+                                    originalPrice={item.originalPrice}
+                                    discountedPrice={item.discountedPrice}
                                     onUpdateQuantity={handleUpdateQuantity}
                                     onRemove={handleRemoveItem}
                                 />
@@ -284,25 +319,25 @@ const Cart = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="mt-8 bg-white rounded-lg shadow p-4"
+                        className="mt-8 bg-white rounded-lg shadow p-6"
                     >
-                        <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
-                        <div className="mb-2">
-                            <span>Discounted Coupon</span>
-                            <div className="flex justify-between items-center">
+                        <h2 className="text-2xl font-sans font-semibold mb-6">Price Details</h2>
+                        <div className="mb-4">
+                            <span className="block text-gray-700">Discount Coupon</span>
+                            <div className="flex mt-2">
                                 <input
                                     type="text"
                                     value={coupon}
                                     onChange={(e) => setCoupon(e.target.value)}
-                                    className="border rounded w-full p-2 mr-2"
-                                    placeholder="Enter coupon"
+                                    className="border rounded-l-md w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    placeholder="Enter coupon code"
                                     disabled={Boolean(appliedCoupon)}
                                 />
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={handleApplyCoupon}
-                                    className={`${appliedCoupon ? 'bg-red-500' : 'bg-[#3B5345]'} text-white px-8 py-2 rounded`}
+                                    className={`${appliedCoupon ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-r-md focus:outline-none`}
                                 >
                                     {appliedCoupon ? 'Remove' : 'Apply'}
                                 </motion.button>
@@ -313,22 +348,26 @@ const Cart = () => {
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
-                                        className={`text-sm mt-1 ${appliedCoupon ? 'text-green-500' : 'text-red-500'}`}
+                                        className={`text-sm mt-2 ${appliedCoupon ? 'text-green-600' : 'text-red-600'}`}
                                     >
                                         {couponMessage}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
-                        <div className="flex justify-between mb-2">
-                            <span>Sub-total</span>
-                            <span>{subTotal} IQD</span>
+                        <div className="flex justify-between mb-3">
+                            <span className="text-gray-700">Sub-total</span>
+                            <span className="font-semibold">{subTotal} IQD</span>
                         </div>
-                        <div className="flex justify-between mb-2">
-                            <span>Discount</span>
-                            <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
-                        </div>
-                        <div className="flex justify-between font-bold mt-4">
+                        {appliedCoupon && (
+                            <>
+                                <div className="flex justify-between mb-3">
+                                    <span className="text-gray-700">Discount</span>
+                                    <span className="font-semibold">-{discount} IQD</span>
+                                </div>
+                            </>
+                        )}
+                        <div className="flex justify-between font-bold text-lg mt-4 border-t pt-4">
                             <span>Total Price</span>
                             <span>{totalPrice} IQD</span>
                         </div>
@@ -336,7 +375,7 @@ const Cart = () => {
                     <button
                         onClick={handleProceed}
                         disabled={isOrderSet}
-                        className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
+                        className="w-full bg-green-500 text-white py-3 rounded-lg font-medium text-lg mt-6 hover:bg-green-600 transition disabled:bg-green-300"
                     >
                         {isOrderSet ? "Processing..." : "Proceed"}
                     </button>
