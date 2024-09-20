@@ -13,9 +13,9 @@ const REVALIDATE_PRODUCTS = 14400; // 4 hours
 // Wrap fetchSubBrands with unstable_cache
 const fetchSubBrands = unstable_cache(
     async () => {
-        console.log('Fetching sub-brands');
         const response = await fetch('https://api.naayiq.com/subcategories/brands', {
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' }
+            cache: "force-cache",
         });
 
         if (response.status === 200) {
@@ -31,9 +31,9 @@ const fetchSubBrands = unstable_cache(
 // Wrap fetchProducts with unstable_cache
 const fetchProducts = unstable_cache(
     async () => {
-        console.log('Fetching products');
         const response = await fetch('https://api.naayiq.com/products', {
             headers: { 'Content-Type': 'application/json' },
+            cache: "force-cache"
         });
 
         if (!response.ok) {
@@ -47,7 +47,7 @@ const fetchProducts = unstable_cache(
 );
 
 // Cache getFilteredProducts to ensure it's only processed once per request
-const getFilteredProducts = async (
+const getFilteredProducts = unstable_cache(async (
     page = 1,
     query = '',
     c = '',
@@ -194,7 +194,7 @@ const getFilteredProducts = async (
         minPrice,
         maxPrice,
     };
-};
+}, {revalidate: 84000});
 
 // The main ProductsPage component
 const ProductsPage = async ({ searchParams }) => {
