@@ -119,7 +119,7 @@ export default function ProductList({
                 <>
                     <header className="flex mt-24 items-center mb-16">
                         <h1
-                            className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                            className="text-3xl z-10 text-[#181717] font-sans text-center font-medium">
                             {title || 'All Products'}
                         </h1>
                     </header>
