@@ -17,21 +17,17 @@ const Cart = () => {
     const [coupon, setCoupon] = useState('');
     const [appliedCouponId, setAppliedCouponId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isApplyingCoupon, setIsApplyingCoupon] = useState(false); // New state for applying coupon
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [confirmationMessage, setConfirmationMessage] = useState('');
     const [couponMessage, setCouponMessage] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const [isOrderSet, setIsOrderSet] = useState(false);
-    const dispatch = useAppDispatch();
-    const order = useAppSelector(state => state.order);
     const router = useRouter();
 
     const fetchCartItems = useCallback(async () => {
-        console.log('Fetching cart items...');
         const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        console.log('Stored cart:', storedCart);
         if (storedCart.length === 0) {
-            console.log('Cart is empty.');
             setIsLoading(false);
             return;
         }
@@ -41,7 +37,6 @@ const Cart = () => {
                 storedCart.map(async (item) => {
                     try {
                         const response = await fetch(`https://api.naayiq.com/products/${item.product_id}`);
-                        console.log(`Fetching product ${item.product_id}:`, response.status);
                         if (!response.ok) {
                             throw new Error(`Failed to fetch product ${item.product_id}: ${response.statusText}`);
                         }
@@ -64,7 +59,6 @@ const Cart = () => {
                     }
                 })
             );
-            console.log('Fetched cart items with details:', itemsWithDetails);
             setCartItems(itemsWithDetails);
         } catch (error) {
             console.error('Error in fetchCartItems:', error);
@@ -80,7 +74,6 @@ const Cart = () => {
 
     useEffect(() => {
         const total = cartItems.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
-        console.log('Calculating subTotal:', total);
         setSubTotal(total);
     }, [cartItems]);
 
@@ -90,7 +83,6 @@ const Cart = () => {
                 item.product_id === id ? { ...item, qty: newQty } : item
             );
             localStorage.setItem('cart', JSON.stringify(updatedItems));
-            console.log(`Updated quantity for product ${id} to ${newQty}`);
             return updatedItems;
         });
     }, []);
@@ -102,7 +94,6 @@ const Cart = () => {
             setCartItems(prevItems => {
                 const updatedItems = prevItems.filter(item => item.product_id !== id);
                 localStorage.setItem('cart', JSON.stringify(updatedItems));
-                console.log(`Removed product ${id} from cart.`);
                 return updatedItems;
             });
             setShowConfirmation(false);
@@ -121,6 +112,7 @@ const Cart = () => {
 
     const handleApplyCoupon = useCallback(async () => {
         if (appliedCoupon) {
+            // Removing the applied coupon
             setShowConfirmation(true);
             setConfirmationMessage('Are you sure you want to remove the applied coupon?');
             setConfirmAction(() => () => {
@@ -130,10 +122,10 @@ const Cart = () => {
                 setCoupon('');
                 setCouponMessage('');
                 setShowConfirmation(false);
-                console.log('Removed applied coupon.');
             });
         } else {
-            console.log(`Applying coupon: ${coupon}`);
+            // Applying a new coupon
+            setIsApplyingCoupon(true); // Start loading
             try {
                 const response = await fetch(`https://api.naayiq.com/coupons/${encodeURIComponent(coupon)}/activate`, {
                     method: 'POST',
@@ -150,7 +142,6 @@ const Cart = () => {
                     setAppliedCoupon(data.coupon);
                     setAppliedCouponId(data.coupon.id);
                     setCouponMessage(data.message || 'Coupon applied successfully!');
-                    console.log(`Coupon applied: ${data.coupon.id} with discount ${calculatedDiscount}`);
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");
                     console.warn('Error applying coupon:', data.message);
@@ -158,6 +149,8 @@ const Cart = () => {
             } catch (error) {
                 console.error('Error applying coupon:', error);
                 setCouponMessage("Error applying coupon. Please try again.");
+            } finally {
+                setIsApplyingCoupon(false); // End loading
             }
         }
     }, [appliedCoupon, coupon, subTotal, calculateDiscount]);
@@ -166,7 +159,6 @@ const Cart = () => {
         if (appliedCoupon) {
             const newDiscount = calculateDiscount(appliedCoupon, subTotal);
             setDiscount(newDiscount);
-            console.log(`Recalculated discount based on applied coupon: ${newDiscount}`);
         }
     }, [subTotal, appliedCoupon, calculateDiscount]);
 
@@ -174,6 +166,29 @@ const Cart = () => {
         const discountedTotal = subTotal - discount;
         return Math.max(discountedTotal, 0);
     }, [subTotal, discount]);
+
+    // Calculate per-item discounts
+    const cartItemsWithDiscount = useMemo(() => {
+        if (discount <= 0) {
+            return cartItems.map(item => ({
+                ...item,
+                originalTotal: item.price * (item.qty || 1),
+                discountedTotal: item.price * (item.qty || 1),
+            }));
+        }
+
+        return cartItems.map(item => {
+            const itemTotal = item.price * (item.qty || 1);
+            const itemShare = itemTotal / subTotal;
+            const itemDiscount = Math.round(discount * itemShare);
+            const discountedTotal = itemTotal - itemDiscount;
+            return {
+                ...item,
+                originalTotal: itemTotal,
+                discountedTotal: discountedTotal,
+            };
+        });
+    }, [cartItems, discount, subTotal]);
 
     const [confirmAction, setConfirmAction] = useState(() => {});
 
@@ -188,19 +203,18 @@ const Cart = () => {
             })),
             info: { delivery, discount, subTotal },
         };
-        console.log('Storing order data in localStorage:', orderData);
 
         localStorage.setItem('orderData', JSON.stringify(orderData));
         setIsOrderSet(true)
 
     }, [appliedCouponId, cartItems, delivery, discount, subTotal, router]);
+
     useEffect(() => {
         if (isOrderSet) {
-            console.log('Order has been set. Navigating to /cart/order');
             router.push('/cart/order');
             setIsOrderSet(false);
         }
-    }, [isOrderSet]);
+    }, [isOrderSet, router]);
 
     if (isLoading) {
         console.log('Loading is true. Rendering <Loading /> component.');
@@ -257,7 +271,7 @@ const Cart = () => {
                     </AnimatePresence>
 
                     <AnimatePresence>
-                        {cartItems.map(item => (
+                        {cartItemsWithDiscount.map(item => (
                             <motion.div
                                 key={item.product_id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -272,7 +286,8 @@ const Cart = () => {
                                     image={item.image}
                                     size={item.size}
                                     qty={item.qty}
-                                    price={item.price}
+                                    originalPrice={item.originalTotal}
+                                    discountedPrice={item.discountedTotal}
                                     onUpdateQuantity={handleUpdateQuantity}
                                     onRemove={handleRemoveItem}
                                 />
@@ -287,9 +302,9 @@ const Cart = () => {
                         className="mt-8 bg-white rounded-lg shadow p-4"
                     >
                         <h2 className="text-xl font-sans font-medium mb-4">Price Details</h2>
-                        <div className="mb-2">
+                        <div className="mb-4">
                             <span>Discounted Coupon</span>
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center mt-2">
                                 <input
                                     type="text"
                                     value={coupon}
@@ -303,8 +318,11 @@ const Cart = () => {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={handleApplyCoupon}
                                     className={`${appliedCoupon ? 'bg-red-500' : 'bg-[#3B5345]'} text-white px-8 py-2 rounded`}
+                                    disabled={isApplyingCoupon} // Disable button while applying
                                 >
-                                    {appliedCoupon ? 'Remove' : 'Apply'}
+                                    {isApplyingCoupon
+                                        ? 'Applying...' // Show loading state
+                                        : (appliedCoupon ? 'Remove' : 'Apply')}
                                 </motion.button>
                             </div>
                             <AnimatePresence>
@@ -313,7 +331,7 @@ const Cart = () => {
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
-                                        className={`text-sm mt-1 ${appliedCoupon ? 'text-green-500' : 'text-red-500'}`}
+                                        className={`text-sm mt-2 ${appliedCoupon ? 'text-green-500' : 'text-red-500'}`}
                                     >
                                         {couponMessage}
                                     </motion.div>
@@ -322,21 +340,21 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-between mb-2">
                             <span>Sub-total</span>
-                            <span>{subTotal} IQD</span>
+                            <span>{subTotal.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between mb-2">
                             <span>Discount</span>
-                            <span>{discount > 0 ? "-" : ""}{discount} IQD</span>
+                            <span>{discount > 0 ? "-" : ""}{discount.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between font-bold mt-4">
                             <span>Total Price</span>
-                            <span>{totalPrice} IQD</span>
+                            <span>{totalPrice.toLocaleString()} IQD</span>
                         </div>
                     </motion.div>
                     <button
                         onClick={handleProceed}
                         disabled={isOrderSet}
-                        className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center"
+                        className="w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center disabled:opacity-50 cursor-pointer"
                     >
                         {isOrderSet ? "Processing..." : "Proceed"}
                     </button>

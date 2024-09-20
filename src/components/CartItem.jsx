@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
 
-const CartItem = ({ id, title, color, image, size, qty, price, onUpdateQuantity, onRemove }) => {
+const CartItem = ({ id, title, color, image, size, qty, originalPrice, discountedPrice, onUpdateQuantity, onRemove }) => {
     const handleIncrement = () => {
         onUpdateQuantity(id, qty + 1);
     };
@@ -29,13 +29,24 @@ const CartItem = ({ id, title, color, image, size, qty, price, onUpdateQuantity,
 
             <div className="flex flex-col items-center gap-3 w-[120px]">
                 <h3 className="font-semibold text-sm text-center leading-tight">{title}</h3>
-                {color ? <p className="text-sm text-center">Color:{color}</p> : ""}
-                {size ? <p className="text-sm text-center">Size:{size}</p> : ""}
+                {color ? <p className="text-sm text-center">Color: {color}</p> : ""}
+                {size ? <p className="text-sm text-center">Size: {size}</p> : ""}
                 <div className="flex items-center justify-between w-[86px] h-6 bg-[#F6F3F1] rounded-lg px-3">
-                    <span className="text-sm">Qty:{qty}</span>
+                    <span className="text-sm">Qty: {qty}</span>
                     <ChevronDown size={16} />
                 </div>
-                <p className="font-semibold text-sm text-center">{price*qty} IQD</p>
+                {/* Price Section */}
+                <div className="text-center">
+                    {discountedPrice < originalPrice ? (
+                        <>
+                            <span className="line-through text-gray-500 text-sm">{originalPrice.toLocaleString()} IQD</span>
+                            <br />
+                            <span className="text-green-600 font-semibold text-sm">{discountedPrice.toLocaleString()} IQD</span>
+                        </>
+                    ) : (
+                        <span className="font-semibold text-sm">{originalPrice.toLocaleString()} IQD</span>
+                    )}
+                </div>
             </div>
 
             <div className="flex flex-col justify-between gap-2">

@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
@@ -13,53 +14,73 @@ const CartCheckout = ({ subTotal, discount }) => {
         coupon_id: null,
         items: [],
     });
-    const [userInfo, setUserInfo] = useState({userId: null});
+    const [userInfo, setUserInfo] = useState({ userId: null });
     const router = useRouter();
-    const {addNotification} = useNotification();
+    const { addNotification } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        const storedOrder = JSON.parse(localStorage.getItem('orderData') || '{}');
-        const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-        setOrderData(storedOrder);
-        setUserInfo(storedUserInfo);
-        router.prefetch("/cart/order/confirm");
-    }, []);
+        if (typeof window !== 'undefined') {
+            try {
+                const storedOrder = JSON.parse(localStorage.getItem('orderData') || 'null');
+                const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+                setOrderData(storedOrder || {
+                    shippingAddress: null,
+                    coupon_id: null,
+                    items: [],
+                });
+                setUserInfo(storedUserInfo || { userId: null });
+            } catch (error) {
+                addNotification('error', 'Failed to load order data.');
+            }
+            router.prefetch("/cart/order/confirm");
+        }
+    }, [addNotification, router]);
 
     const delivery = useMemo(() => {
         if (subTotal > 100000) {
             return 0; // Free delivery for orders over 100,000 IQD
         }
-        return orderData.shippingAddress?.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
+        if (orderData.shippingAddress?.governorate) {
+            return orderData.shippingAddress.governorate.toLowerCase() === 'karbala' ? 0 : 5000;
+        }
+        return 5000; // Default delivery fee if governorate not specified
     }, [subTotal, orderData.shippingAddress]);
 
     const totalPrice = useMemo(() => subTotal + delivery - discount, [subTotal, delivery, discount]);
 
-    const renderShippingAddress = () => (
-        orderData.shippingAddress ? (
-            <>
-                <div className="border border-gray-200 rounded-lg p-4">
-                    <p>{orderData.shippingAddress.governorate}, {orderData.shippingAddress.city}</p>
-                    <p>{orderData.shippingAddress.address}</p>
-                    <p>{orderData.shippingAddress.phone_number}</p>
-                </div>
+    const renderShippingAddress = useCallback(() => {
+        if (orderData.shippingAddress) {
+            const { governorate, city, address, phone_number } = orderData.shippingAddress;
+            return (
+                <>
+                    <div className="border border-gray-200 rounded-lg p-4">
+                        <p>{`${governorate}, ${city}`}</p>
+                        <p>{address}</p>
+                        <p>{phone_number}</p>
+                    </div>
+                    <Link
+                        href="/cart/choose-address"
+                        className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                        aria-label="Choose another address"
+                    >
+                        <span className="text-base font-semibold">Choose another address</span>
+                    </Link>
+                </>
+            );
+        } else {
+            return (
                 <Link
                     href="/cart/choose-address"
-                    className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                    prefetch={false}
+                    className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
+                    aria-label="Choose address"
                 >
-                    <span className="text-base font-semibold">Choose another address</span>
+                    <span className="text-base font-semibold">Choose address</span>
                 </Link>
-            </>
-        ) : (
-            <Link
-                href="/cart/choose-address"
-                prefetch={false}
-                className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
-            >
-                <span className="text-base font-semibold">Choose address</span>
-            </Link>
-        )
-    );
+            );
+        }
+    }, [orderData.shippingAddress]);
 
     const handleSubmitOrder = useCallback(async () => {
         if (!orderData.shippingAddress) {
@@ -72,14 +93,14 @@ const CartCheckout = ({ subTotal, discount }) => {
         const submitData = {
             user_id: userInfo.userId || null,
             notes: note,
-            full_name: orderData.shippingAddress?.full_name,
-            governorate: orderData.shippingAddress?.governorate,
-            city: orderData.shippingAddress?.city,
-            address: orderData.shippingAddress?.address,
-            closest_point: orderData.shippingAddress?.closest_point,
-            phone_number: orderData.shippingAddress?.phone_number,
-            type: orderData.shippingAddress?.type,
-            coupon_id: orderData.coupon_id,
+            full_name: orderData.shippingAddress.full_name || '',
+            governorate: orderData.shippingAddress.governorate || '',
+            city: orderData.shippingAddress.city || '',
+            address: orderData.shippingAddress.address || '',
+            closest_point: orderData.shippingAddress.closest_point || '',
+            phone_number: orderData.shippingAddress.phone_number || '',
+            type: orderData.shippingAddress.type || '',
+            coupon_id: orderData.coupon_id || null,
             items: orderData.items.map(item => ({
                 product_id: item.product_id,
                 size_id: item.size_id || null,
@@ -103,23 +124,32 @@ const CartCheckout = ({ subTotal, discount }) => {
                 router.push(`/cart/order/confirm?id=${data.cart.id}`);
             } else {
                 const errorData = await response.json();
-                if (errorData.errors) {
-                    addNotification('error', errorData.errors[0].msg);
+                if (errorData.errors && errorData.errors.length > 0) {
+                    addNotification('error', errorData.errors[0].msg || 'An error occurred while submitting the order.');
                 } else {
                     addNotification('error', 'An error occurred while submitting the order.');
                 }
             }
         } catch (error) {
-            console.error('Network error:', error);
             addNotification('error', 'A network error occurred. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
-    }, [note, orderData, userInfo, addNotification, router, isSubmitting]);
-    return (<>
+    }, [note, orderData, userInfo, addNotification, router]);
+
+    return (
+        <>
             <header className="flex items-center mb-12">
-                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
-                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">Checkout</h1>
+                <button
+                    onClick={() => router.back()}
+                    className="p-2 relative z-20 cursor-pointer"
+                    aria-label="Go back"
+                >
+                    <CircleArrowLeft size={52} strokeWidth={0.7} />
+                </button>
+                <h1 className="text-2xl ssm:text-3xl absolute right-0 left-0 z-10 text-center font-medium font-sans">
+                    Checkout
+                </h1>
             </header>
             <div className="font-serif overflow-x-hidden container mx-auto max-w-md">
                 <section className="mb-6">
@@ -138,6 +168,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                             onChange={(e) => setNote(e.target.value)}
                             placeholder="I am not available on Sunday"
                             className="w-full border border-[rgba(105,92,92,0.3)] rounded-lg p-4 pl-12 text-sm"
+                            aria-label="Additional note"
                         />
                     </div>
                 </section>
@@ -158,26 +189,27 @@ const CartCheckout = ({ subTotal, discount }) => {
                     <div className="space-y-3">
                         <div className="flex justify-between">
                             <span>Sub-total</span>
-                            <span>{subTotal} IQD</span>
+                            <span>{subTotal.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Delivery</span>
-                            <span>{delivery} IQD</span>
+                            <span>{delivery.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Discount</span>
-                            <span>{discount} IQD</span>
+                            <span>{discount.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between font-bold">
                             <span>Total Price</span>
-                            <span>{totalPrice} IQD</span>
+                            <span>{totalPrice.toLocaleString()} IQD</span>
                         </div>
                     </div>
                 </section>
                 <button
                     onClick={handleSubmitOrder}
-                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg"
+                    className="w-full inline-block bg-[#3B5345] text-white py-3 px-4 rounded-lg font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isSubmitting}
+                    aria-label="Submit Order"
                 >
                     {isSubmitting ? 'Submitting...' : 'Submit Order'}
                 </button>
