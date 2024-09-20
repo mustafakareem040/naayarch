@@ -15,7 +15,7 @@ export function Profile() {
         if (!isAuthenticated) {
             const timer = setTimeout(() => {
                 router.push('/login');
-            }, 3000); // Small delay to ensure state is checked
+            }, 3000);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(false);
@@ -23,7 +23,7 @@ export function Profile() {
     }, [isAuthenticated, router]);
 
     if (isLoading) {
-        return <div>Loading...</div>; // Or use your Loading component
+        return <div>Loading...</div>;
     }
 
     return (

@@ -7,8 +7,6 @@ import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import ProductDetail from '@/components/ProductDetail';
-import Link from 'next/link';
-import Image from 'next/image';
 import { NotificationProvider } from "@/components/NotificationContext";
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {

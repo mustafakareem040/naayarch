@@ -5,10 +5,10 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 15;
-export const revalidate = 14400; // 4 hours
+export const dynamic = 'force-dynamic'
 
 const REVALIDATE_SUBBRANDS = 14400; // 4 hours
-const REVALIDATE_PRODUCTS = 14400; // 4 hours
+const REVALIDATE_PRODUCTS = 0; // 4 hours
 
 // Wrap fetchSubBrands with unstable_cache
 const fetchSubBrands = unstable_cache(
@@ -61,7 +61,7 @@ const getFilteredProducts = unstable_cache(async (
     sortBy = ''
 ) => {
     const [productsData, subBrands] = await Promise.all([
-        fetchProducts(), // Uses unstable_cache: fetched once every 4 hours
+        fetchProducts(),
         b ? fetchSubBrands() : Promise.resolve([]), // Uses unstable_cache: fetched once every 4 hours if 'b' is truthy
     ]);
 
