@@ -1,22 +1,21 @@
 'use client'
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import dynamic from 'next/dynamic';
 import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
-import { usePathname } from 'next/navigation';
-import Loading from "./Loading"
-import {NotificationProvider} from "@/components/NotificationContext";
+import ProductDetail from '@/components/ProductDetail';
+import Link from 'next/link';
+import Image from 'next/image';
+import { NotificationProvider } from "@/components/NotificationContext";
 
-// Dynamically import the SearchComponent
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
-    loading: () => <SearchComponentSkeleton />,
+    loading: () => <SearchComponentSkeleton />
 });
 
-// Dynamically import the ProductModal
 const ProductModal = dynamic(() => import("@/components/ProductDetailModal"), {
     ssr: false
 });
@@ -26,25 +25,24 @@ export default function ProductList({
                                         hasMore,
                                         initialPage,
                                         initialQuery,
-    minPrice,
-    maxPrice,
-    title
+                                        minPrice,
+                                        maxPrice,
+                                        title
                                     }) {
     const [products, setProducts] = useState(initialProducts);
     const [page, setPage] = useState(initialPage);
     const [loading, setLoading] = useState(false);
     const [noMoreProducts, setNoMoreProducts] = useState(!hasMore);
     const [query, setQuery] = useState(initialQuery);
-    const [isNavigating, setIsNavigating] = useState(false);
-
-    // New State: Manage the selected product for the modal
+    const [detail, setDetail] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [shouldScroll, setShouldScroll] = useState(false);
+    const scroll = useRef(0);
 
     const { ref, inView } = useInView({ threshold: 0 });
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
-
     const loadMoreProducts = useCallback(() => {
         if (loading || noMoreProducts) return;
 
@@ -61,16 +59,13 @@ export default function ProductList({
         }
     }, [inView, loadMoreProducts, noMoreProducts]);
 
-    const handleSearch = useCallback(
-        (newQuery) => {
-            setQuery(newQuery);
-            const params = new URLSearchParams(Array.from(searchParams.entries()));
-            params.set('query', newQuery);
-            params.set('page', '1');
-            router.push(`/products?${params.toString()}`, { scroll: false });
-        },
-        [searchParams, router]
-    )
+    const handleSearch = useCallback((newQuery) => {
+        setQuery(newQuery);
+        const params = new URLSearchParams(Array.from(searchParams.entries()));
+        params.set('query', newQuery);
+        params.set('page', '1');
+        router.push(`/products?${params.toString()}`, { scroll: false });
+    }, [searchParams, router]);
 
     useEffect(() => {
         setProducts(initialProducts);
@@ -80,83 +75,80 @@ export default function ProductList({
         setLoading(false);
     }, [initialProducts, initialPage, hasMore, initialQuery]);
 
-    const memoizedProducts = useMemo(
-        () =>
-            products.map((product) => ({
-                ...product,
-                cheapestPrice: getCheapestPrice(product),
-            })),
-        [products]
-    );
+    const memoizedProducts = useMemo(() => products.map((product) => ({
+        ...product,
+        cheapestPrice: getCheapestPrice(product),
+    })), [products]);
 
-    const handleProductClick = useCallback(
-        (product) => {
-            setIsNavigating(true);
-            router.push(`/products/${product.id}`, {shallow: true});
-        },
-        [router]
-    );
+    useEffect(() => {
+        if (shouldScroll) {
+            window.scrollTo(0, scroll.current);
+            setShouldScroll(false);
+        }
+    }, [shouldScroll]);
 
-    // New Handler: Handle cart button click to open modal
-    const handleCartClick = useCallback(
-        (product) => {
-            setSelectedProduct(product);
-        },
-        []
-    );
+    useEffect(() => {
+        if (pathname === '/products') {
+            setDetail(null);
+            setShouldScroll(true);
+        }
+    }, [pathname]);
 
-    // New Handler: Close the modal
+    const handleProductClick = useCallback((product) => {
+        scroll.current = window.scrollY;
+        setDetail(product);
+        const newURL = `/products/${product.id}`;
+        window.history.pushState({ path: newURL }, '', newURL);
+    }, []);
+
+    const handleCartClick = useCallback((product) => {
+        setSelectedProduct(product);
+    }, []);
+
     const handleModalClose = useCallback(() => {
         setSelectedProduct(null);
     }, []);
 
-    useEffect(() => {
-        // This effect will run when the pathname changes
-        setIsNavigating(false);
-    }, [pathname]);
-
-    if (isNavigating) {
-        return <Loading />
-    }
-
     return (
         <>
-            <header className="flex mt-24 justify-center items-center mb-8 relative">
-                <h1
-                    className="text-3xl z-10 text-[#181717] font-sans text-center font-medium">
-                    {title || 'All Products'}
-                </h1>
-            </header>
-            <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch}/>
-            {memoizedProducts.length > 0 ? (
-                <div
-                    className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {memoizedProducts.map((product) => (
-                        <div
-                            key={product.id}
-                            onClick={() => handleProductClick(product)}
-                            className="cursor-pointer"
-                        >
-                            <ProductItem
-                                id={product.id}
-                                name={product.name}
-                                product={product}
-                                handleClick={() => handleProductClick(product)}
-                                price={formatPrice(product.cheapestPrice)}
-                                imageUrl={product.images[0]}
-                                onCartClick={handleCartClick} // Pass the handler
-                            />
-                        </div>
-                    ))}
-                </div>
+            {detail ? (
+                <NotificationProvider>
+                    <ProductDetail product={detail} />
+                </NotificationProvider>
             ) : (
-                <NoProductsFound />
+                <>
+                    <header className="flex items-center mb-6">
+                        <Link prefetch={false} className="relative z-20" href="/">
+                            <Image src="https://storage.naayiq.com/resources/arrow-left.svg" width={40}
+                                   unoptimized={true} height={40} alt="left" priority/>
+                        </Link>
+                        <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                            {title || 'All Products'}
+                        </h1>
+                    </header>
+                    <SearchComponent minPrice={minPrice} maxPrice={maxPrice} query={query} setQuery={handleSearch}/>
+                    {memoizedProducts.length > 0 ? (
+                        <div className="grid grid-cols-2 w-full justify-between gap-4 sm:gap-6 ssm3:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                            {memoizedProducts.map((product) => (
+                                <ProductItem
+                                    key={product.id}
+                                    id={product.id}
+                                    name={product.name}
+                                    product={product}
+                                    handleClick={() => handleProductClick(product)}
+                                    price={formatPrice(product.cheapestPrice)}
+                                    imageUrl={product.images[0]}
+                                    onCartClick={handleCartClick}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <NoProductsFound />
+                    )}
+                    {loading && <ProductLoading />}
+                    {!loading && !noMoreProducts && <div ref={ref} style={{height: '20px'}}></div>}
+                </>
             )}
-            {loading && <ProductLoading />}
-            {!loading && !noMoreProducts && (
-                <div ref={ref} style={{ height: '20px' }}></div>
-            )}
-            {/* Render Modal Here */}
             {selectedProduct && (
                 <NotificationProvider>
                     <ProductModal

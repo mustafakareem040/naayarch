@@ -2,8 +2,9 @@ import { Suspense, memo } from "react";
 import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import {unstable_cache} from "next/cache";
 export const revalidate = 14400
-const fetchWithRevalidate = async (url) => {
+const fetchWithRevalidate = unstable_cache(async (url) => {
     const res = await fetch(url, {
         headers: {
             'Content-Type': "application/json"
@@ -11,12 +12,12 @@ const fetchWithRevalidate = async (url) => {
         next: {
             revalidate: 14400
         }
-    });
+    })
     if (!res.ok) {
         throw new Error(`Failed to fetch data from ${url}`);
     }
     return res.json();
-};
+}, {revalidate: 14400});
 
 const fetchCategories = () => fetchWithRevalidate('https://api.naayiq.com/categories');
 const fetchSubcategories = () => fetchWithRevalidate('https://api.naayiq.com/subcategories');
