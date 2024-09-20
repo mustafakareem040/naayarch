@@ -14,7 +14,7 @@ const REVALIDATE_PRODUCTS = 14400; // 4 hours
 const fetchSubBrands = unstable_cache(
     async () => {
         const response = await fetch('https://api.naayiq.com/subcategories/brands', {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
             cache: "force-cache",
         });
 
