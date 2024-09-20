@@ -178,15 +178,12 @@ const Cart = () => {
                     setAppliedCoupon(data.coupon.code);
                     setAppliedCouponId(data.coupon.id);
                     setCouponMessage(data.message || 'Coupon applied successfully!');
-                    addNotification('success', data.message || 'Coupon applied successfully!');
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");
-                    addNotification('error', data.message || "Invalid coupon code");
                 }
             } catch (error) {
                 console.log(error)
                 setCouponMessage("Error applying coupon. Please try again.");
-                addNotification('error', "Error applying coupon. Please try again.");
             } finally {
                 setIsApplyingCoupon(false);
             }
