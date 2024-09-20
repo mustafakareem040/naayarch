@@ -96,11 +96,11 @@ export default function AddAddress() {
             </header>
 
             <div className="mb-6">
-                <div className="flex font-medium space-x-2 mb-4">
+                <div className="font-medium flex space-x-2 mb-4">
                     {['home', 'work', 'other'].map((type) => (
                         <button
                             key={type}
-                            className={`flex-1 flex items-center justify-center px-4 py-2 border rounded-md ${
+                            className={`flex flex-1 items-center justify-center py-2 border rounded-md ${
                                 addressType === type ? 'bg-[#3B5345] text-white' : 'bg-white text-black'
                             }`}
                             onClick={() => setAddressType(type)}
