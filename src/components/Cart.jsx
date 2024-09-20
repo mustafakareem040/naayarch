@@ -184,6 +184,7 @@ const Cart = () => {
                     addNotification('error', data.message || "Invalid coupon code");
                 }
             } catch (error) {
+                console.log(error)
                 setCouponMessage("Error applying coupon. Please try again.");
                 addNotification('error', "Error applying coupon. Please try again.");
             } finally {
