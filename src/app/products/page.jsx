@@ -30,26 +30,20 @@ const fetchSubBrands = unstable_cache(
 );
 
 // Wrap fetchProducts with unstable_cache
-const fetchProducts = unstable_cache(
-    async () => {
-        const response = await fetch('https://api.naayiq.com/products', {
-            headers: { 'Content-Type': 'application/json' },
-            cache: "force-cache",
-            next: {revalidate: REVALIDATE_PRODUCTS}
-        });
+const fetchProducts = async () => {
+    const response = await fetch('https://api.naayiq.com/products', {
+        headers: {'Content-Type': 'application/json'},
+        next: {revalidate: REVALIDATE_PRODUCTS}
+    });
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch products');
-        }
-        return response.json();
-    },
-    {
-        revalidate: REVALIDATE_PRODUCTS,
+    if (!response.ok) {
+        throw new Error('Failed to fetch products');
     }
-);
+    return response.json();
+}
 
 // Cache getFilteredProducts to ensure it's only processed once per request
-const getFilteredProducts = unstable_cache(async (
+const getFilteredProducts = async (
     page = 1,
     query = '',
     c = '',
@@ -195,7 +189,7 @@ const getFilteredProducts = unstable_cache(async (
         minPrice,
         maxPrice,
     };
-}, {revalidate: 84000});
+};
 
 // The main ProductsPage component
 const ProductsPage = async ({ searchParams }) => {
