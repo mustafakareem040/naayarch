@@ -1,72 +1,42 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { getAuthState, setAuthState, AUTH_KEY } from '@/lib/localStorage';
+'use client'
+import { useEffect } from 'react';
+import { setIsAuthenticated } from "@/lib/features/authSlice";
+import { setAddresses } from "@/lib/features/addressesSlice";
+import { setUserInfo } from "@/lib/features/userSlice";
+import { useAppDispatch } from "@/lib/hook";
 
 export default function IsAuth() {
-    const [checked, setChecked] = useState(false);
-
+    const dispatch = useAppDispatch();
     useEffect(() => {
-        const checkAuth = async () => {
-            const existingAuth = getAuthState();
-
-            if (existingAuth) {
-                setChecked(true);
-                return;
+        async function checkAuth() {
+            const response = await fetch('https://api.naayiq.com/user/check-auth',
+                {credentials: "include"});
+            const data = await response.json();
+            if (data.isAuthenticated) {
+                handleAuthResponse(data, dispatch);
             }
-
-            try {
-                const response = await fetch('https://api.naayiq.com/user/check-auth', {
-                    credentials: 'include',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-
-                if (data.isAuthenticated) {
-                    localStorage.setItem("addresses", JSON.stringify(data.addresses | []));
-                    setAuthState({
-                        isAuthenticated: true,
-                        addresses: data.addresses || [],
-                        userInfo: {
-                            userId: data.userId,
-                            name: data.name,
-                            email: data.email,
-                            phone: data.phone,
-                            dob: data.dob,
-                            role: data.role,
-                        },
-                    });
-                } else {
-                    setAuthState({
-                        isAuthenticated: false,
-                        addresses: [],
-                        userInfo: {},
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to check auth:', error);
-                // In case of error, ensure state is set to unauthenticated
-                setAuthState({
-                    isAuthenticated: false,
-                    addresses: [],
-                    userInfo: {},
-                });
-            } finally {
-                setChecked(true);
-            }
-        };
-
+        }
         checkAuth();
-    }, []);
-
-    // Optionally, you can render a loading state until authentication is checked
-    if (!checked) {
-        return null; // Or a loading spinner/component
-    }
+    }, [dispatch]);
 
     return null;
+}
+
+export function handleAuthResponse(data, dispatch) {
+    if (data.isAuthenticated) {
+        dispatch(setIsAuthenticated(true));
+        dispatch(setAddresses(data.addresses));
+        dispatch(setUserInfo({
+            userId: data.userId,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            dob: data.dob,
+            role: data.role
+        }));
+    } else {
+        dispatch(setIsAuthenticated(false));
+        dispatch(setAddresses([]));
+        dispatch(setUserInfo({}))
+    }
 }
