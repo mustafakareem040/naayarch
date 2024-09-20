@@ -197,7 +197,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                         </div>
                         <div className="flex justify-between">
                             <span>Discount</span>
-                            <span>{discount.toLocaleString()} IQD</span>
+                            <span>-{discount.toLocaleString()} IQD</span>
                         </div>
                         <div className="flex justify-between font-bold">
                             <span>Total Price</span>
