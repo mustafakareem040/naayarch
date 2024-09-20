@@ -16,6 +16,7 @@ const fetchSubBrands = unstable_cache(
         const response = await fetch('https://api.naayiq.com/subcategories/brands', {
             headers: { 'Content-Type': 'application/json' },
             cache: "force-cache",
+            next: {revalidate: REVALIDATE_SUBBRANDS}
         });
 
         if (response.status === 200) {
@@ -33,7 +34,8 @@ const fetchProducts = unstable_cache(
     async () => {
         const response = await fetch('https://api.naayiq.com/products', {
             headers: { 'Content-Type': 'application/json' },
-            cache: "force-cache"
+            cache: "force-cache",
+            next: {revalidate: REVALIDATE_PRODUCTS}
         });
 
         if (!response.ok) {
