@@ -4,8 +4,7 @@ const nextConfig = {
         reactCompiler: true,
         optimizeCss: true,
         optimisticClientCache: true,
-        optimizeServerReact: true,
-        optimizePackageImports: true
+        optimizeServerReact: true
     },
     images: {
         remotePatterns: [
