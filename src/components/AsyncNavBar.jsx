@@ -13,6 +13,7 @@ const fetchWithRevalidate = async (url) => {
     }
     return res.json();
 };
+
 const fetchCategories = () => fetchWithRevalidate('https://api.naayiq.com/categories');
 const fetchSubcategories = () => fetchWithRevalidate('https://api.naayiq.com/subcategories');
 const NavBarSkeleton = memo(function NavBarSkeleton() {
