@@ -2,10 +2,7 @@
 const nextConfig = {
     experimental: {
         optimizeCss: true,
-        optimisticClientCache: true,
-        webpackMemoryOptimizations: true,
-        parallelServerCompiles: true,
-        webpackBuildWorker: true
+        optimisticClientCache: true
     },
     webpack: (config, { dev, isServer }) => {
         if (!dev && !isServer) {
