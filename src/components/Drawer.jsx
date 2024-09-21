@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useState, useCallback, memo, useRef} from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import Image from 'next/image';
 import Link from "next/link";
 import Cookies from 'js-cookie';
@@ -17,7 +17,7 @@ const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
 
 const SubcategoryView = memo(function SubcategoryView({ category, subcategories, onBack, isVisible }) {
     return (
-        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-[200vh] pb-[200vh] overflow-y-scroll bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-full max-h-screen overflow-y-auto bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="mr-4">
                     <CircleArrowLeft size={40} strokeWidth={0.7} />
@@ -39,9 +39,6 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentView, setCurrentView] = useState('main');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const drawerRef = useRef(null);
-    const oldScrollRef = useRef(0);
-
     useEffect(() => {
         const checkLoginStatus = () => {
             const accessToken = Cookies.get('token');
@@ -64,19 +61,10 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const handleCategoryClick = useCallback((category) => {
         setSelectedCategory(category);
         setCurrentView('subcategory');
-        if (drawerRef.current) {
-            oldScrollRef.current = drawerRef.current.scrollTop;
-            drawerRef.current.scrollTop = 0;
-        }
-        drawerRef.current.style.overflow = 'hidden'
     }, []);
 
     const handleBackClick = useCallback(() => {
         setCurrentView('main');
-        drawerRef.current.style.overflow = 'auto'
-        if (drawerRef.current) {
-            drawerRef.current.scrollTop = oldScrollRef.current;
-        }
     }, []);
 
     const productCategories = categories.filter(category => !category.is_brand);
@@ -92,10 +80,11 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                 className={`fixed overflow-y-scroll top-0 left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-out ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
-            ref={drawerRef}>
+            >
                 <div className="p-6 pt-20 relative">
                     <div className="space-y-4">
-                        <div>
+                        <div
+                        ref={}>
                             <h2 className="font-sans font-medium text-[1.775rem] mb-2">Product</h2>
                             {productCategories.map(category => (
                                 <div key={category.id} className="py-2">
