@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        optimizeCss: true,
-        optimisticClientCache: true
-    },
     webpack: (config, { dev, isServer }) => {
         if (!dev && !isServer) {
             Object.assign(config.resolve.alias, {
