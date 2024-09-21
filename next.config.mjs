@@ -5,7 +5,8 @@ const nextConfig = {
         optimizeCss: true,
         optimisticClientCache: true,
         webpackMemoryOptimizations: true,
-        parallelServerCompiles: true
+        parallelServerCompiles: true,
+        webpackBuildWorker: true
     },
     webpack: (config, { dev, isServer }) => {
         if (!dev && !isServer) {
