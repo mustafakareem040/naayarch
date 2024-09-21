@@ -31,8 +31,6 @@
     "next": "15.0.0-canary.160",
     "nextjs-toploader": "^3.6.15",
     "npm": "^10.8.3",
-    "preact": "^10.24.0",
-    "preact-compat": "^3.19.0",
     "react": "19.0.0-rc-e740d4b1-20240919",
     "react-dom": "19.0.0-rc-e740d4b1-20240919",
     "react-fast-marquee": "^1.6.5",

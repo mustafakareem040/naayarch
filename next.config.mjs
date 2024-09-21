@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
-        reactCompiler: true
+        reactCompiler: true,
+        optimizeCss: true,
+        optimisticClientCache: true,
+        optimizeServerReact: true,
+        optimizePackageImports: true
     },
     images: {
         remotePatterns: [
