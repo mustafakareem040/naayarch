@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState, useCallback, memo } from 'react';
+import React, {useEffect, useState, useCallback, memo, useRef} from 'react';
 import Image from 'next/image';
 import Link from "next/link";
 import Cookies from 'js-cookie';
@@ -39,6 +39,8 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentView, setCurrentView] = useState('main');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const drawerRef = useRef(null);
+    const oldScrollRef = useRef(0);
 
     useEffect(() => {
         const checkLoginStatus = () => {
@@ -62,10 +64,19 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const handleCategoryClick = useCallback((category) => {
         setSelectedCategory(category);
         setCurrentView('subcategory');
+        if (drawerRef.current) {
+            oldScrollRef.current = drawerRef.current.scrollTop;
+            drawerRef.current.scrollTop = 0;
+        }
+        drawerRef.current.style.overflow = 'hidden'
     }, []);
 
     const handleBackClick = useCallback(() => {
         setCurrentView('main');
+        drawerRef.current.style.overflow = 'auto'
+        if (drawerRef.current) {
+            drawerRef.current.scrollTop = oldScrollRef.current;
+        }
     }, []);
 
     const productCategories = categories.filter(category => !category.is_brand);
@@ -81,7 +92,7 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                 className={`fixed overflow-y-scroll top-0 left-0 h-full w-80 bg-white z-40 transform transition-transform duration-300 ease-out ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
-            >
+            ref={drawerRef}>
                 <div className="p-6 pt-20 relative">
                     <div className="space-y-4">
                         <div>
