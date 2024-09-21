@@ -79,7 +79,10 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     return (
         <>
             {isOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={function() {
+                    categoryRef.current.style.display = 'block'
+                    onClose()
+                }} />
             )}
 
             <div
