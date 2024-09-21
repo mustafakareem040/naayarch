@@ -2,7 +2,6 @@
 const nextConfig = {
     experimental: {
         reactCompiler: true,
-        optimizeCss: true,
         optimisticClientCache: true,
         optimizeServerReact: true
     },
