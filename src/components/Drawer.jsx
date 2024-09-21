@@ -17,7 +17,7 @@ const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
 
 const SubcategoryView = memo(function SubcategoryView({ category, subcategories, onBack, isVisible }) {
     return (
-        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-[200vh] pb-[100vh] overflow-y-scroll bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`p-6 pt-20 absolute top-0 left-0 w-full h-[200vh] pb-[120vh] overflow-y-scroll bg-white transition-transform duration-300 ease-out transform ${isVisible ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="mr-4">
                     <CircleArrowLeft size={40} strokeWidth={0.7} />
