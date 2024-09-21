@@ -23,6 +23,7 @@
     "babel-plugin-react-compiler": "^0.0.0-experimental-ca8e0be-20240916",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "critters": "^0.0.24",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.5.6",
     "js-cookie": "^3.0.5",
