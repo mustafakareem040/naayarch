@@ -14,7 +14,7 @@ const fetchSubBrands = unstable_cache(
         const response = await fetch('https://api.naayiq.com/subcategories/brands', {
             headers: { 'Content-Type': 'application/json' },
             cache: "force-cache",
-            next: {revalidate: REVALIDATE_SUBBRANDS}
+            next: {revalidate: 1440}
         });
 
         if (response.status === 200) {
@@ -23,7 +23,7 @@ const fetchSubBrands = unstable_cache(
         throw new Error(`Failed to fetch sub-brands: ${response.statusText}`);
     },
     {
-        revalidate: REVALIDATE_SUBBRANDS,
+        revalidate: 1440,
     }
 );
 
@@ -31,7 +31,7 @@ const fetchSubBrands = unstable_cache(
 const fetchProducts = async () => {
     const response = await fetch('https://api.naayiq.com/products', {
         headers: {'Content-Type': 'application/json'},
-        next: {revalidate: 60}
+        next: {revalidate: 1440}
     });
 
     if (!response.ok) {
