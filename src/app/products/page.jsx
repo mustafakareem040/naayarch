@@ -27,7 +27,6 @@ const fetchSubBrands = unstable_cache(
     }
 );
 
-// Wrap fetchProducts with unstable_cache
 const fetchProducts = async () => {
     const response = await fetch('https://api.naayiq.com/products', {
         headers: {'Content-Type': 'application/json'},
