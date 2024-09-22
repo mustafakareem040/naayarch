@@ -5,11 +5,7 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 15;
-export const revalidate = 44000
-
-const REVALIDATE_SUBBRANDS = 14400; // 4 hours
-const REVALIDATE_PRODUCTS = 44000; // 4 hours
-
+export const revalidate = 60
 
 
 // Wrap fetchSubBrands with unstable_cache
@@ -35,7 +31,7 @@ const fetchSubBrands = unstable_cache(
 const fetchProducts = async () => {
     const response = await fetch('https://api.naayiq.com/products', {
         headers: {'Content-Type': 'application/json'},
-        next: {revalidate: REVALIDATE_PRODUCTS}
+        next: {revalidate: 60}
     });
 
     if (!response.ok) {
