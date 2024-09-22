@@ -10,7 +10,6 @@ async function fetchProduct(id) {
     }
     return response.json();
 }
-
 async function ProductContent({ id }) {
     const { product } = await fetchProduct(id);
 
