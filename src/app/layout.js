@@ -7,7 +7,6 @@ import StoreProvider from "@/app/StoreProvider";
 import Head from "next/head";
 import React from "react";
 import IsAuth from "@/components/isAuth"
-import {SpeedInsights} from "@vercel/speed-insights/next";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [

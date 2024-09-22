@@ -5,10 +5,12 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 15;
-export const dynamic = 'force-dynamic'
+export const revalidate = 44000
 
 const REVALIDATE_SUBBRANDS = 14400; // 4 hours
-const REVALIDATE_PRODUCTS = 0; // 4 hours
+const REVALIDATE_PRODUCTS = 44000; // 4 hours
+
+
 
 // Wrap fetchSubBrands with unstable_cache
 const fetchSubBrands = unstable_cache(
