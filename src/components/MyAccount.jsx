@@ -14,8 +14,15 @@ const MyAccount = () => {
 
     const fetchUserInfo = useCallback(async () => {
         try {
-            const response = await fetch('https://api.naayiq.com/user/check-auth',
-                {credentials: "include"});
+            const timestamp = new Date().getTime();
+            const response = await fetch(`https://api.naayiq.com/user/check-auth?_=${timestamp}`, {
+                credentials: "include",
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
+                },
+            });
             const data = await response.json();
             if (data.isAuthenticated) {
                 setUser(data);
@@ -23,7 +30,7 @@ const MyAccount = () => {
                     const dobDate = new Date(data.dob);
                     setDateOfBirth({
                         year: dobDate.getFullYear().toString(),
-                        month: (dobDate.getMonth() + 1).toString(), // getMonth() returns 0-11
+                        month: (dobDate.getMonth() + 1).toString(),
                         day: dobDate.getDate().toString()
                     });
                 } else {
@@ -37,7 +44,6 @@ const MyAccount = () => {
             router.push("/login")
         }
     }, [router]);
-
     useEffect(() => {
         fetchUserInfo();
     }, [fetchUserInfo]);
