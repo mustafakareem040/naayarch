@@ -5,7 +5,7 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 15;
-export const revalidate = 60
+export const revalidate = 3600
 
 
 // Wrap fetchSubBrands with unstable_cache
@@ -14,7 +14,7 @@ const fetchSubBrands = unstable_cache(
         const response = await fetch('https://api.naayiq.com/subcategories/brands', {
             headers: { 'Content-Type': 'application/json' },
             cache: "force-cache",
-            next: {revalidate: 1440}
+            next: {revalidate: 3600}
         });
 
         if (response.status === 200) {
@@ -30,7 +30,7 @@ const fetchSubBrands = unstable_cache(
 const fetchProducts = async () => {
     const response = await fetch('https://api.naayiq.com/products', {
         headers: {'Content-Type': 'application/json'},
-        next: {revalidate: 1440}
+        next: {revalidate: 3600}
     });
 
     if (!response.ok) {
@@ -39,7 +39,6 @@ const fetchProducts = async () => {
     return response.json();
 }
 
-// Cache getFilteredProducts to ensure it's only processed once per request
 const getFilteredProducts = async (
     page = 1,
     query = '',
