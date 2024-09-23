@@ -7,13 +7,20 @@ import {Profile} from "@/components/Profile";
 import Image from "next/image";
 
 async function getUserData() {
-    const response = await fetch('https://api.naayiq.com/user/check-auth', {
+    const timestamp = new Date().getTime();
+    const url = `https://api.naayiq.com/user/check-auth?_=${timestamp}`;
+    const response = await fetch(url, {
         credentials: "include",
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+        },
     });
     if (!response.ok) {
         throw new Error('Failed to fetch user data');
     }
-    return response.json();
+    return await response.json();
 }
 
 export default function ProfileClient() {
