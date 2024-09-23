@@ -240,7 +240,7 @@ const ProductsPage = async ({ searchParams }) => {
             </>
         );
     } catch (error) {
-        // Enhanced error handling with user-friendly message
+        // Enhanced error handling  user-friendly message
         console.error('Error fetching products:', error);
         return (
             <div className="font-serif flex flex-col justify-center items-center p-4">
