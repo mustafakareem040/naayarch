@@ -3,10 +3,11 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
-import StoreProvider from "@/app/StoreProvider";
 import Head from "next/head";
 import React from "react";
-import IsAuth from "@/components/isAuth"
+import IsAuth from "../components/isAuth"
+import {Provider} from "react-redux";
+import StoreProvider from "@/app/StoreProvider";
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [

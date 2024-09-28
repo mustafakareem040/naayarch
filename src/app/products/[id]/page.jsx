@@ -4,7 +4,7 @@ import Loading from "@/components/Loading";
 import { NotificationProvider } from "@/components/NotificationContext";
 export const revalidate = 3600
 async function fetchProduct(id) {
-    const response = await fetch(`https://api.naayiq.com/products/${id}`, {cache: "force-cache"});
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products/${id}`, {cache: "force-cache"});
     if (!response.ok) {
         throw new Error('Failed to fetch product');
     }

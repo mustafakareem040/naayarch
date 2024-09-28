@@ -25,7 +25,7 @@ const getCouponColors = (couponType) => {
 
 export default async function CouponPage() {
     // Fetch data from the API
-    const res = await fetch('https://api.naayiq.com/coupons', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API}/coupons`, {
         // Optionally, add headers if needed
         headers: {
             'Content-Type': 'application/json',

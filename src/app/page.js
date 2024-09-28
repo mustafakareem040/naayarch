@@ -1,9 +1,9 @@
-import Dashboard from "@/components/Dashboard";
-export const dynamic = 'force-static'
-export const dynamicParams = false
-export default function Home() {
+import Dashboard from "../components/Dashboard";
+import {getDictionary} from "./dictionaries";
+export default async function Home({params}) {
+    const t = await getDictionary(await params.lang);
     return (
-        <Dashboard />
-  );
+        <Dashboard t={await t}/>
+    );
 
 }

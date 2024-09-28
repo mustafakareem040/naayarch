@@ -5,13 +5,14 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 15;
-export const revalidate = 3600
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 
 // Wrap fetchSubBrands with unstable_cache
 const fetchSubBrands = unstable_cache(
     async () => {
-        const response = await fetch('https://api.naayiq.com/subcategories/brands', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API}/subcategories/brands`, {
             headers: { 'Content-Type': 'application/json' },
             cache: "force-cache",
             next: {revalidate: 3600}
@@ -28,7 +29,7 @@ const fetchSubBrands = unstable_cache(
 );
 
 const fetchProducts = async () => {
-    const response = await fetch('https://api.naayiq.com/products', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products`, {
         headers: {'Content-Type': 'application/json'},
         next: {revalidate: 3600}
     });
@@ -245,7 +246,7 @@ const ProductsPage = async ({ searchParams }) => {
         return (
             <div className="font-serif flex flex-col justify-center items-center p-4">
                 <p>Oops! Something went wrong while loading products. Please try again later.</p>
-                <Link href="/" className="text-blue-500 underline mt-2">
+                <Link href="/nay-store/public" className="text-blue-500 underline mt-2">
                     Go back home
                 </Link>
             </div>
