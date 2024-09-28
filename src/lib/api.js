@@ -1,6 +1,6 @@
 // lib/api.js
 
-const API_URL = "https://api.naayiq.com"
+const API_URL = process.env.NEXT_PUBLIC_API
 const PRODUCTS_PER_PAGE = 25;
 
 export async function fetchProducts(page, search, category, subCategory) {

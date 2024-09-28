@@ -8,7 +8,8 @@ import Hero from "@/components/Hero";
 import {ProductWithSales} from "@/components/ProductWithSales";
 import AsyncNavBar from "@/components/AsyncNavBar";
 
-export default function Dashboard() {
+export default function Dashboard({t}) {
+    console.log(t)
     return (
         <div className="overflow-x-hidden">
             <AsyncNavBar />
@@ -17,8 +18,8 @@ export default function Dashboard() {
             <ProductSlider />
             <CustomProduct
                 title="Our New Products"
-                subtitle="Fenty Lipgloss"
-                description="The ultimate lip gloss with shine that feels as good as it looks."
+                subtitle="Check out our new products"
+                description="Keep up to date with our latest products and make your skin glowing."
                 bigimg="/woman2.webp"
                 flower="/pingwing.webp"
             />

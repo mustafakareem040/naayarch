@@ -43,7 +43,7 @@ const Cart = () => {
             // Fetch all unique products in parallel
             await Promise.all(uniqueProductIds.map(async (productId) => {
                 try {
-                    const response = await fetch(`https://api.naayiq.com/products/${productId}`);
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products/${productId}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch product ${productId}: ${response.statusText}`);
                     }
@@ -163,7 +163,7 @@ const Cart = () => {
             // Applying a new coupon
             setIsApplyingCoupon(true);
             try {
-                const response = await fetch(`https://api.naayiq.com/coupons/${encodeURIComponent(coupon.trim())}/activate`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API}/coupons/${encodeURIComponent(coupon.trim())}/activate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

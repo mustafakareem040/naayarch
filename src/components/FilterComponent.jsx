@@ -1,8 +1,8 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react';
 import { Slider, ThemeProvider, createTheme } from '@mui/material';
-import { useRouter, useSearchParams } from 'next/navigation';
 import "./NotificationStyles.css"
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -11,16 +11,13 @@ const theme = createTheme({
     },
 });
 
-const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPrice, maxPrice }) => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-
+const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPrice, filterQuery, setFilterQuery }) => {
     const [priceRange, setPriceRange] = useState([
-        parseInt(searchParams.get('minPrice')) || minPrice,
-        parseInt(searchParams.get('maxPrice')) || maxPrice
+        parseInt(new URLSearchParams(filterQuery).get('minPriceA')) || minPrice,
+        parseInt(new URLSearchParams(filterQuery).get('maxPriceA')) || maxPrice
     ]);
-    const [inStock, setInStock] = useState(searchParams.get('availability') !== 'out_of_stock');
-    const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || '');
+    const [inStock, setInStock] = useState(new URLSearchParams(filterQuery).get('availability') !== 'out_of_stock');
+    const [sortBy, setSortBy] = useState(new URLSearchParams(filterQuery).get('sortBy') || '');
 
     const handleFilterClose = useCallback(() => {
         setFilter(false);
@@ -34,34 +31,25 @@ const ProductFilterComponent = ({ onFilter, modalRef, filter, setFilter, minPric
     }, [handleFilterClose, modalRef]);
 
     const handleApplyFilter = (e) => {
-        e.preventDefault(); // Prevent default form submission
-        const params = new URLSearchParams(searchParams);
-        params.set('minPrice', priceRange[0]);
-        params.set('maxPrice', priceRange[1]);
-        params.set('availability', inStock ? 'in_stock' : 'out_of_stock');
-        if (sortBy) {
-            params.set('sortBy', sortBy);
-        } else {
-            params.delete('sortBy');
-        }
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (priceRange[0] !== minPrice) params.set('minPriceA', priceRange[0]);
+        if (priceRange[1] !== maxPrice) params.set('maxPriceA', priceRange[1]);
+        if (!inStock) params.set('availability', 'out_of_stock');
+        if (sortBy) params.set('sortBy', sortBy);
 
-        // Update the URL without navigating
-        router.push(`?${params.toString()}`, { scroll: false });
-
-        onFilter({ priceRange, inStock, sortBy });
+        const newFilterQuery = params.toString();
+        console.log(newFilterQuery);
+        setFilterQuery(newFilterQuery);
         handleFilterClose();
     };
 
     const handleResetFilter = (e) => {
-        e.preventDefault(); // Prevent default button behavior
+        e.preventDefault();
         setPriceRange([minPrice, maxPrice]);
         setInStock(true);
         setSortBy('');
-
-        // Clear all filter-related params from the URL
-        const params = new URLSearchParams(searchParams);
-        ['minPrice', 'maxPrice', 'availability', 'sortBy'].forEach(param => params.delete(param));
-        router.push(`?${params.toString()}`, { scroll: false });
+        setFilterQuery('');
     };
 
     const handlePriceRangeChange = (event, newValue, activeThumb) => {

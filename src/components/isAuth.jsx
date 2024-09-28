@@ -9,7 +9,7 @@ export default function IsAuth() {
     const dispatch = useAppDispatch();
     useEffect(() => {
         async function checkAuth() {
-            const response = await fetch('https://api.naayiq.com/user/check-auth',
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/check-auth`,
                 {credentials: "include"});
             const data = await response.json();
             if (data.isAuthenticated) {

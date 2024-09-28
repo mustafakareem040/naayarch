@@ -14,8 +14,8 @@ const fetchWithRevalidate = async (url) => {
     return res.json();
 };
 
-const fetchCategories = () => fetchWithRevalidate('https://api.naayiq.com/categories');
-const fetchSubcategories = () => fetchWithRevalidate('https://api.naayiq.com/subcategories');
+const fetchCategories = () => fetchWithRevalidate(`${process.env.NEXT_PUBLIC_API}/categories`);
+const fetchSubcategories = () => fetchWithRevalidate(`${process.env.NEXT_PUBLIC_API}/subcategories`);
 const NavBarSkeleton = memo(function NavBarSkeleton() {
     return (
         <nav className="flex items-center justify-between p-5 bg-white absolute top-0 left-0 right-0 z-50">

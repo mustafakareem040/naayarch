@@ -8,7 +8,7 @@ import Image from "next/image";
 
 async function getUserData() {
     const timestamp = new Date().getTime();
-    const url = `https://api.naayiq.com/user/check-auth?_=${timestamp}`;
+    const url = `${process.env.NEXT_PUBLIC_API}/user/check-auth?_=${timestamp}`;
     const response = await fetch(url, {
         credentials: "include",
         headers: {

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Hero() {
+export default function Hero({subtitle}) {
     return (
         <section className="relative mb-12 font-sans w-full h-[550px] overflow-hidden rounded-lg">
             <Image
@@ -13,8 +13,8 @@ export default function Hero() {
                 className="object-cover"
             />
             <div className="absolute -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
-                <h1 className="text-2xl mb-4 font-serif text-white ">
-                    Welcome To<br />Naay Iraq
+                <h1 className="text-2xl max-w-[8.35rem] mb-4 font-serif text-white ">
+                    Welcome to Naay Iraq
                 </h1>
                 <Link
                     href="/products"

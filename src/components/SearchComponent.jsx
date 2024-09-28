@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { debounce } from 'lodash';
 import FilterComponent from "@/components/FilterComponent";
 
-const SearchComponent = ({ query: initialQuery, setQuery, minPrice, maxPrice }) => {
+const SearchComponent = ({ query: initialQuery, setQuery, minPrice, maxPrice, filterQuery, setFilterQuery }) => {
     const [localQuery, setLocalQuery] = useState(initialQuery);
     const [filter, setFilter] = useState(false);
     const modalRef = useRef(null);
@@ -33,7 +33,7 @@ const SearchComponent = ({ query: initialQuery, setQuery, minPrice, maxPrice }) 
     }, []);
 
     const MemoizedFilterComponent = useMemo(() => (
-        <FilterComponent minPrice={minPrice} maxPrice={maxPrice} modalRef={modalRef} onFilter={() => {}} filter={filter} setFilter={setFilter} />
+        <FilterComponent minPrice={minPrice} maxPrice={maxPrice} modalRef={modalRef}  filterQuery={filterQuery} setFilterQuery={setFilterQuery} filter={filter} setFilter={setFilter} />
     ), [filter, minPrice, maxPrice]);
 
     return (

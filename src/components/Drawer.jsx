@@ -3,7 +3,8 @@ import React, {useEffect, useState, useCallback, memo, useRef} from 'react';
 import Image from 'next/image';
 import Link from "next/link";
 import Cookies from 'js-cookie';
-import {CircleArrowRight, CircleArrowLeft} from "lucide-react";
+import {CircleArrowRight, CircleArrowLeft, Check} from "lucide-react";
+import {usePathname} from "next/navigation";
 const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
     return (
         <div className="py-2" onClick={onClick}>
@@ -40,8 +41,23 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const [currentView, setCurrentView] = useState('main');
     const [selectedCategory, setSelectedCategory] = useState('');
     const drawerRef = useRef(null);
-    const oldScrollRef = useRef(0);
     const categoryRef = useRef(null);
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+    const [enPath, setEnPath] = useState('/en');
+    const [arPath, setArPath] = useState('/ar');
+    const pathname = usePathname();
+
+    useEffect(() => {
+        const pathParts = pathname.split('/');
+        const langFromPath = pathParts[1];
+
+        if (langFromPath === 'en' || langFromPath === 'ar') {
+            setCurrentLanguage(langFromPath);
+            const restOfPath = '/' + pathParts.slice(2).join('/');
+            setEnPath('/en' + restOfPath);
+            setArPath('/ar' + restOfPath);
+        }
+    }, [pathname]);
     useEffect(() => {
         const checkLoginStatus = () => {
             const accessToken = Cookies.get('token');
@@ -60,6 +76,8 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
+
+
 
     const handleCategoryClick = useCallback((category) => {
         setSelectedCategory(category);
@@ -138,18 +156,21 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                             )}
                         </div>
 
-                        {/*<div>*/}
-                        {/*    <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>*/}
-                        {/*    <div className="flex items-center space-x-3 mb-6 ">*/}
-                        {/*        <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic" width={24} height={24}/>*/}
-                        {/*        <span className="font-serif text-xl">Arabic</span>*/}
-                        {/*    </div>*/}
-                        {/*    <div className="flex items-center space-x-3">*/}
-                        {/*        <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true} alt="English" width={24} height={24}/>*/}
-                        {/*        <span className="font-serif text-xl">English</span>*/}
-                        {/*        <Image src="https://storage.naayiq.com/resources/checkmark.svg" unoptimized={true} alt="Selected" width={20} height={20} className="ml-auto"/>*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
+                        <div>
+                            <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>
+                            <Link href={arPath} className="flex items-center space-x-3 mb-6 cursor-pointer">
+                                <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic"
+                                       width={24} height={24}/>
+                                <span className="font-serif text-xl">Arabic</span>
+                                {currentLanguage === 'ar' && <Check size={20} className="ml-auto"/>}
+                            </Link>
+                            <Link href={enPath} className="flex items-center space-x-3 cursor-pointer">
+                                <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true}
+                                       alt="English" width={24} height={24}/>
+                                <span className="font-serif text-xl">English</span>
+                                {currentLanguage === 'en' && <Check size={20} className="ml-auto"/>}
+                            </Link>
+                        </div>
                     </div>
 
                     <SubcategoryView

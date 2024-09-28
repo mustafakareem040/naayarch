@@ -49,7 +49,7 @@ export default function AddAddress() {
         return;
 
         try {
-            const response = await fetch('https://api.naayiq.com/addresses', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/addresses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

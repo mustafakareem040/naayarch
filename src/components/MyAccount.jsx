@@ -15,8 +15,7 @@ const MyAccount = () => {
     const fetchUserInfo = useCallback(async () => {
         try {
             const timestamp = new Date().getTime();
-            const response = await fetch(`https://api.naayiq.com/user/check-auth?_=${timestamp}`, {
-                credentials: "include",
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/check-auth?_=${timestamp}`, {
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
                     'Pragma': 'no-cache',
@@ -79,13 +78,12 @@ const MyAccount = () => {
         }
 
         try {
-            const response = await fetch(`https://api.naayiq.com/user/${user.userId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/${user.userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(updateData),
-                credentials: "include"
             });
 
             if (response.ok) {

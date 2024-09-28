@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-const Footer = () => {
+const Footer = ({subtitle}) => {
     return (
         <footer className="flex mt-36 flex-col justify-end items-center px-4 sm:px-8 pt-16 pb-8 w-full mx-auto bg-[#F6F3F1] rounded-lg">
             <div className="mb-8">
@@ -22,7 +22,7 @@ const Footer = () => {
             </div>
 
             <div className="text-sm text-gray-500">
-                Copyright © 2024 NaayIraq
+                {subtitle}
             </div>
         </footer>
     );

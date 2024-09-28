@@ -50,7 +50,7 @@ const WishlistHeart = ({ product  }) => {
         }
 
         try {
-            const response = await fetch("https://api.naayiq.com/wishlist", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/wishlist`, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',

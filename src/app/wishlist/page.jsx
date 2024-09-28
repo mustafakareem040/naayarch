@@ -122,7 +122,7 @@ export default function Wishlist() {
                             <p className="font-serif text-3xl text-center mb-2 font-semibold">Wishlist is empty!</p>
                             <p className="font-serif text-lg text-center leading-none">Tab Heart Button to start</p>
                             <p className="font-serif text-lg text-center">saving your favorite item.</p>
-                            <Link href={"/nay-store/public"} className="min-h-[56px] mt-4 items-center font-serif px-3 ssm:px-6 bg-[#3B5345] flex justify-center text-white text-xl rounded-lg">
+                            <Link href={"/"} className="min-h-[56px] mt-4 items-center font-serif px-3 ssm:px-6 bg-[#3B5345] flex justify-center text-white text-xl rounded-lg">
                                 Start Browsing
                             </Link>
                         </section>

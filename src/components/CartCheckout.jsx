@@ -110,9 +110,8 @@ const CartCheckout = ({ subTotal, discount }) => {
         };
 
         try {
-            const response = await fetch('https://api.naayiq.com/cart', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
                 method: 'POST',
-                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
                 },

@@ -38,7 +38,7 @@ const ManageAddress = () => {
         const fetchAddresses = async () => {
             try {
                 if (isAuthenticated) {
-                    const response = await fetch('https://api.naayiq.com/addresses', {credentials: 'include'});
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/addresses`, {credentials: 'include'});
                     if (response.status === 401 || response.status === 403) {
                         router.push("/login");
                     }
@@ -63,7 +63,7 @@ const ManageAddress = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this address?')) {
             try {
-                const response = await fetch(`https://api.naayiq.com/addresses/${id}`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API}/addresses/${id}`, {
                     method: 'DELETE',
                     credentials: 'include'
                 });
