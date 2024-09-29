@@ -49,7 +49,7 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
                         <p className="text-sm text-gray-600">In Stock: {availableQty}</p>
                     )}
                 </div>
-                {/* Price Section */}
+                {/**/}
                 <div className="text-center">
                     {discountedPrice < originalPrice ? (
                         <>
