@@ -41,12 +41,15 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
                     <span className="text-sm">Qty: {qty}</span>
                     <ChevronDown size={16} />
                 </div>
+                {/* Display Available Stock or Out of Stock */}
                 <div className="text-center">
                     {isOutOfStock ? (
-                        <p className="text-red-500 font-sans font-medium text-sm">Out of Stock</p>
-                    ): ""}
+                        <p className="text-red-500 text-sm">Out of Stock</p>
+                    ) : (
+                        <p className="text-sm text-gray-600">In Stock: {availableQty}</p>
+                    )}
                 </div>
-                {/**/}
+                {/* Price Section */}
                 <div className="text-center">
                     {discountedPrice < originalPrice ? (
                         <>
