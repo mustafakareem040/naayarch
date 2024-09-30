@@ -4,10 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
-import setCookies, {login} from "@/components/loginAPIs";
-import {useDispatch} from "react-redux";
-import {handleAuthResponse} from "@/components/isAuth";
-
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -16,8 +13,8 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const dispatch = useDispatch()
     const { addNotification } = useNotification();
 
     const onFinish = async (event) => {
@@ -25,14 +22,23 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const response = await login(email, password, rememberMe)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password, rememberMe }),
+            });
+
             if (response.ok) {
                 const data = await response.json();
-                setCookies(data, rememberMe)
+                localStorage.setItem('token', data.token);
+                if (rememberMe) {
+                    localStorage.setItem('userData', JSON.stringify(data));
+                }
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);
-                handleAuthResponse(data, dispatch)
                 setTimeout(() => router.push("/"), 3000);
             } else {
                 const errorData = await response.json();
@@ -54,8 +60,11 @@ export default function LoginPage() {
     const handleFieldChange = () => {
         if (hasError) {
             setHasError(false);
-
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -74,17 +83,24 @@ export default function LoginPage() {
                             className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
                         />
                     </div>
-                    <div className="mb-4">
+                    <div className="mb-4 relative">
                         <label className="block text-[#695C5C] mb-2" htmlFor="password">Password</label>
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onInput={handleFieldChange}
                             placeholder="Enter Your Password"
                             className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
                         />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-3 top-10 text-gray-500"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
                     </div>
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
@@ -93,7 +109,7 @@ export default function LoginPage() {
                                 type="checkbox"
                                 checked={rememberMe}
                                 onChange={(e) => setRememberMe(e.target.checked)}
-                                className="sr-only" // Hide the default checkbox
+                                className="sr-only"
                             />
                             <label htmlFor="remember" className="flex items-center cursor-pointer">
                                 <div

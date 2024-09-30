@@ -1,10 +1,7 @@
-'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { getWishlistByProductId, addWishlist, deleteWishlist } from '@/lib/features/wishlistSlice';
-import { useAppDispatch, useAppSelector } from "@/lib/hook";
 import {
     AlertDialog,
     AlertDialogContent,
@@ -15,67 +12,41 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-const WishlistHeart = ({ product  }) => {
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const wishlistItem = useAppSelector((state) => getWishlistByProductId(state, product.id));
-    const dispatch = useAppDispatch();
-    const router = useRouter();
+const WishlistHeart = ({ id, isInWishlist2 }) => {
+    const [isInWishlist, setIsInWishlist] = useState(isInWishlist2);
     const [showDialog, setShowDialog] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Loading state to prevent multiple clicks
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
+
     const handleClick = async (e) => {
         e.stopPropagation();
+        if (isLoading) return;
 
-        if (isLoading) return; // Prevent multiple clicks
-
-        if (!isAuthenticated) {
+        const token = localStorage.getItem("token");
+        if (!token) {
             setShowDialog(true);
             return;
         }
 
         setIsLoading(true);
-
-        const method = wishlistItem ? "DELETE" : "POST";
-
-        // Prepare optimistic actions
-        if (wishlistItem) {
-            // Optimistically remove from wishlist
-            dispatch(deleteWishlist(wishlistItem.id));
-        } else {
-            // Optimistically add to wishlist with temporary ID or necessary fields
-            dispatch(addWishlist({
-                wishlist_id: Date.now(), // Temporary unique identifier
-                ...product
-            }));
-        }
+        const method = isInWishlist ? "DELETE" : "POST";
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API}/wishlist`, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
-                credentials: "include",
-                body: JSON.stringify({ productId: product.id }),
+                body: JSON.stringify({ product_id: id }),
             });
-
-            if (response.ok) {
-                if (method === "POST") {
-                    const newWishlistItem = await response.json();
-                    // Replace the temporary wishlist item with the one from the server
-                    dispatch(deleteWishlist(Date.now())); // Remove temporary item
-                    dispatch(addWishlist(newWishlistItem)); // Add the confirmed item from server
-                }
-                // No action needed for DELETE if successful
-            } else {
-                throw new Error('Failed to update wishlist');
+            setIsInWishlist(!isInWishlist);
+            if (!response.ok) {
+                setIsInWishlist(!isInWishlist)
             }
         } catch (error) {
-            if (method === "DELETE") {
-                dispatch(addWishlist(wishlistItem)); // Re-add the removed item
-            } else {
-                dispatch(deleteWishlist(Date.now())); // Remove the optimistically added item
-            }
             console.error('Error updating wishlist:', error);
         } finally {
             setIsLoading(false);
@@ -103,7 +74,7 @@ const WishlistHeart = ({ product  }) => {
                 >
                     <Heart
                         className={`w-[1.85rem] h-[1.85rem] z-10 stroke-[1.2] ${
-                            wishlistItem
+                            isInWishlist
                                 ? "fill-[#C91C1C] stroke-[#C91C1C]"
                                 : "fill-transparent stroke-[#C91C1C] hover:fill-[#C91C1C]"
                         } cursor-pointer transition-colors duration-300`}

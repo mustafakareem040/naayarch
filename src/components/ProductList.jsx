@@ -8,7 +8,7 @@ import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import ProductDetail from '@/components/ProductDetail';
-import { NotificationProvider } from '@/components/NotificationContext';
+import {NotificationProvider, useNotification} from '@/components/NotificationContext';
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
@@ -20,7 +20,7 @@ const ProductModal = dynamic(() => import('@/components/ProductDetailModal'), {
 });
 
 export default function ProductList({ initialFilters }) {
-    const { c, sc, b, title } = initialFilters;
+    const { c, sc, b, title, sortBy } = initialFilters;
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -28,6 +28,7 @@ export default function ProductList({ initialFilters }) {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('');
     const [query, setQuery] = useState('');
+    const [wishlist, setWishlist] = useState([])
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(250000); // Adjust based on your data
     const [detail, setDetail] = useState(null);
@@ -37,6 +38,28 @@ export default function ProductList({ initialFilters }) {
         threshold: 0,
         triggerOnce: false
     });
+    const { addNotification } = useNotification(); // Using Notification Context
+
+    const fetchWishlist = useCallback(async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/wishlist`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const w = await response.json();
+                console.log('Fetched wishlist:', w.wishlist);
+                const wishlistIds = w.wishlist.map(item => item.id);
+                setWishlist(wishlistIds);
+            }
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+        }
+    }, [wishlist, setWishlist]);
 
     const pathname = usePathname(); // Import and use usePathname
 
@@ -44,6 +67,7 @@ export default function ProductList({ initialFilters }) {
         setLoading(true);
         setError(null);
         try {
+            await fetchWishlist()
             const params = new URLSearchParams({
                 page: currentPage,
                 itemsPerPage: 15, // Can be adjusted or made dynamic
@@ -52,13 +76,12 @@ export default function ProductList({ initialFilters }) {
             if (c) params.append('c', c);
             if (sc) params.append('sc', sc);
             if (b) params.append('b', b);
+            if (sortBy) params.append("sortBy", sortBy);
             if (searchQuery) params.append('search', searchQuery); // Use searchQuery
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice && maxPrice !== Infinity) params.append('maxPrice', maxPrice);
             if (filter) params.append('filter', filter); // Ensure filter is appended correctly
 
-            console.log(`Fetching products with filter: ${filter}`);
-            console.log(`${process.env.NEXT_PUBLIC_API}/products?${params.toString()}`);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products?${params.toString()}&${filter}`);
             if (!response.ok) {
@@ -68,7 +91,6 @@ export default function ProductList({ initialFilters }) {
             setProducts((prev) => [...prev, ...data.products]);
             setHasMore(data.hasMore);
             setPage((prev) => prev + 1);
-
             // After the initial fetch, set first.current to false
             if (first.current) {
                 first.current = false;
@@ -167,7 +189,7 @@ export default function ProductList({ initialFilters }) {
         <>
             {detail ? (
                 <NotificationProvider>
-                    <ProductDetail product={detail} />
+                    <ProductDetail product={detail} isInWishlist={wishlist.includes(detail.id)} />
                 </NotificationProvider>
             ) : (
                 <>
@@ -192,6 +214,7 @@ export default function ProductList({ initialFilters }) {
                                     key={product.id}
                                     id={product.id}
                                     name={product.name}
+                                    isInWishlist={wishlist.includes(product.id)}
                                     product={product}
                                     handleClick={() => handleProductClick(product)}
                                     price={formatPrice(product.cheapestPrice)}

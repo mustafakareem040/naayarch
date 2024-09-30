@@ -155,22 +155,6 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
                                 </Link>
                             )}
                         </div>
-
-                        <div>
-                            <h2 className="font-sans font-medium text-[1.775rem] mb-2">Language</h2>
-                            <Link href={arPath} className="flex items-center space-x-3 mb-6 cursor-pointer">
-                                <Image src="https://storage.naayiq.com/resources/ar.svg" unoptimized={true} alt="Arabic"
-                                       width={24} height={24}/>
-                                <span className="font-serif text-xl">Arabic</span>
-                                {currentLanguage === 'ar' && <Check size={20} className="ml-auto"/>}
-                            </Link>
-                            <Link href={enPath} className="flex items-center space-x-3 cursor-pointer">
-                                <Image src="https://storage.naayiq.com/resources/en.svg" unoptimized={true}
-                                       alt="English" width={24} height={24}/>
-                                <span className="font-serif text-xl">English</span>
-                                {currentLanguage === 'en' && <Check size={20} className="ml-auto"/>}
-                            </Link>
-                        </div>
                     </div>
 
                     <SubcategoryView

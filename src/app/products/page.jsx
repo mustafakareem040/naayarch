@@ -7,12 +7,12 @@ import AsyncNavBar from '@/components/AsyncNavBar';
 export const dynamic = 'force-dynamic';
 
 const ProductsPage = ({ searchParams }) => {
-    const { c = '', sc = '', b = '', title = '' } = searchParams;
+    const { c = '', sc = '', b = '', title = '', sortBy = '' } = searchParams;
 
     return (
         <>
             <AsyncNavBar />
-            <ProductList initialFilters={{ c, sc, b, title }} />
+            <ProductList initialFilters={{ c, sc, b, title, sortBy }} />
         </>
     );
 };

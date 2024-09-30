@@ -1,6 +1,12 @@
 'use client';
-import React, {useState, useEffect, useCallback, useMemo, Suspense} from 'react';
-import {ArrowLeft, Minus, Plus} from 'lucide-react';
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    Suspense
+} from 'react';
+import { ArrowLeft, Minus, Plus } from 'lucide-react';
 import 'slick-carousel/slick/slick.css';
 import '@/components/NotificationStyles.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -11,17 +17,17 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
 import Image from "next/image";
-import {useRouter} from "next/navigation";
-import {useNotification} from "@/components/NotificationContext";
+import { useRouter } from "next/navigation";
+import { useNotification } from "@/components/NotificationContext";
 import Link from "next/link";
 import WishlistHeart from "@/components/WishlistHeart";
 
 const formatPrice = (price) => {
-    const formattedPrice = price >= 10000 ? price.toLocaleString('en-US') : price.toString();
+    const formattedPrice = price >= 10000 ? price.toLocaleString() : price.toString();
     return `${formattedPrice} IQD`;
 };
 
-export default function ProductDetail({product}) {
+export default function ProductDetail({ product, isInWishlist }) {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
@@ -29,9 +35,13 @@ export default function ProductDetail({product}) {
     const [currentPrice, setCurrentPrice] = useState(product.price);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
-    const {addNotification} = useNotification();
+    const { addNotification } = useNotification();
+    const [wishReady, setWishReady] = useState(false)
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
+
+    // New state for internal wishlist status
+    const [internalIsInWishlist, setInternalIsInWishlist] = useState(false);
 
     // Memoize images to prevent re-computation
     const images = useMemo(() => {
@@ -119,7 +129,6 @@ export default function ProductDetail({product}) {
     }, [cartItems, product.id, selectedColor, selectedSize]);
 
     const handleAddToCart = () => {
-        // Ensure quantity does not exceed maxQuantity
         const finalQuantity = Math.min(quantity, maxQuantity);
         const cartItem = {
             product_id: product.id,
@@ -170,7 +179,7 @@ export default function ProductDetail({product}) {
         },
     }), [images.length]);
 
-    // Memoize isOutOfStock to prevent recalculations
+
     const isOutOfStock = useMemo(() => {
         if (product.has_size && selectedSize) {
             return selectedSize.qty === 0;
@@ -180,6 +189,38 @@ export default function ProductDetail({product}) {
             return product.qty === 0;
         }
     }, [product.has_size, selectedSize, product.has_color, selectedColor, product.qty]);
+
+    // Function to fetch the wishlist
+    const fetchWishlist = useCallback(async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/wishlist`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const w = await response.json();
+                console.log('Fetched wishlist:', w.wishlist);
+                const wishlistIds = w.wishlist.map(item => item.id);
+                setInternalIsInWishlist(wishlistIds.includes(product.id));
+            }
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+        }
+        setWishReady(true)
+    }, [product.id]);
+
+    // Fetch wishlist if isInWishlist prop is undefined
+    useEffect(() => {
+        if (isInWishlist === undefined) {
+            fetchWishlist();
+        }
+    }, [isInWishlist, fetchWishlist]);
+
+    // Determine the final isInWishlist value;
 
     return (
         <div className="flex overflow-x-hidden font-serif relative z-50 font-medium flex-col -mt-4 -mx-4 bg-white">
@@ -235,13 +276,15 @@ export default function ProductDetail({product}) {
             >
                 <ArrowLeft width={30} height={30} strokeWidth={1}/>
             </button>
-            <button
+            {wishReady && <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
             >
                 <WishlistHeart
-                    product={product}
+                    id={product.id}
+                    isInWishlist2={isInWishlist !== undefined ? isInWishlist : internalIsInWishlist}
                 />
-            </button>
+            </button>}
+
 
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
@@ -329,27 +372,27 @@ export default function ProductDetail({product}) {
                     <div className="flex justify-between items-center mb-6">
                         {!isOutOfStock &&
                             <>
-                        <span
-                            className="text-xl font-serif font-medium">{formatPrice(currentPrice * quantity)}</span>
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                                disabled={isOutOfStock || quantity <= 1}
-                                aria-label="Decrease quantity"
-                            >
-                                <Minus className="w-4 h-4 text-[#3B5345]"/>
-                            </button>
-                            <span className="text-lg font-medium">{quantity}</span>
-                            <button
-                                onClick={() => setQuantity(prev => Math.min(prev + 1, maxQuantity))}
-                                className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                                disabled={isOutOfStock || quantity >= maxQuantity}
-                                aria-label="Increase quantity"
-                            >
-                                <Plus className="w-4 h-4 text-[#3B5345]"/>
-                            </button>
-                        </div>
+                                <span
+                                    className="text-xl font-serif font-medium">{formatPrice(currentPrice * quantity)}</span>
+                                <div className="flex items-center space-x-4">
+                                    <button
+                                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                                        className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                        disabled={isOutOfStock || quantity <= 1}
+                                        aria-label="Decrease quantity"
+                                    >
+                                        <Minus className="w-4 h-4 text-[#3B5345]"/>
+                                    </button>
+                                    <span className="text-lg font-medium">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(prev => Math.min(prev + 1, maxQuantity))}
+                                        className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
+                                        disabled={isOutOfStock || quantity >= maxQuantity}
+                                        aria-label="Increase quantity"
+                                    >
+                                        <Plus className="w-4 h-4 text-[#3B5345]"/>
+                                    </button>
+                                </div>
                             </>}
                     </div>
 
@@ -406,4 +449,3 @@ export default function ProductDetail({product}) {
         </div>
     );
 }
-

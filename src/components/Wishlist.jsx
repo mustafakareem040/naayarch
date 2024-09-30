@@ -1,0 +1,182 @@
+// src/pages/Wishlist.jsx
+
+'use client';
+
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { CircleArrowLeft } from "lucide-react";
+import WishlistItem from "@/components/WishlistItem";
+import Loading from "@/components/Loading"; // Add your Loading component
+
+export const getToken = () => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('token'); // Adjust based on your token storage strategy
+};
+
+export const fetchWithAuth = async (url, options = {}) => {
+    const token = getToken();
+    if (!token) {
+        throw new Error('No authentication token found');
+    }
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...options.headers,
+    };
+
+    const response = await fetch(url, {
+        ...options,
+        headers,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'API request failed');
+    }
+
+    return response.json();
+};
+
+export default function Wishlist() {
+    const router = useRouter();
+    const [wishlistProductIds, setWishlistProductIds] = useState([]);
+    const [wishlistProducts, setWishlistProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true); // Overall loading state
+    const [error, setError] = useState(null);
+
+    // Fetch Wishlist IDs and Products
+    const fetchWishlist = useCallback(async () => {
+        try {
+            const data = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/wishlist`);
+            if (!Array.isArray(data.wishlist)) {
+                throw new Error('Invalid wishlist data format');
+            }
+            setWishlistProductIds(data.wishlist); // Assuming data.wishlist is an array of { id: ... }
+
+            // Fetch all products in parallel
+            const productPromises = data.wishlist.map(async (item) => {
+                try {
+                    const productData = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/products/${item.id}`);
+                    return productData.product;
+                } catch (err) {
+                    console.error(`Error fetching product with ID ${item.id}:`, err);
+                    setError('Some wishlist items failed to load.');
+                    return null;
+                }
+            });
+
+            const products = await Promise.all(productPromises);
+            const validProducts = products.filter(p => p !== null);
+            setWishlistProducts(validProducts);
+        } catch (err) {
+            console.error('Error fetching wishlist:', err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    // Initial Data Fetch
+    useEffect(() => {
+        fetchWishlist();
+    }, [fetchWishlist]);
+
+    // Handle Remove Item
+    const handleRemoveItem = async (productId, index) => {
+        // Optimistically remove the item from UI
+        const updatedProductIds = wishlistProductIds.filter(id => id.id !== productId);
+        setWishlistProductIds(updatedProductIds);
+        setWishlistProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
+
+        try {
+            await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/wishlist/`, {
+                body: JSON.stringify({ product_id: productId }),
+                method: 'DELETE',
+            });
+            // Successfully removed on server
+        } catch (err) {
+            console.error('Error removing item:', err);
+            setError('Failed to remove item from wishlist.');
+            // Revert UI changes
+            await fetchWishlist();
+        }
+    };
+
+    if (isLoading) {
+        return <Loading />; // Display the Loading component while fetching
+    }
+
+    return (
+        <>
+            <header className="flex items-center mb-6 px-4">
+                <CircleArrowLeft
+                    size={52}
+                    strokeWidth={0.7}
+                    onClick={() => router.back()}
+                    className="p-2 relative z-20 cursor-pointer"
+                />
+                <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">
+                    Wishlist
+                </h1>
+            </header>
+            <main className="flex-grow flex flex-col items-center px-4">
+                {error && (
+                    <div className="text-red-500 text-center mb-4">{error}</div>
+                )}
+                {wishlistProductIds.length === 0 ? (
+                    <EmptyWishlist />
+                ) : (
+                    <div className="w-full max-w-md">
+                        {wishlistProducts.map((product, index) => (
+                            <div key={product.id} className="mb-4">
+                                <WishlistItem
+                                    product={product}
+                                    onRemove={(productId) => handleRemoveItem(productId, index)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </main>
+        </>
+    );
+}
+const EmptyWishlist = () => (
+    <>
+        <div className="relative w-full h-[33vh]">
+            <img
+                src="https://storage.naayiq.com/resources/empty_wishlist.gif"
+                alt="Empty wishlist"
+                className="object-contain w-full h-full"
+            />
+        </div>
+        <section className="text-center">
+            <p className="font-serif text-3xl mb-2 font-semibold">Wishlist is empty!</p>
+            <p className="font-serif text-lg leading-none">Tap the Heart Button to start</p>
+            <p className="font-serif text-lg">saving your favorite items.</p>
+            <Link href="/" className="min-h-[56px] mt-4 inline-flex items-center justify-center px-3 sm:px-6 bg-[#3B5345] text-white text-xl rounded-lg">
+                Start Browsing
+            </Link>
+        </section>
+    </>
+);
+
+const WishlistSkeleton = () => {
+    return (
+        <div className="bg-white rounded-lg p-4 flex items-stretch justify-between mb-4 shadow-sm animate-pulse">
+            {/* Skeleton for Product Details */}
+            <div className="flex-grow flex flex-col justify-center space-y-2">
+                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+            </div>
+
+            {/* Skeleton for Action Buttons */}
+            <div className="flex flex-col justify-center items-center space-y-2">
+                <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+                <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+            </div>
+        </div>
+    );
+};

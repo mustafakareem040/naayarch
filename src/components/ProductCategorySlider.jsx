@@ -22,7 +22,7 @@ const ProductCategorySlider = () => {
             id: 2,
             title: 'Global Products',
             image: 'https://storage.naayiq.com/resources/global.webp',
-            description: 'Providing our customers with the best Korean Skincare!',
+            description: 'Discover the best skincare around the world!',
             link: "/products?b=11&title=Global Products"
         },
     ];

@@ -21,7 +21,7 @@ const ImageSkeleton = () => (
     <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-t-lg" />
 );
 
-const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onCartClick }) => {
+const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onCartClick, isInWishlist }) => {
     const [imageLoaded, setImageLoaded] = React.useState(false);
 
     const handleProductClick = (e) => {
@@ -47,7 +47,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
         <div className="rounded-lg" onClick={handleProductClick}>
             <div className="bg-white aspect-[186/275] relative flex flex-col w-full drop-shadow overflow-hidden group">
                 <button className="absolute left-1 top-4 z-20 heart-icon" onClick={(e) => e.stopPropagation()}>
-                    <WishlistHeart product={product} />
+                    <WishlistHeart id={product.id} isInWishlist2={isInWishlist} />
                 </button>
 
                 {!imageLoaded && <ImageSkeleton />}

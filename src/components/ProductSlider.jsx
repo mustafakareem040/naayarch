@@ -48,7 +48,7 @@ const ProductSlider = ({ products }) => { // Receive products as props
             <div className="flex mb-12 p-4 flex-col justify-center items-center gap-6 w-full h-auto bg-[#F6F3F17F] rounded-lg relative">
                 <div className="flex justify-between mb-6 items-center w-[95%]">
                     <h1 className="text-[#201E1C] font-sans font-medium text-3xl mb-6">Best Seller</h1>
-                    <Link prefetch={false} href="/products?sortBy=Best+Selling" className="text-[#3B5345] font-serif text-xl font-medium">Show all</Link>
+                    <Link prefetch={false} href="/products?sortBy=Best+Selling&title=Best Selling" className="text-[#3B5345] font-serif text-xl font-medium">Show all</Link>
                 </div>
                 <Slider {...settings} ref={sliderRef} className="relative bottom-12 w-full">
                     {sliderProducts.map((product) => (
@@ -81,7 +81,7 @@ const ProductSlider = ({ products }) => { // Receive products as props
                                     <p className="mt-2 min-h-12 self-end">{product.minPrice.toLocaleString()} IQD</p>
                                 </div>
                                 <Link
-                                    href={`/products/${product.id}`} // Assuming 'href' refers to product ID
+                                    href={`/products/${product.id}`}
                                     className="w-full text-center mb-6 py-1 mt-4 rounded-full font-serif text-2xl bg-[#3B5345] text-white">
                                     Add To Cart
                                 </Link>
@@ -95,7 +95,7 @@ const ProductSlider = ({ products }) => { // Receive products as props
                         className="absolute font-serif text-xl little-white bottom-[40%] right-6 px-2 py-2 border border-[#695C5C] rounded-[20px]"
                     >
                         <span>Swipe </span>
-                        <Image src="/resources/nextArrow.svg" alt="next" width={24} height={24} className="inline" />
+                        <Image src="https://storage.naayiq.com/resources/nextArrow.svg" unoptimized={true} alt="next" width={24} height={24} className="inline"/>
                     </button>
                 )}
             </div>

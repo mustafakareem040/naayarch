@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/NotificationContext';
 import '@/components/NotificationStyles.css';
-import setCookies, {signUp} from "@/components/loginAPIs";
-import {handleAuthResponse} from "@/components/isAuth";
-import {useAppDispatch} from "@/lib/hook";
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(false);
@@ -15,33 +13,39 @@ export default function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const { addNotification } = useNotification(); // Use the context
-    const dispatch = useAppDispatch()
+    const { addNotification } = useNotification();
+
     const onFinish = async (event) => {
         event.preventDefault();
         setLoading(true);
         setHasError(false);
 
         try {
-            const response = await signUp(fullName, email, password, phone);
-            const json = await response.json()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: fullName, email, password, phone }),
+            });
+
+            const json = await response.json();
+
             if (response.ok) {
-                setCookies(json, true, true)
+                localStorage.setItem('token', json.token);
+                localStorage.setItem('userData', JSON.stringify(json));
                 addNotification('success', 'Successfully signed up!');
-                handleAuthResponse(json, dispatch)
                 router.push('/');
-            }
-            else {
-                const errorData = await response.json();
-                addNotification('error', errorData.message)
-                setHasError(true)
-            }
-        } catch (error) {
-            if (error.response) {
-                addNotification('error', error.response.message);
+            } else {
+                addNotification('error', json.message);
                 setHasError(true);
             }
+        } catch (error) {
+            console.error('Error during signup:', error);
+            addNotification('error', 'An error occurred during signup. Please try again.');
+            setHasError(true);
         } finally {
             setLoading(false);
         }
@@ -51,6 +55,10 @@ export default function SignUpPage() {
         if (hasError) {
             setHasError(false);
         }
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -97,17 +105,24 @@ export default function SignUpPage() {
                             className={`w-full p-3 borderblack40 ${hasError ? 'border-red-500' : ''}`}
                         />
                     </div>
-                    <div className="mb-6">
+                    <div className="mb-6 relative">
                         <label className="block text-[#695C5C] mb-2" htmlFor="password">Password</label>
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onInput={handleFieldChange}
                             placeholder="Enter Your Password"
                             className={`w-full borderblack40 p-3 ${hasError ? 'border-red-500' : ''}`}
                         />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-3 top-10 text-gray-500"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
                     </div>
                     <div className="mb-4">
                         <button
