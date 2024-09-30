@@ -49,7 +49,7 @@ const WishlistItem = React.memo(({ product, onRemove }) => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="bg-[#F6F3F1]/30 py-4 px-3 shadow-[0px_2px_4px_3px_rgba(0,0,0,0.1)] min-h-[201px] rounded-lg flex items-stretch space-x-4 mb-4"
         >
-            <div className="relative min-h-[100px] sssm:min-h-[124px] ssm:min-h-[154px] aspect-[154/169]">
+            <div className="relative min-h-[100px] sssm:min-h-[115px] ssm:min-h-[154px] aspect-[154/169]">
                 <Image
                     src={image}
                     alt={product.name}
