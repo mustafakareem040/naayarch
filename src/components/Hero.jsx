@@ -12,7 +12,7 @@ export default function Hero({subtitle}) {
                 priority={true}
                 className="object-cover"
             />
-            <div className="absolute -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
+            <div className="absolute font-serif -top-36 mr-1 ssm:-top-24 font-medium text-center inset-0 transform right-0 left-1/2 flex flex-col items-center justify-center space-y-4">
                 <h1 className="text-2xl max-w-[8.35rem] mb-4 font-serif text-white ">
                     Welcome to Naay Iraq
                 </h1>

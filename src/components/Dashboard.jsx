@@ -39,6 +39,13 @@ export default async function Dashboard() {
                 flower="/pingwing.webp"
             />
             <ProductCategorySlider />
+            <CustomProduct
+                title="Makeup Product"
+                subtitle="Makeup and beauty 💄"
+                description="Our most popular product will help you to create best look"
+                bigimg="/woman.webp"
+                flower="/whiteflower.webp"
+            />
             <Footer />
         </div>
     );

@@ -374,4 +374,4 @@ const ProductSearchComponent = () => {
         </div>
     );
 }
-export default ProductSearchComponent;
+    export default ProductSearchComponent;

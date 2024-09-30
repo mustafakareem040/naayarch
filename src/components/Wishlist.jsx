@@ -172,3 +172,4 @@ const EmptyWishlist = () => (
         </section>
     </>
 );
+
