@@ -34,9 +34,6 @@ const CartCheckout = ({ subTotal, discount }) => {
                         shippingAddress: lastUsedAddress,
                     });
                 }
-                console.log(storedOrder)
-                console.log('Order Data is')
-                console.log(orderData)
 
                 setUserInfo(storedUserInfo || { userId: null });
             } catch (err) {

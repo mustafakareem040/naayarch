@@ -82,7 +82,7 @@ export default function AddAddress() {
     }, [formData, addressType, dispatch, addNotification]);
 
     const handleRedirect = () => {
-        const redirectPath = searchParams.get('redirect') || '/profile/address';
+        const redirectPath = searchParams.get('redirect') ? "/cart/order" : "" || '/profile/address';
         router.push(redirectPath);
     };
 
