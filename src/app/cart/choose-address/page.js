@@ -95,7 +95,7 @@ const ChooseAddress = () => {
             {!isSelecting && renderedAddresses}
 
             <Link
-                className="w-full bg-[#3B5345] text-white py-3 px-4 rounded-lg inline-block font-medium text-lg mt-4 text-center"
+                className="w-full flex items-center justify-center bg-[#3B5345] text-white py-3 px-4 rounded-lg gap-1.5 font-medium text-lg mt-4 text-center"
                 href={{
                     pathname: "/profile/address/add",
                     query: { redirect: "/cart/order" } // Redirect back to checkout

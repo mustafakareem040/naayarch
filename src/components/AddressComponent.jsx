@@ -88,7 +88,7 @@ const ManageAddress = () => {
 
             <div className="w-full my-20 text-center">
                 <button
-                    className="py-4 px-14 rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
+                    className="py-4 px-14 flex items-center align-center rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
                     onClick={() => router.push("/profile/address/add")}
                     disabled={addresses.length >= 5}
                 >

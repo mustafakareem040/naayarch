@@ -26,22 +26,17 @@ const CartCheckout = ({ subTotal, discount }) => {
             try {
                 const storedOrder = JSON.parse(localStorage.getItem('orderData') || 'null');
                 const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
-
                 // Check for lastUsedAddress
                 const lastUsedAddress = JSON.parse(localStorage.getItem('lastUsedAddress') || 'null');
 
                 if (lastUsedAddress) {
-                    setOrderData(prev => ({
-                        ...prev,
+                    setOrderData({...storedOrder,
                         shippingAddress: lastUsedAddress,
-                    }));
-                } else {
-                    setOrderData(storedOrder || {
-                        shippingAddress: null,
-                        coupon_id: null,
-                        items: [],
                     });
                 }
+                console.log(storedOrder)
+                console.log('Order Data is')
+                console.log(orderData)
 
                 setUserInfo(storedUserInfo || { userId: null });
             } catch (err) {
@@ -104,7 +99,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         }
 
         setIsSubmitting(true);
-
+        console.log(orderData.items)
         const submitData = {
             user_id: userInfo.userId || null,
             notes: note,
@@ -123,7 +118,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 quantity: item.quantity,
             })),
         };
-
+        console.log(submitData)
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
                 method: 'POST',

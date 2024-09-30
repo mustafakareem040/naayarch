@@ -15,14 +15,37 @@ const formatPrice = (price) => {
 
 const ProductModal = ({ isOpen, onClose, productData }) => {
     const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedColor, setSelectedColor] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [isInCart, setIsInCart] = useState(false);
     const { addNotification } = useNotification();
 
     const product = productData.product;
 
+    // Compute maxQty based on selected size and/or color
+    const maxQty = useMemo(() => {
+        let sizeQty = selectedSize ? selectedSize.qty : Infinity;
+        let colorQty = selectedColor ? selectedColor.qty : Infinity;
+
+        // If both size and color are selected, take the minimum of both
+        return Math.min(sizeQty, colorQty);
+    }, [selectedSize, selectedColor]);
+
+    // Adjust quantity if it exceeds maxQty or handle out of stock
+    useEffect(() => {
+        if (quantity > maxQty) {
+            setQuantity(maxQty);
+        }
+        if (maxQty === 0) {
+            setQuantity(0);
+        } else if (quantity < 1 && maxQty > 0) {
+            setQuantity(1);
+        }
+    }, [maxQty, quantity]);
+
     // Compute total price dynamically
     const totalPrice = useMemo(() => {
+        // Assuming that price is based on size; adjust if based on color or variant
         return selectedSize ? parseFloat(selectedSize.price) * quantity : 0;
     }, [selectedSize, quantity]);
 
@@ -33,36 +56,54 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
             const isItemInCart = cart.some(
                 (item) =>
                     item.product_id === product.id &&
-                    item.size_id === selectedSize?.id
+                    item.size_id === selectedSize?.id &&
+                    item.color_id === selectedColor?.id
             );
             setIsInCart(isItemInCart);
         } catch (error) {
             console.error('Error accessing localStorage:', error);
             setIsInCart(false);
         }
-    }, [product.id, selectedSize]);
+    }, [product.id, selectedSize, selectedColor]);
 
-    // Set default selected size on product change
+    // Set default selected size and color on product change
     useEffect(() => {
         if (product?.sizes?.length > 0) {
             setSelectedSize(product.sizes[0]);
+        } else {
+            setSelectedSize(null);
+        }
+
+        if (product?.colors?.length > 0) {
+            setSelectedColor(product.colors[0]);
+        } else {
+            setSelectedColor(null);
         }
     }, [product]);
 
-    // Check if the product is in the cart whenever selectedSize changes
+    // Check if the product is in the cart whenever selectedSize or selectedColor changes
     useEffect(() => {
         checkIfInCart();
-    }, [selectedSize, checkIfInCart]);
+    }, [selectedSize, selectedColor, checkIfInCart]);
 
     // Handle adding product to cart
     const handleAddToCart = useCallback(() => {
-        if (!selectedSize) return;
+        if ((!selectedSize && product.has_size) || (!selectedColor && product.has_color)) {
+            addNotification('error', 'Please select the required options');
+            return;
+        }
+
+        if (maxQty === 0) {
+            addNotification('error', 'Selected option is out of stock');
+            return;
+        }
 
         const cartItem = {
             product_id: product.id,
-            size_id: selectedSize.id,
+            size_id: selectedSize ? selectedSize.id : null,
+            color_id: selectedColor ? selectedColor.id : null,
             qty: quantity,
-            price: selectedSize.price,
+            price: selectedSize ? selectedSize.price : product.price,
         };
 
         try {
@@ -70,12 +111,22 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
             const existingItemIndex = cart.findIndex(
                 (item) =>
                     item.product_id === cartItem.product_id &&
-                    item.size_id === cartItem.size_id
+                    item.size_id === cartItem.size_id &&
+                    item.color_id === cartItem.color_id
             );
 
             if (existingItemIndex > -1) {
-                cart[existingItemIndex].qty += quantity;
+                const newQty = cart[existingItemIndex].qty + quantity;
+                if (newQty > maxQty) {
+                    addNotification('error', `Cannot add more than ${maxQty} items`);
+                    return;
+                }
+                cart[existingItemIndex].qty = newQty;
             } else {
+                if (quantity > maxQty) {
+                    addNotification('error', `Cannot add more than ${maxQty} items`);
+                    return;
+                }
                 cart.push(cartItem);
             }
 
@@ -86,9 +137,13 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
             console.error('Error updating cart:', error);
             addNotification('error', 'Failed to add to cart');
         }
-    }, [product.id, selectedSize, quantity, addNotification]);
+    }, [product, selectedSize, selectedColor, quantity, addNotification, maxQty]);
 
     if (!isOpen || !product) return null;
+
+    // Determine button disabled states
+    const isDecreaseDisabled = (maxQty > 0 && quantity <= 1) || (maxQty === 0 && quantity === 0);
+    const isIncreaseDisabled = quantity >= maxQty;
 
     return (
         <AnimatePresence>
@@ -155,15 +210,12 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                                     <button
                                         key={color.id}
                                         className={`w-20 h-20 rounded-full border-2 ${
-                                            selectedSize && selectedSize.color_id === color.id
+                                            selectedColor && selectedColor.id === color.id
                                                 ? 'border-[rgba(105,92,92,0.5)]'
                                                 : 'border-transparent'
                                         } flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                         aria-label={`Select color ${color.name}`}
-                                        onClick={() => {
-                                            // Assuming color selection affects selectedSize
-                                            // If not, consider adding a separate state for selectedColor
-                                        }}
+                                        onClick={() => setSelectedColor(color)}
                                     >
                                         <div
                                             className="w-15 h-15 rounded-full"
@@ -179,27 +231,60 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                                     </span>
                                 ))}
                             </div>
+                            {!selectedColor && (
+                                <p className="text-[#C91C1C] text-xs mt-2 font-sans">
+                                    Please choose Color
+                                </p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Display Out of Stock message */}
+                    {maxQty === 0 && (
+                        <div className="mb-4">
+                            <p className="text-red-600 font-semibold text-center">
+                                Out of Stock
+                            </p>
                         </div>
                     )}
 
                     <div className="flex font-serif justify-between items-center mb-6">
                         <p className="text-lg font-medium">{formatPrice(totalPrice)}</p>
                         <div className="flex items-center space-x-4">
+                            {/* Decrease Quantity Button */}
                             <button
-                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                                disabled={quantity <= 1}
+                                className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition-opacity duration-300 ${
+                                    isDecreaseDisabled
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-gray-100'
+                                }`}
+                                onClick={() => setQuantity((prev) => Math.max(prev - 1, maxQty === 0 ? 0 : 1))}
+                                disabled={isDecreaseDisabled}
                                 aria-label="Decrease quantity"
                             >
-                                <Minus className="w-4 h-4 text-[#3B5345]" />
+                                <Minus
+                                    className="w-4 h-4 text-[#3B5345]"
+                                    strokeWidth={isDecreaseDisabled ? 1 : 2} // Increase stroke when active
+                                />
                             </button>
+
                             <span className="text-lg">{quantity}</span>
+
+                            {/* Increase Quantity Button */}
                             <button
-                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                onClick={() => setQuantity((prev) => prev + 1)}
+                                className={`w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition-opacity duration-300 ${
+                                    isIncreaseDisabled
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-gray-100'
+                                }`}
+                                onClick={() => setQuantity((prev) => Math.min(prev + 1, maxQty))}
+                                disabled={isIncreaseDisabled}
                                 aria-label="Increase quantity"
                             >
-                                <Plus className="w-4 h-4 text-[#3B5345]" />
+                                <Plus
+                                    className="w-4 h-4 text-[#3B5345]"
+                                    strokeWidth={isIncreaseDisabled ? 1 : 2} // Increase stroke when active
+                                />
                             </button>
                         </div>
                     </div>
@@ -217,12 +302,16 @@ const ProductModal = ({ isOpen, onClose, productData }) => {
                         ) : (
                             <button
                                 className={`flex-1 ${
-                                    selectedSize
+                                    (selectedSize || selectedColor)
                                         ? 'bg-[#3B5345] text-white hover:bg-[#2d4233]'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 } py-3 rounded-lg font-medium text-base md:text-lg flex items-center justify-center transition duration-300`}
                                 onClick={handleAddToCart}
-                                disabled={!selectedSize}
+                                disabled={
+                                    (!selectedSize && product.has_size) ||
+                                    (!selectedColor && product.has_color) ||
+                                    maxQty === 0
+                                }
                                 aria-label="Add to cart"
                             >
                                 <ShoppingCart className="mr-2" />
