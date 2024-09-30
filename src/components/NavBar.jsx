@@ -8,25 +8,6 @@ import ShoppingBag from "@/components/ShoppingBag";
 const Drawer = dynamic(() => import('./Drawer'), { ssr: false });
 
 
-const ImageButton = memo(function ImageButton({ src, alt, dest, isClose = false }) {
-    return (
-        <Link
-            href={dest}
-            className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
-            <Image src={src} alt={alt} width={32} height={32} unoptimized={true} />
-        </Link>
-    );
-});
-
-const ImageCloseButton = memo(function ImageCloseButton({ src, alt, onClick, isClose = false }) {
-    return (
-        <button
-            onClick={onClick}
-            className={`rounded-full transition-colors ${isClose ? '' : 'hover:bg-gray-100'}`}>
-            <Image src={src} alt={alt} width={32} height={32} />
-        </button>
-    );
-});
 
 export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -58,7 +39,7 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
                     </svg>
                 </Link>
                 <div className="flex items-center space-x-2">
-                    <Link href={"/products"}>
+                    <Link href={"/search"}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
                             <g stroke="#181717" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.25"
                                clipPath="url(#a)">
