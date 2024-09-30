@@ -21,7 +21,6 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@vercel/speed-insights": "^1.0.12",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-57db2f6-20240926",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
@@ -47,6 +46,7 @@
     "yet-another-react-lightbox": "^3.21.6"
   },
   "devDependencies": {
+    "babel-plugin-react-compiler": "^0.0.0-experimental-3feb7e4-20240930",
     "eslint": "^9.11.0",
     "eslint-config-next": "15.0.0-canary.171",
     "postcss": "^8.4.47",
