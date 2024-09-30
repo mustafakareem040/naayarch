@@ -62,7 +62,8 @@ const ProductSlider = ({ products }) => { // Receive products as props
                                         <Image
                                             src={`https://storage.naayiq.com/resources/${product.image}`}
                                             alt={product.title}
-                                            fill
+                                            fill={true}
+                                            unoptimized={true}
                                             sizes="(max-width: 768px) 100vw,
                                                    (max-width: 1200px) 50vw,
                                                    33vw"
