@@ -57,8 +57,8 @@ const WishlistHeart = ({ id, isInWishlist2 }) => {
         e.preventDefault();
         setIsRedirecting(true);
         setTimeout(() => {
-            router.push('/signin');
-        }, 1000);
+            router.push('/login');
+        }, 300);
     };
 
     const handleCancel = () => {
