@@ -1,35 +1,60 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Minus, Plus } from 'lucide-react';
-import Slider from 'react-slick';
+import React, {useState, useEffect, useCallback, useMemo, Suspense} from 'react';
+import {ArrowLeft, Minus, Plus} from 'lucide-react';
 import 'slick-carousel/slick/slick.css';
 import '@/components/NotificationStyles.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import Lightbox from "yet-another-react-lightbox";
+const Slider = React.lazy(() => import('react-slick'));
+const Lightbox = React.lazy(() => import("yet-another-react-lightbox"));
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import "yet-another-react-lightbox/styles.css";
-import { useNotification } from "@/components/NotificationContext";
+import Image from "next/image";
+import {useRouter} from "next/navigation";
+import {useNotification} from "@/components/NotificationContext";
 import Link from "next/link";
 import WishlistHeart from "@/components/WishlistHeart";
+
 const formatPrice = (price) => {
     const formattedPrice = price >= 10000 ? price.toLocaleString('en-US') : price.toString();
     return `${formattedPrice} IQD`;
 };
-export default function ProductDetail({ product }) {
+
+export default function ProductDetail({product}) {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [maxQuantity, setMaxQuantity] = useState(1); // New state for max quantity
     const [currentPrice, setCurrentPrice] = useState(product.price);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
-    const { addNotification } = useNotification();
+    const {addNotification} = useNotification();
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
-    const images = product.images.map(img => img.url || img);
+
+    // Memoize images to prevent re-computation
+    const images = useMemo(() => {
+        return product.images.map(img => img.url || img);
+    }, [product.images]);
+
+    // Memoize lightbox slides
+    const lightboxSlides = useMemo(() => {
+        return images.map(src => ({
+            src: `https://storage.naayiq.com/resources/${src}`
+        }));
+    }, [images]);
+
+    // Determine the maximum available quantity based on selected attributes
+    const determineMaxQuantity = useCallback(() => {
+        if (selectedSize) {
+            return selectedSize.qty;
+        } else if (selectedColor) {
+            return selectedColor.qty;
+        } else {
+            return product.qty;
+        }
+    }, [selectedSize, selectedColor, product.qty]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -57,7 +82,14 @@ export default function ProductDetail({ product }) {
             setSelectedSize(product.sizes[0]);
         }
         updatePrice();
-    }, []);
+    }, [product, updatePrice]);
+
+    useEffect(() => {
+        setMaxQuantity(determineMaxQuantity());
+        if (quantity > determineMaxQuantity()) {
+            setQuantity(determineMaxQuantity() || 1);
+        }
+    }, [determineMaxQuantity, quantity]);
 
     useEffect(() => {
         updatePrice();
@@ -78,20 +110,22 @@ export default function ProductDetail({ product }) {
         setSelectedSize(newSize);
     };
 
-    const isInCart = () => {
+    const isInCart = useCallback(() => {
         return cartItems.some(item =>
             item.product_id === product.id &&
             item.color_id === selectedColor?.id &&
             item.size_id === selectedSize?.id
         );
-    };
+    }, [cartItems, product.id, selectedColor, selectedSize]);
 
     const handleAddToCart = () => {
+        // Ensure quantity does not exceed maxQuantity
+        const finalQuantity = Math.min(quantity, maxQuantity);
         const cartItem = {
             product_id: product.id,
             color_id: selectedColor?.id,
             size_id: selectedSize?.id,
-            qty: quantity
+            qty: finalQuantity
         };
 
         let updatedCart = [...cartItems];
@@ -102,7 +136,9 @@ export default function ProductDetail({ product }) {
         );
 
         if (existingItemIndex > -1) {
-            updatedCart[existingItemIndex].qty += quantity;
+            updatedCart[existingItemIndex].qty += finalQuantity;
+            // Ensure it does not exceed maxQuantity
+            updatedCart[existingItemIndex].qty = Math.min(updatedCart[existingItemIndex].qty, maxQuantity);
         } else {
             updatedCart.push(cartItem);
         }
@@ -112,7 +148,7 @@ export default function ProductDetail({ product }) {
         addNotification('success', 'Product Added To Cart');
     };
 
-    const sliderSettings = {
+    const sliderSettings = useMemo(() => ({
         dots: images.length > 1,
         infinite: false,
         speed: 500,
@@ -132,14 +168,10 @@ export default function ProductDetail({ product }) {
                 />
             );
         },
-    };
+    }), [images.length]);
 
-    const lightboxSlides = images.map(src => ({
-        src: `https://storage.naayiq.com/resources/${src}`
-}));
-
-    // Determine if the product is out of stock
-    const isOutOfStock = (() => {
+    // Memoize isOutOfStock to prevent recalculations
+    const isOutOfStock = useMemo(() => {
         if (product.has_size && selectedSize) {
             return selectedSize.qty === 0;
         } else if (product.has_color && selectedColor) {
@@ -147,26 +179,32 @@ export default function ProductDetail({ product }) {
         } else {
             return product.qty === 0;
         }
-    })();
+    }, [product.has_size, selectedSize, product.has_color, selectedColor, product.qty]);
 
     return (
         <div className="flex overflow-x-hidden font-serif relative z-50 font-medium flex-col -mt-4 -mx-4 bg-white">
-            <Slider {...sliderSettings} className="w-full mb-2 h-[55vh]">
-                {images.map((image, index) => (
-                    <div key={index} className="relative w-full h-[60vh]" onClick={() => { setLightboxIndex(index); setLightboxOpen(true); }}>
-                        <Image
-                            src={`https://storage.naayiq.com/resources/${image}`}
+            <Suspense fallback={<div>Loading images...</div>}>
+                <Slider {...sliderSettings} className="w-full mb-2 h-[55vh]">
+                    {images.map((image, index) => (
+                        <div key={index} className="relative w-full h-[60vh]" onClick={() => {
+                            setLightboxIndex(index);
+                            setLightboxOpen(true);
+                        }}>
+                            <Image
+                                src={`https://storage.naayiq.com/resources/${image}`}
                                 alt={`Product image ${index + 1}`}
                                 fill={true}
                                 unoptimized={true}
                                 className="w-full object-cover cursor-pointer"
                                 priority={index === 0}
-                                />
-                                </div>
-                                ))}
-                    </Slider>
+                            />
+                        </div>
+                    ))}
+                </Slider>
+            </Suspense>
 
-                    <Lightbox
+            <Suspense fallback={<div>Loading lightbox...</div>}>
+                <Lightbox
                     open={lightboxOpen}
                     close={() => setLightboxOpen(false)}
                     index={lightboxIndex}
@@ -176,7 +214,7 @@ export default function ProductDetail({ product }) {
                         finite: images.length <= 1,
                         navigationDisabled: images.length <= 1
                     }}
-                    animation={{ zoom: 500 }}
+                    animation={{zoom: 500}}
                     zoom={{
                         maxZoomPixelRatio: 5,
                         zoomInMultiplier: 2,
@@ -188,13 +226,14 @@ export default function ProductDetail({ product }) {
                         pinchZoomDistanceFactor: 100,
                         scrollToZoom: true,
                     }}
-            />
+                />
+            </Suspense>
 
             <button
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
                 onClick={router.back}
             >
-                <ArrowLeft width={30} height={30} strokeWidth={1} />
+                <ArrowLeft width={30} height={30} strokeWidth={1}/>
             </button>
             <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
@@ -223,8 +262,9 @@ export default function ProductDetail({ product }) {
                                         className={`w-20 h-20 rounded-full border-2 ${selectedColor?.id === color.id ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden`}
                                         onClick={() => handleColorChange(color)}
                                         disabled={color.qty === 0}
+                                        aria-label={`Select color ${color.name}`}
                                     >
-                                        {color.images && color.images.length > 0 && (
+                                        {color.images && color.images.length > 0 ? (
                                             <Image
                                                 src={color.images[0]}
                                                 alt={color.name}
@@ -232,6 +272,8 @@ export default function ProductDetail({ product }) {
                                                 height={80}
                                                 className="object-cover"
                                             />
+                                        ) : (
+                                            <span className="text-sm">{color.name}</span>
                                         )}
                                     </button>
                                     <span className="text-sm">{color.name}</span>
@@ -247,7 +289,9 @@ export default function ProductDetail({ product }) {
                             value={selectedSize ? selectedSize.id : ''}
                             onChange={handleSizeChange}
                             className="w-32 p-2 border border-[#E5E7EB] rounded-lg font-serif bg-white"
+                            aria-label="Select size"
                         >
+                            <option value="" disabled>Select Size</option>
                             {(selectedColor && selectedColor.sizes ? selectedColor.sizes : product.sizes).map((size) => (
                                 <option key={size.id} value={size.id} disabled={size.qty === 0}>
                                     Size: {size.name} {size.qty === 0 && '(Out of Stock)'}
@@ -283,25 +327,30 @@ export default function ProductDetail({ product }) {
                 <footer
                     className="fixed mt-12 border-[#695C5C]/30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05),0_-2px_4px_-1px_rgba(0,0,0,0.06)] bottom-0 bg-white p-4 right-0 left-0 z-50">
                     <div className="flex justify-between items-center mb-6">
+                        {!isOutOfStock &&
+                            <>
                         <span
                             className="text-xl font-serif font-medium">{formatPrice(currentPrice * quantity)}</span>
                         <div className="flex items-center space-x-4">
                             <button
-                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                                 className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                                disabled={isOutOfStock}
+                                disabled={isOutOfStock || quantity <= 1}
+                                aria-label="Decrease quantity"
                             >
                                 <Minus className="w-4 h-4 text-[#3B5345]"/>
                             </button>
                             <span className="text-lg font-medium">{quantity}</span>
                             <button
-                                onClick={() => setQuantity(quantity + 1)}
+                                onClick={() => setQuantity(prev => Math.min(prev + 1, maxQuantity))}
                                 className="w-8 h-8 flex items-center justify-center border border-[#E5E7EB] rounded-full"
-                                disabled={isOutOfStock}
+                                disabled={isOutOfStock || quantity >= maxQuantity}
+                                aria-label="Increase quantity"
                             >
                                 <Plus className="w-4 h-4 text-[#3B5345]"/>
                             </button>
                         </div>
+                            </>}
                     </div>
 
                     {/* Conditionally render the Add to Cart or Buy Now button based on stock status */}
@@ -357,3 +406,4 @@ export default function ProductDetail({ product }) {
         </div>
     );
 }
+

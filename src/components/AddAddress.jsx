@@ -1,13 +1,14 @@
-'use client'
-import React, { useState, useEffect } from 'react';
+'use client';
+import React, { useState, useCallback } from 'react';
 import { HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from "next/navigation";
+import { useNotification } from '@/components/NotificationContext'; // Assuming you have a notification system
 import { addAddress } from "@/lib/features/addressesSlice";
 import { useAppDispatch } from "@/lib/hook";
 
 export default function AddAddress() {
     const dispatch = useAppDispatch();
-    const [addressType, setAddressType] = useState('');
+    const [addressType, setAddressType] = useState(''); // Optional: Can be empty string
     const [formData, setFormData] = useState({
         full_name: '',
         governorate: '',
@@ -16,94 +17,99 @@ export default function AddAddress() {
         closest_point: '',
         phone_number: ''
     });
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { addNotification } = useNotification(); // Using notification context
 
-    useEffect(() => {
-        const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
-    }, []);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    // Validate phone number
+    const validatePhoneNumber = (number) => {
+        const regex = /^07\d{9}$/; // Starts with '07' followed by 9 digits
+        return regex.test(number);
     };
 
-    const handleSubmit = async (e) => {
+    const handleInputChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }, []);
+
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setError('');
+        setErrors({});
 
-        const newAddress = { ...formData, type: addressType };
+        // Validate phone number
+        if (!validatePhoneNumber(formData.phone_number)) {
+            setErrors(prev => ({
+                ...prev,
+                phone_number: 'Please enter a correct phone number 07xxxxxxxxx'
+            }));
+            setIsLoading(false);
+            return;
+        }
 
-        // Save to local storage
-        const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
-        const updatedAddresses = [...storedAddresses, newAddress];
-        localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
-
-        // Dispatch to Redux store
-        dispatch(addAddress(newAddress));
-
-        handleRedirect();
-        return;
+        const newAddress = { ...formData };
+        if (addressType) {
+            newAddress.type = addressType;
+        }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/addresses`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newAddress),
-                credentials: 'include'
-            });
+            // Save to local storage with error handling
+            const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+            const updatedAddresses = [...storedAddresses, newAddress];
+            localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to add address');
-            }
+            // Set lastUsedAddress to the new address
+            localStorage.setItem('lastUsedAddress', JSON.stringify(newAddress));
+
+            // Dispatch to Redux store
+            dispatch(addAddress(newAddress));
+
+            addNotification('success', 'Address added successfully.');
 
             handleRedirect();
-        } catch (err) {
-            setError(err.message);
-            // If there's an error, remove the address from local storage
-            const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
-            const filteredAddresses = storedAddresses.filter(addr =>
-                addr.full_name !== newAddress.full_name ||
-                addr.phone_number !== newAddress.phone_number
-            );
-            localStorage.setItem('addresses', JSON.stringify(filteredAddresses));
+        } catch (error) {
+            console.error('Failed to save the address:', error);
+            setErrors(prev => ({
+                ...prev,
+                general: 'Failed to save the address. Please try again.'
+            }));
+            addNotification('error', 'Failed to save the address.');
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [formData, addressType, dispatch, addNotification]);
 
     const handleRedirect = () => {
-        const redirectPath = searchParams.get('redirect');
-        if (redirectPath) {
-            router.push(redirectPath);
-        } else {
-            router.push('/profile/address');
-        }
+        const redirectPath = searchParams.get('redirect') || '/profile/address';
+        router.push(redirectPath);
     };
 
     return (
-        <div className="bg-white font-sans max-w-2xl mx-auto px-4">
-            <header className="flex items-center justify-between mb-8">
-                    <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2" />
-                <h1 className="text-2xl font-bold">Add Address</h1>
+        <div className="bg-white max-w-2xl mx-auto px-4">
+            <header className="flex font-sans items-center justify-between mb-8">
+                <CircleArrowLeft
+                    size={52}
+                    strokeWidth={0.7}
+                    onClick={() => router.back()}
+                    className="p-2 cursor-pointer"
+                    aria-label="Go back"
+                />
+                <h1 className="text-2xl font-medium">Add Address</h1>
                 <div className="w-10"></div>
             </header>
 
-            <div className="mb-6">
+            <div className="mb-6 font-serif">
                 <div className="font-medium flex space-x-2 mb-4">
                     {['home', 'work', 'other'].map((type) => (
                         <button
                             key={type}
-                            className={`flex flex-1 items-center justify-center py-2 border rounded-md ${
+                            className={`flex flex-1 items-center justify-center py-3 border rounded-md ${
                                 addressType === type ? 'bg-[#3B5345] text-white' : 'bg-white text-black'
                             }`}
                             onClick={() => setAddressType(type)}
+                            type="button"
                         >
                             {type === 'home' && <HomeIcon className="mr-2 h-4 w-4" />}
                             {type === 'work' && <BriefcaseBusiness className="mr-2 h-4 w-4" />}
@@ -112,6 +118,7 @@ export default function AddAddress() {
                         </button>
                     ))}
                 </div>
+                {errors.addressType && <p className="text-red-500 text-sm">{errors.addressType}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
@@ -130,7 +137,7 @@ export default function AddAddress() {
                         required
                     >
                         <option value="" disabled hidden>Governorate</option>
-                        <option value="anbar">Al-Anbar</option>
+                        <option value="al-anbar">Al-Anbar</option>
                         <option value="babil">Babil</option>
                         <option value="baghdad">Baghdad</option>
                         <option value="basra">Basra</option>
@@ -144,7 +151,7 @@ export default function AddAddress() {
                         <option value="muthanna">Muthanna</option>
                         <option value="najaf">Najaf</option>
                         <option value="nineveh">Nineveh</option>
-                        <option value="qadisiyyah">Al-Qadisiyyah</option>
+                        <option value="al-qadisiyyah">Al-Qadisiyyah</option>
                         <option value="saladin">Saladin</option>
                         <option value="sulaymaniyah">Sulaymaniyah</option>
                         <option value="wasit">Wasit</option>
@@ -173,23 +180,28 @@ export default function AddAddress() {
                         onChange={handleInputChange}
                     />
                     <input
-                        className="w-full p-3 border rounded-md"
+                        className={`w-full p-3 border rounded-md ${errors.phone_number ? 'border-red-500' : ''}`}
                         placeholder="Phone Number"
                         name="phone_number"
                         value={formData.phone_number}
                         onChange={handleInputChange}
                         required
+                        maxLength={11}
+                        pattern="^07\d{9}$"
+                        title="Please enter a correct phone number 07xxxxxxxxx."
                     />
-                    {error && <p className="text-red-500">{error}</p>}
+                    {errors.phone_number && <p className="text-red-500 text-sm">{errors.phone_number}</p>}
+                    {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
                     <button
                         type="submit"
                         className="w-full p-3 bg-[#3B5345] text-white rounded-md disabled:bg-gray-400"
                         disabled={isLoading}
+                        aria-label="Save Address"
                     >
                         {isLoading ? 'Saving...' : 'Save'}
                     </button>
                 </form>
             </div>
         </div>
-    );
+    )
 }

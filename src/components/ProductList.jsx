@@ -1,5 +1,3 @@
-// /components/ProductList.jsx
-
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -12,7 +10,6 @@ import NoProductsFound from '@/components/NoProductsFound';
 import ProductDetail from '@/components/ProductDetail';
 import { NotificationProvider } from '@/components/NotificationContext';
 
-// Dynamic imports with proper loading states
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
     loading: () => <SearchComponentSkeleton />
@@ -43,8 +40,7 @@ export default function ProductList({ initialFilters }) {
 
     const pathname = usePathname(); // Import and use usePathname
 
-    // Fetch products with proper dependencies
-    const fetchProducts = useCallback(async (currentPage) => {
+    const fetchProducts = useCallback(async (currentPage, searchQuery) => { // Added searchQuery
         setLoading(true);
         setError(null);
         try {
@@ -56,7 +52,7 @@ export default function ProductList({ initialFilters }) {
             if (c) params.append('c', c);
             if (sc) params.append('sc', sc);
             if (b) params.append('b', b);
-            if (query) params.append('search', query);
+            if (searchQuery) params.append('search', searchQuery); // Use searchQuery
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice && maxPrice !== Infinity) params.append('maxPrice', maxPrice);
             if (filter) params.append('filter', filter); // Ensure filter is appended correctly
@@ -83,20 +79,20 @@ export default function ProductList({ initialFilters }) {
         } finally {
             setLoading(false);
         }
-    }, [c, sc, b, query, minPrice, maxPrice, filter]);
+    }, [c, sc, b, minPrice, maxPrice, filter]);
 
     // Initial fetch on mount
     useEffect(() => {
-        fetchProducts(page);
+        fetchProducts(page, query); // Pass current query
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Only run on mount
 
     // Fetch more products when in view
     useEffect(() => {
         if (inView && hasMore && !loading) {
-            fetchProducts(page);
+            fetchProducts(page, query); // Pass current query
         }
-    }, [inView, hasMore, loading, fetchProducts, page]);
+    }, [inView, hasMore, loading, fetchProducts, page, query]);
 
     // Handle search functionality
     const handleSearch = useCallback((newQuery) => {
@@ -104,8 +100,8 @@ export default function ProductList({ initialFilters }) {
         setProducts([]);
         setPage(1);
         setHasMore(true);
-        first.current = true; // Reset first ref when searching
-        fetchProducts(1);
+        first.current = true;
+        fetchProducts(1, newQuery); // Pass newQuery
     }, [fetchProducts]);
 
     // Handle filter changes
@@ -114,8 +110,8 @@ export default function ProductList({ initialFilters }) {
         setPage(1);
         setHasMore(true);
         first.current = true; // Reset first ref when filtering
-        fetchProducts(1);
-    }, [fetchProducts]);
+        fetchProducts(1, query); // Pass current query
+    }, [fetchProducts, query]);
 
     // Watch for filter changes
     useEffect(() => {
@@ -125,31 +121,24 @@ export default function ProductList({ initialFilters }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter]);
 
-    // Monitor pathname to handle navigation back from product detail
     useEffect(() => {
-        // If the pathname is exactly '/products', close the detail view
         if (pathname === '/products') {
             setDetail(null);
         }
     }, [pathname]);
 
-    // Handle product click to show details
     const handleProductClick = useCallback((product) => {
         setDetail(product);
         const newURL = `/products/${product.id}`;
         window.history.pushState({ path: newURL }, '', newURL);
     }, []);
 
-    // Handle back/forward navigation
     useEffect(() => {
         const handlePopState = (event) => {
             const currentPath = window.location.pathname;
             if (currentPath === '/products') {
                 setDetail(null);
             } else {
-                // Optionally, you can fetch and set the product detail based on the URL
-                // This requires parsing the product ID from the URL and fetching its data
-                // For simplicity, we'll assume detail is managed elsewhere
             }
         };
 
@@ -169,7 +158,6 @@ export default function ProductList({ initialFilters }) {
         setSelectedProduct(null);
     }, []);
 
-    // Memoize products for performance
     const memoizedProducts = useMemo(() => products.map((product) => ({
         ...product,
         cheapestPrice: getCheapestPrice(product),
@@ -235,7 +223,6 @@ export default function ProductList({ initialFilters }) {
     );
 }
 
-// Utility function to get the cheapest price
 const getCheapestPrice = (product) => {
     const prices = [
         product.price && product.price !== '0.00'
@@ -251,13 +238,11 @@ const getCheapestPrice = (product) => {
     return prices.length > 0 ? Math.min(...prices) : null;
 };
 
-// Utility function to format price
 const formatPrice = (price) => {
     if (price == null || price === Infinity) return 'N/A';
     return `${price >= 10000 ? price.toLocaleString() : price} IQD`;
 };
 
-// Skeleton component for SearchComponent
 const SearchComponentSkeleton = () => (
     <div className="flex mb-4 items-center space-x-2 animate-pulse">
         <div className="h-10 bg-gray-200 rounded-md flex-grow"></div>

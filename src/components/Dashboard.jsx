@@ -1,21 +1,36 @@
-import dynamic from 'next/dynamic';
+// app/dashboard/page.jsx or wherever your Dashboard component is located
 
-const ProductSlider = dynamic(() => import('@/components/ProductSlider'));
-const CustomProduct = dynamic(() => import('@/components/CustomProduct'));
-const ProductCategorySlider = dynamic(() => import('@/components/ProductCategorySlider'));
-const Footer = dynamic(() => import('@/components/Footer'))
+import dynamic from 'next/dynamic';
 import Hero from "@/components/Hero";
-import {ProductWithSales} from "@/components/ProductWithSales";
+import { ProductWithSales } from "@/components/ProductWithSales";
 import AsyncNavBar from "@/components/AsyncNavBar";
 
-export default function Dashboard({t}) {
-    console.log(t)
+const ProductSlider = dynamic(() => import('@/components/ProductSlider'), {
+    suspense: false,
+});
+const CustomProduct = dynamic(() => import('@/components/CustomProduct'));
+const ProductCategorySlider = dynamic(() => import('@/components/ProductCategorySlider'));
+const Footer = dynamic(() => import('@/components/Footer'));
+
+export default async function Dashboard() {
+    const res = await fetch('https://dev.naayiq.com/products/top-selling', {
+        next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+        console.error('Failed to fetch top-selling products');
+        return <div>Error loading products.</div>;
+    }
+
+    const data = await res.json();
+    const products = data.products || []; // Ensure products is an array
+
     return (
         <div className="overflow-x-hidden">
             <AsyncNavBar />
             <Hero />
             <ProductWithSales />
-            <ProductSlider />
+            <ProductSlider products={products} /> {/* Pass products as props */}
             <CustomProduct
                 title="Our New Products"
                 subtitle="Check out our new products"

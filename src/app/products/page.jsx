@@ -4,7 +4,7 @@ import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
-export const dynamic = 'force-dynamic'; // Ensures the page is always dynamic
+export const dynamic = 'force-dynamic';
 
 const ProductsPage = ({ searchParams }) => {
     const { c = '', sc = '', b = '', title = '' } = searchParams;

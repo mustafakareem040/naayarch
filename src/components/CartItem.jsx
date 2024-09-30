@@ -2,18 +2,24 @@ import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
 
-const CartItem = React.memo(({ id, title, color, image, size, qty, originalPrice, discountedPrice, onUpdateQuantity, onRemove }) => {
+const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty, originalPrice, discountedPrice, onUpdateQuantity, onRemove }) => {
+    const isOutOfStock = availableQty < 1;
+    const canIncrement = qty < availableQty;
+    const canDecrement = qty > 1;
+
     const handleIncrement = useCallback(() => {
-        onUpdateQuantity(id, qty + 1);
-    }, [id, qty, onUpdateQuantity]);
+        if (canIncrement) {
+            onUpdateQuantity(id, qty + 1);
+        }
+    }, [id, qty, canIncrement, onUpdateQuantity]);
 
     const handleDecrement = useCallback(() => {
-        if (qty > 1) {
+        if (canDecrement) {
             onUpdateQuantity(id, qty - 1);
         } else {
             onRemove(id);
         }
-    }, [id, qty, onUpdateQuantity, onRemove]);
+    }, [id, qty, canDecrement, onUpdateQuantity, onRemove]);
 
     return (
         <div className="flex gap-2 justify-between font-serif items-stretch p-4 bg-[rgba(246,243,241,0.3)] shadow-[0px_2px_4px_3px_rgba(0,0,0,0.1)] rounded-md mb-4 w-full">
@@ -35,7 +41,12 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, originalPrice
                     <span className="text-sm">Qty: {qty}</span>
                     <ChevronDown size={16} />
                 </div>
-                {/* Price Section */}
+                <div className="text-center">
+                    {isOutOfStock ? (
+                        <p className="text-red-500 font-sans font-medium text-sm">Out of Stock</p>
+                    ): ""}
+                </div>
+                {/**/}
                 <div className="text-center">
                     {discountedPrice < originalPrice ? (
                         <>
@@ -52,8 +63,9 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, originalPrice
             <div className="flex flex-col justify-between gap-2">
                 <button
                     onClick={handleIncrement}
-                    className="w-[41px] h-[40px] flex items-center justify-center bg-[#3B5345] rounded-lg"
+                    className={`w-[41px] h-[40px] flex items-center justify-center bg-[#3B5345] rounded-lg ${!canIncrement ? 'opacity-50 cursor-not-allowed' : ''}`}
                     aria-label={`Increase quantity of ${title}`}
+                    disabled={!canIncrement}
                 >
                     <Plus className="w-6 h-6 text-white" />
                 </button>

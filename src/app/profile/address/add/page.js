@@ -1,11 +1,10 @@
 import AddAddress from "@/components/AddAddress";
-import {Suspense} from "react";
-import Loading from "@/components/Loading";
+import {NotificationProvider} from "@/components/NotificationContext";
 
 export default function AddAddressPage() {
     return (
-        <Suspense fallback={<Loading />}>
+        <NotificationProvider>
             <AddAddress />
-        </Suspense>
+        </NotificationProvider>
     )
 }

@@ -9,8 +9,7 @@ export default function NoProductsFound() {
                        className="object-contain"
                        fill={true}
                        unoptimized={true}
-                       priority={true}
-                />
+                       priority={true}/>
             </div>
             <header className="font-semibold -translate-y-full font-serif text-center">
                 <p className="text-2xl">No Products Found</p>

@@ -8,7 +8,8 @@ import Loading from "@/components/Loading";
 import EmptyCart from "@/components/EmptyCart";
 import { CircleArrowLeft } from "lucide-react";
 import { useNotification } from '@/components/NotificationContext';
-import "./NotificationStyles.css"
+import "./NotificationStyles.css";
+
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [subTotal, setSubTotal] = useState(0);
@@ -24,11 +25,12 @@ const Cart = () => {
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const [isOrderSet, setIsOrderSet] = useState(false);
     const [confirmationAction, setConfirmationAction] = useState(null);
-
+    const [couponDetails, setCouponDetails] = useState(null); // **Added state for coupon details**
+    const [minimum, setMinimum] = useState(0)
     const router = useRouter();
     const { addNotification } = useNotification();
 
-    // Fetch cart items from localStorage and enrich with product details
+
     const fetchCartItems = useCallback(async () => {
         try {
             const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -39,8 +41,8 @@ const Cart = () => {
 
             const uniqueProductIds = [...new Set(storedCart.map(item => item.product_id))];
             const productDetailsMap = {};
+            const failedProductIds = []; // **Track failed product IDs**
 
-            // Fetch all unique products in parallel
             await Promise.all(uniqueProductIds.map(async (productId) => {
                 try {
                     const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products/${productId}`);
@@ -50,15 +52,21 @@ const Cart = () => {
                     const data = await response.json();
                     productDetailsMap[productId] = data.product;
                 } catch (error) {
-                    addNotification('error', `Error fetching product ${productId}. It will be skipped.`);
+                    failedProductIds.push(productId); // **Add to failed list**
+                    addNotification('error', `Error fetching product ${productId}. It will be removed from your cart.`);
                 }
             }));
 
-            // Enrich cart items with product details
+            // **Remove failed products from localStorage**
+            if (failedProductIds.length > 0) {
+                const updatedStoredCart = storedCart.filter(item => !failedProductIds.includes(item.product_id));
+                localStorage.setItem('cart', JSON.stringify(updatedStoredCart));
+            }
+
             const itemsWithDetails = storedCart.map(item => {
                 const product = productDetailsMap[item.product_id];
                 if (!product) {
-                    return null; // Skip items with failed fetches
+                    return null; // **Skip items with failed fetches**
                 }
 
                 const selectedSize = product.sizes.find(size => size.id === item.size_id);
@@ -69,12 +77,13 @@ const Cart = () => {
                     title: product.name,
                     image: selectedSize && selectedSize.images.length > 0
                         ? `https://storage.naayiq.com/resources/${selectedSize.images[0]}`
-                        : '/placeholder-image.png', // Fallback image
+                        : '/placeholder-image.png', // **Fallback image**
                     price: parseInt(selectedSize?.price || product.price, 10),
                     color: selectedColor?.name || 'N/A',
                     size: selectedSize?.name || 'N/A',
+                    availableQty: selectedSize?.qty || 0, // **Added availableQty**
                 };
-            }).filter(item => item !== null); // Remove items with failed fetches
+            }).filter(item => item !== null); // **Remove null items**
 
             setCartItems(itemsWithDetails);
         } catch (error) {
@@ -90,18 +99,21 @@ const Cart = () => {
         }
     }, [fetchCartItems]);
 
-    // Calculate subtotal whenever cartItems change
     useEffect(() => {
         const total = cartItems.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
         setSubTotal(total);
     }, [cartItems]);
 
-    // Handle quantity updates
+
     const handleUpdateQuantity = useCallback((id, newQty) => {
         setCartItems(prevItems => {
-            const updatedItems = prevItems.map(item =>
-                item.product_id === id ? { ...item, qty: newQty } : item
-            );
+            const updatedItems = prevItems.map(item => {
+                if (item.product_id === id) {
+                    const finalQty = Math.min(newQty, item.availableQty);
+                    return { ...item, qty: finalQty };
+                }
+                return item;
+            });
             try {
                 localStorage.setItem('cart', JSON.stringify(updatedItems));
             } catch (error) {
@@ -111,7 +123,6 @@ const Cart = () => {
         });
     }, [addNotification]);
 
-    // Handle item removal with confirmation
     const handleRemoveItem = useCallback((id) => {
         setConfirmationMessage('Are you sure you want to remove this item from your cart?');
         setConfirmationAction(() => () => {
@@ -129,7 +140,6 @@ const Cart = () => {
         setShowConfirmation(true);
     }, [addNotification]);
 
-    // Calculate discount based on coupon details
     const calculateDiscount = useCallback((couponDetails, subtotal) => {
         if (couponDetails.discount_percentage) {
             const discountAmount = subtotal * (couponDetails.discount_percentage / 100);
@@ -140,7 +150,6 @@ const Cart = () => {
         return 0;
     }, []);
 
-    // Handle applying and removing coupons
     const handleApplyCoupon = useCallback(async () => {
         if (appliedCoupon) {
             // Removing the applied coupon
@@ -151,6 +160,7 @@ const Cart = () => {
                 setDiscount(0);
                 setCoupon('');
                 setCouponMessage('');
+                setCouponDetails(null); // **Reset couponDetails**
                 setShowConfirmation(false);
                 addNotification('success', 'Coupon removed successfully.');
             });
@@ -177,6 +187,7 @@ const Cart = () => {
                     setDiscount(calculatedDiscount);
                     setAppliedCoupon(data.coupon.code);
                     setAppliedCouponId(data.coupon.id);
+                    setCouponDetails(data.coupon); // **Store coupon details**
                     setCouponMessage(data.message || 'Coupon applied successfully!');
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");
@@ -190,24 +201,23 @@ const Cart = () => {
         }
     }, [appliedCoupon, coupon, subTotal, calculateDiscount, addNotification]);
 
-    // Recalculate discount when subtotal changes
-    useEffect(() => {
-        if (appliedCouponId) {
-            // Optionally refetch coupon details if necessary
-            // For now, we assume discount remains the same or is recalculated
-            // Here, we recalculate the discount
-            // You might need to store coupon details to recalculate
-            // For simplicity, we'll leave it as is
-        }
-    }, [subTotal, appliedCouponId]);
 
-    // Calculate total price after discount
+    useEffect(() => {
+        if (couponDetails) {
+            if (subTotal < couponDetails.min_purchase_amount) {
+                setDiscount(0)
+                return;
+            }
+            const newDiscount = calculateDiscount(couponDetails, subTotal);
+            setDiscount(newDiscount);
+        }
+    }, [subTotal, couponDetails, calculateDiscount]);
+
     const totalPrice = useMemo(() => {
         const discountedTotal = subTotal - discount;
         return Math.max(discountedTotal, 0);
     }, [subTotal, discount]);
 
-    // Calculate per-item discounts for display
     const cartItemsWithDiscount = useMemo(() => {
         if (discount <= 0) {
             return cartItems.map(item => ({
@@ -230,8 +240,14 @@ const Cart = () => {
         });
     }, [cartItems, discount, subTotal]);
 
-    // Handle proceeding to order
     const handleProceed = useCallback(() => {
+        // **Check for out of stock items before proceeding**
+        const outOfStockItems = cartItems.filter(item => item.availableQty < (item.qty || 1));
+        if (outOfStockItems.length > 0) {
+            addNotification('error', 'Some items are out of stock or do not have sufficient quantity.');
+            return;
+        }
+
         const orderData = {
             coupon_id: appliedCouponId,
             items: cartItems.map(item => ({
@@ -251,7 +267,6 @@ const Cart = () => {
         }
     }, [appliedCouponId, cartItems, delivery, discount, subTotal, addNotification]);
 
-    // Navigate to order page once order data is set
     useEffect(() => {
         if (isOrderSet) {
             router.push('/cart/order');
@@ -259,7 +274,6 @@ const Cart = () => {
         }
     }, [isOrderSet, router]);
 
-    // Handle confirmation modal actions
     const handleConfirm = useCallback(() => {
         if (confirmationAction) {
             confirmationAction();
@@ -271,6 +285,11 @@ const Cart = () => {
         setShowConfirmation(false);
         setConfirmationAction(null);
     }, []);
+
+    // **Determine if any item is out of stock to disable the Proceed button**
+    const hasOutOfStock = useMemo(() => {
+        return cartItems.some(item => item.availableQty < (item.qty || 1));
+    }, [cartItems]);
 
     if (isLoading) {
         return <Loading />;
@@ -349,6 +368,7 @@ const Cart = () => {
                                     image={item.image}
                                     size={item.size}
                                     qty={item.qty || 1}
+                                    availableQty={item.availableQty} // **Passed availableQty**
                                     originalPrice={item.originalTotal}
                                     discountedPrice={item.discountedTotal}
                                     onUpdateQuantity={handleUpdateQuantity}
@@ -416,10 +436,11 @@ const Cart = () => {
                             <span>{totalPrice.toLocaleString()} IQD</span>
                         </div>
                     </motion.div>
+                    {/* **Disable Proceed button if any item is out of stock** */}
                     <button
                         onClick={handleProceed}
-                        disabled={isOrderSet}
-                        className={`w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center ${isOrderSet ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        disabled={isOrderSet || hasOutOfStock}
+                        className={`w-full bg-[#3B5345] text-white py-3 rounded-lg font-medium text-lg mt-6 block text-center ${isOrderSet || hasOutOfStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         aria-label="Proceed to order"
                     >
                         {isOrderSet ? "Processing..." : "Proceed"}
@@ -427,7 +448,6 @@ const Cart = () => {
                 </motion.div>
             </>
     );
-
 };
 
 export default Cart;

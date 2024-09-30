@@ -23,11 +23,11 @@ export default function OrderNow() {
         return <Loading />;
     }
 
-    const { subTotal, delivery, discount } = orderData.info;
+    const { subTotal, discount } = orderData.info;
 
     return (
         <NotificationProvider>
-            <CartCheckout subTotal={subTotal} delivery={delivery} discount={discount} />
+            <CartCheckout subTotal={subTotal} discount={discount} />
         </NotificationProvider>
     );
 }

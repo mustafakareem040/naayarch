@@ -18,19 +18,34 @@ const CartCheckout = ({ subTotal, discount }) => {
     const router = useRouter();
     const { addNotification } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
 
+    // Load orderData and userInfo on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             try {
                 const storedOrder = JSON.parse(localStorage.getItem('orderData') || 'null');
                 const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
-                setOrderData(storedOrder || {
-                    shippingAddress: null,
-                    coupon_id: null,
-                    items: [],
-                });
+
+                // Check for lastUsedAddress
+                const lastUsedAddress = JSON.parse(localStorage.getItem('lastUsedAddress') || 'null');
+
+                if (lastUsedAddress) {
+                    setOrderData(prev => ({
+                        ...prev,
+                        shippingAddress: lastUsedAddress,
+                    }));
+                } else {
+                    setOrderData(storedOrder || {
+                        shippingAddress: null,
+                        coupon_id: null,
+                        items: [],
+                    });
+                }
+
                 setUserInfo(storedUserInfo || { userId: null });
-            } catch (error) {
+            } catch (err) {
+                console.error('Failed to load order data:', err);
                 addNotification('error', 'Failed to load order data.');
             }
             router.prefetch("/cart/order/confirm");
@@ -97,9 +112,9 @@ const CartCheckout = ({ subTotal, discount }) => {
             governorate: orderData.shippingAddress.governorate || '',
             city: orderData.shippingAddress.city || '',
             address: orderData.shippingAddress.address || '',
-            closest_point: orderData.shippingAddress.closest_point || '',
+            closest_point: orderData.shippingAddress.closest_point || '', // Optional
             phone_number: orderData.shippingAddress.phone_number || '',
-            type: orderData.shippingAddress.type || '',
+            type: orderData.shippingAddress.type || '', // Optional
             coupon_id: orderData.coupon_id || null,
             items: orderData.items.map(item => ({
                 product_id: item.product_id,
@@ -129,7 +144,8 @@ const CartCheckout = ({ subTotal, discount }) => {
                     addNotification('error', 'An error occurred while submitting the order.');
                 }
             }
-        } catch (error) {
+        } catch (err) {
+            console.error('Order submission failed:', err);
             addNotification('error', 'A network error occurred. Please try again.');
         } finally {
             setIsSubmitting(false);
@@ -212,9 +228,11 @@ const CartCheckout = ({ subTotal, discount }) => {
                 >
                     {isSubmitting ? 'Submitting...' : 'Submit Order'}
                 </button>
+                {error && <p className="text-red-500 text-center mt-4">{error}</p>}
             </div>
         </>
     );
+
 };
 
 export default React.memo(CartCheckout);
