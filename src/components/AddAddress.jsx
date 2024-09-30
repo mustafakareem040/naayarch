@@ -7,7 +7,6 @@ import { addAddress } from "@/lib/features/addressesSlice";
 import { useAppDispatch } from "@/lib/hook";
 
 export default function AddAddress() {
-    const dispatch = useAppDispatch();
     const [addressType, setAddressType] = useState(''); // Optional: Can be empty string
     const [formData, setFormData] = useState({
         full_name: '',
@@ -59,15 +58,7 @@ export default function AddAddress() {
             const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
             const updatedAddresses = [...storedAddresses, newAddress];
             localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
-
-            // Set lastUsedAddress to the new address
             localStorage.setItem('lastUsedAddress', JSON.stringify(newAddress));
-
-            // Dispatch to Redux store
-            dispatch(addAddress(newAddress));
-
-            addNotification('success', 'Address added successfully.');
-
             handleRedirect();
         } catch (error) {
             console.error('Failed to save the address:', error);
