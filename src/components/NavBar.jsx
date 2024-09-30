@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, useCallback, memo } from 'react';
-import Image from 'next/image';
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import {Heart, X} from "lucide-react";
