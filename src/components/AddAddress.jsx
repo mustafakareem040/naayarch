@@ -3,8 +3,6 @@ import React, { useState, useCallback } from 'react';
 import { HomeIcon, PlusCircleIcon, BriefcaseBusiness, CircleArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useNotification } from '@/components/NotificationContext'; // Assuming you have a notification system
-import { addAddress } from "@/lib/features/addressesSlice";
-import { useAppDispatch } from "@/lib/hook";
 
 export default function AddAddress() {
     const [addressType, setAddressType] = useState(''); // Optional: Can be empty string
@@ -70,7 +68,7 @@ export default function AddAddress() {
         } finally {
             setIsLoading(false);
         }
-    }, [formData, addressType, dispatch, addNotification]);
+    }, [formData, addressType, addNotification]);
 
     const handleRedirect = () => {
         const redirectPath = searchParams.get('redirect') ? "/cart/order" : "" || '/profile/address';
