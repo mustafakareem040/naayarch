@@ -17,27 +17,25 @@ export const getToken = () => {
 
 export const fetchWithAuth = async (url, options = {}) => {
     const token = getToken();
-    if (!token) {
-        throw new Error('No authentication token found');
+    if (token) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            ...options.headers,
+        };
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'API request failed');
+        }
+
+        return response.json();
     }
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        ...options.headers,
-    };
-
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'API request failed');
-    }
-
-    return response.json();
 };
 
 export default function Wishlist() {
