@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft } from "lucide-react";
 import WishlistItem from "@/components/WishlistItem";
-import Loading from "@/components/Loading"; // Add your Loading component
+import Loading from "@/components/Loading";
+import { AnimatePresence, motion } from "framer-motion"; // Import AnimatePresence and motion
 
 export const getToken = () => {
     if (typeof window === 'undefined') return null;
@@ -81,13 +82,13 @@ export default function Wishlist() {
     // Initial Data Fetch
     useEffect(() => {
         fetchWishlist();
-    }, [fetchWishlist]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Handle Remove Item
-    const handleRemoveItem = async (productId, index) => {
+    const handleRemoveItem = useCallback(async (productId) => {
         // Optimistically remove the item from UI
-        const updatedProductIds = wishlistProductIds.filter(id => id.id !== productId);
-        setWishlistProductIds(updatedProductIds);
+        setWishlistProductIds(prevIds => prevIds.filter(id => id.id !== productId));
         setWishlistProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
 
         try {
@@ -100,9 +101,9 @@ export default function Wishlist() {
             console.error('Error removing item:', err);
             setError('Failed to remove item from wishlist.');
             // Revert UI changes
-            await fetchWishlist();
+            fetchWishlist();
         }
-    };
+    }, [fetchWishlist]);
 
     if (isLoading) {
         return <Loading />; // Display the Loading component while fetching
@@ -129,20 +130,29 @@ export default function Wishlist() {
                     <EmptyWishlist />
                 ) : (
                     <div className="w-full max-w-md">
-                        {wishlistProducts.map((product, index) => (
-                            <div key={product.id} className="mb-4">
-                                <WishlistItem
-                                    product={product}
-                                    onRemove={(productId) => handleRemoveItem(productId, index)}
-                                />
-                            </div>
-                        ))}
+                        <AnimatePresence>
+                            {wishlistProducts.map((product) => (
+                                <motion.div
+                                    key={product.id}
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <WishlistItem
+                                        product={product}
+                                        onRemove={handleRemoveItem}
+                                    />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
                 )}
             </main>
         </>
     );
 }
+
 const EmptyWishlist = () => (
     <>
         <div className="relative w-full h-[33vh]">
@@ -163,20 +173,3 @@ const EmptyWishlist = () => (
     </>
 );
 
-const WishlistSkeleton = () => {
-    return (
-        <div className="bg-white rounded-lg p-4 flex items-stretch justify-between mb-4 shadow-sm animate-pulse">
-            {/* Skeleton for Product Details */}
-            <div className="flex-grow flex flex-col justify-center space-y-2">
-                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-            </div>
-
-            {/* Skeleton for Action Buttons */}
-            <div className="flex flex-col justify-center items-center space-y-2">
-                <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
-                <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
-            </div>
-        </div>
-    );
-};
