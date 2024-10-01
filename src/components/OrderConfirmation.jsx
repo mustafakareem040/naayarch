@@ -3,17 +3,13 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
-import { useAppDispatch } from '@/lib/hook';
-import { setOrder } from '@/lib/features/orderSlice';
 
 const OrderConfirmation = ({ id }) => {
-    const dispatch = useAppDispatch();
     useEffect(() => {
         localStorage.removeItem('cart');
         localStorage.removeItem('orderData');
         localStorage.removeItem('lastUsedAddress')
-        dispatch(setOrder({items: [], shippingAddress: null, coupon_id: null, note: '', info: {}}))
-    }, [dispatch]);
+    }, []);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">

@@ -33,9 +33,8 @@ export default function LoginPage() {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
-                if (rememberMe) {
-                    localStorage.setItem('userData', JSON.stringify(data));
-                }
+                localStorage.setItem('userData', JSON.stringify(data));
+                localStorage.setItem('addresses', JSON.stringify(data.address))
                 addNotification('success', 'Successfully Logged in!');
                 setHasError(false);
                 setDisabled(true);

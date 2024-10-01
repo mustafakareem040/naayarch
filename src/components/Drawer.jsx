@@ -2,9 +2,7 @@
 import React, {useEffect, useState, useCallback, memo, useRef} from 'react';
 import Image from 'next/image';
 import Link from "next/link";
-import Cookies from 'js-cookie';
-import {CircleArrowRight, CircleArrowLeft, Check} from "lucide-react";
-import {usePathname} from "next/navigation";
+import {CircleArrowRight, CircleArrowLeft} from "lucide-react";
 const MenuItem = memo(function MenuItem({ label, hasChildren, onClick }) {
     return (
         <div className="py-2" onClick={onClick}>
@@ -42,25 +40,10 @@ const Drawer = memo(function Drawer({ categories, subcategories, isOpen, onClose
     const [selectedCategory, setSelectedCategory] = useState('');
     const drawerRef = useRef(null);
     const categoryRef = useRef(null);
-    const [currentLanguage, setCurrentLanguage] = useState('en');
-    const [enPath, setEnPath] = useState('/en');
-    const [arPath, setArPath] = useState('/ar');
-    const pathname = usePathname();
 
-    useEffect(() => {
-        const pathParts = pathname.split('/');
-        const langFromPath = pathParts[1];
-
-        if (langFromPath === 'en' || langFromPath === 'ar') {
-            setCurrentLanguage(langFromPath);
-            const restOfPath = '/' + pathParts.slice(2).join('/');
-            setEnPath('/en' + restOfPath);
-            setArPath('/ar' + restOfPath);
-        }
-    }, [pathname]);
     useEffect(() => {
         const checkLoginStatus = () => {
-            const accessToken = Cookies.get('token');
+            const accessToken = localStorage.getItem("token");
             setIsLoggedIn(!!accessToken);
         };
 

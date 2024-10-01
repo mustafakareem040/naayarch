@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
+import {removeFileExtension} from "@/lib/api";
 
 const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty, originalPrice, discountedPrice, onUpdateQuantity, onRemove }) => {
     const isOutOfStock = availableQty < 1;
@@ -25,9 +26,10 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
         <div className="flex gap-2 justify-between font-serif items-stretch p-4 bg-[rgba(246,243,241,0.3)] shadow-[0px_2px_4px_3px_rgba(0,0,0,0.1)] rounded-md mb-4 w-full">
             <div className="w-full max-h-[300px] relative aspect-[4/5] ssm:w-1/2 bg-transparent rounded-lg overflow-hidden">
                 <Image
-                    src={image}
+                    src={`${removeFileExtension(image)}_optimized.webp`}
                     alt={title}
                     fill={true}
+                    unoptimized={true}
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover"
                 />
@@ -37,7 +39,7 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
                 <h3 className="font-semibold text-sm text-center leading-tight">{title}</h3>
                 {color !== 'N/A' && <p className="text-sm text-center">Color: {color}</p>}
                 {size !== 'N/A' && <p className="text-sm text-center">Size: {size}</p>}
-                <div className="flex items-center justify-between w-[86px] h-6 bg-[#F6F3F1] rounded-lg px-3">
+                <div className="flex items-center justify-between w-[96px] h-6 bg-[#F6F3F1] rounded-lg px-3">
                     <span className="text-sm">Qty: {qty}</span>
                     <ChevronDown size={16} />
                 </div>

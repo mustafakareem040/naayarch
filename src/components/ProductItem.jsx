@@ -5,6 +5,7 @@
 import React, { memo } from 'react';
 import Image from 'next/image';
 import WishlistHeart from "@/components/WishlistHeart";
+import {removeFileExtension} from "@/lib/api";
 
 const CartIcon = memo(() => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,12 +53,13 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
 
                 {!imageLoaded && <ImageSkeleton />}
                 <Image
-                    src={`https://storage.naayiq.com/resources/${imageUrl}`}
+                    src={`https://storage.naayiq.com/resources/${removeFileExtension(imageUrl)}_optimized.webp`}
                     alt={name}
                     fill={true}
+                    unoptimized={true}
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 10vw"
                     onError={(e) => {
-                        e.target.src = "https://storage.naayiq.com/resources/noimage.webp";
+                        e.target.src = `https://storage.naayiq.com/resources/${imageUrl}`;
                     }}
                     onLoad={handleImageLoad}
                     className={`object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}

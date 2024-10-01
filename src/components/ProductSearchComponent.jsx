@@ -6,6 +6,7 @@ import Image from 'next/image';
 import debounce from 'lodash/debounce';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import {removeFileExtension} from "@/lib/api";
 
 const ITEMS_PER_PAGE = 5; // Define items per page for consistency
 
@@ -189,12 +190,12 @@ const ProductSearchComponent = () => {
         >
             {item.images && item.images[0] && (
                 <Image
-                    src={`https://storage.naayiq.com/resources/${item.images[0].url}`}
+                    src={`https://storage.naayiq.com/resources/${removeFileExtension(item.images[0].url)}_optimized.webp`}
                     alt={item.name}
                     width={40}
+                    unoptimized={true}
                     height={40}
                     className="object-cover rounded"
-                    loading="lazy" // Enable lazy loading
                 />
             )}
             <span className="flex-grow truncate">{item.name}</span>
@@ -274,7 +275,7 @@ const ProductSearchComponent = () => {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="absolute z-10 w-full mt-1 rounded-md bg-white shadow-lg max-h-96 overflow-y-auto"
+                        className="absolute z-10 w-full mt-1 rounded-md max-h-96 overflow-y-auto"
                     >
                         {query === '' ? (
                             <>

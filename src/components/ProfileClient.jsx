@@ -5,22 +5,11 @@ import {useRouter} from 'next/navigation';
 import Footer from "@/components/Footer";
 import {Profile} from "@/components/Profile";
 import Image from "next/image";
+import {fetchWithAuth} from "@/lib/api";
 
 async function getUserData() {
-    const timestamp = new Date().getTime();
-    const url = `${process.env.NEXT_PUBLIC_API}/user/check-auth?_=${timestamp}`;
-    const response = await fetch(url, {
-        credentials: "include",
-        headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-        },
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-    }
-    return await response.json();
+    const url = `${process.env.NEXT_PUBLIC_API}/user/check-auth`;
+    return await fetchWithAuth(url);
 }
 
 export default function ProfileClient() {
@@ -31,7 +20,8 @@ export default function ProfileClient() {
     useEffect(() => {
         getUserData()
             .then(data => {
-                if (!data.isAuthenticated) {
+                if (!data?.isAuthenticated) {
+                    console.log(data)
                     router.push('/login');
                 } else {
                     setUserData(data);
@@ -58,7 +48,7 @@ export default function ProfileClient() {
                         <p>Hi {userData.name}!</p>
                         <p className="text-base font-serif">Let your beauty shine!</p>
                     </div>
-                    <Image src={"https://storage.naayiq.com/resources/bg_flowers.png"} unoptimized={true} alt={"bg_flowers"} fill={true}
+                    <Image src={"https://storage.naayiq.com/resources/bg_flowers.png"} alt={"bg_flowers"} fill={true}
                            className="object-contain"/>
                 </div>
                 <div className="h-screen flex flex-col justify-between">

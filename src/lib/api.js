@@ -1,34 +1,31 @@
 // lib/api.js
+'use client'
 
-const API_URL = process.env.NEXT_PUBLIC_API
-const PRODUCTS_PER_PAGE = 25;
 
-export async function fetchProducts(page, search, category, subCategory) {
-    const params = new URLSearchParams({
-        page: page.toString(),
-        limit: PRODUCTS_PER_PAGE.toString(),
-        search: search || '',
-        c: category || '',
-        sc: subCategory || '',
-    });
+import {getToken} from "@/components/isAuth";
+export function removeFileExtension(url) {
+    if (!url) return url;
+    return url.replace(/\.[^/.]+$/, '');
+}
+export const fetchWithAuth = async (url, options = {}) => {
+    const token = getToken();
+    if (token) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            ...options.headers,
+        };
 
-    try {
-        const response = await fetch(`${API_URL}/products?${params.toString()}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            cache: "force-cache",
-            priority: "high",
-
+        const response = await fetch(url, {
+            ...options,
+            headers,
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch more products');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'API request failed');
         }
 
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching more products:', error);
-        return [];
+        return response.json();
     }
-}
+};

@@ -36,6 +36,7 @@ export default async function Dashboard() {
                 subtitle="Check out our new products"
                 description="Keep up to date with our latest products and make your skin glowing."
                 bigimg="/woman2.webp"
+                url={"/products?sortBy=Newest Arrivals"}
                 flower="/pingwing.webp"
             />
             <ProductCategorySlider />
@@ -44,6 +45,7 @@ export default async function Dashboard() {
                 subtitle="Makeup and beauty 💄"
                 description="Our most popular product will help you to create best look"
                 bigimg="/woman.webp"
+                url={"/products?c=7&title=Makeup"}
                 flower="/whiteflower.webp"
             />
             <Footer />

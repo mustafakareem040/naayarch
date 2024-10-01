@@ -3,11 +3,9 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Figtree } from "next/font/google";
 import NextTopLoader from 'nextjs-toploader';
-import Head from "next/head";
 import React from "react";
-import IsAuth from "../components/isAuth"
-import {Provider} from "react-redux";
-import StoreProvider from "@/app/StoreProvider";
+import IsAuth from "@/components/isAuth";
+
 export const figtree = Figtree({ subsets: ["latin"], variable: "--fig", display: "swap" });
 const nnFont = localFont({
     src: [
@@ -34,10 +32,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-        <Head>
-            <title>NaayIraq</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        </Head>
+        {/* Remove <Head> and manage metadata via head.js */}
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
             color="#3B5345"
@@ -49,10 +44,8 @@ export default function RootLayout({ children }) {
             speed={300}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
-        <StoreProvider>
             <IsAuth />
             {children}
-        </StoreProvider>
         </body>
         </html>
     );

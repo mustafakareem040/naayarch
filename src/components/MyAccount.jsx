@@ -1,9 +1,10 @@
 'use client'
 import React, { useState, useEffect, useCallback } from 'react';
-import {ChevronLeft, Mail, Phone, Lock, CircleArrowLeft} from 'lucide-react';
-import Image from "next/image";
+import {Mail, Phone, Lock, CircleArrowLeft} from 'lucide-react';
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import {getToken} from "@/components/isAuth";
+import {fetchWithAuth} from "@/lib/api";
 
 const MyAccount = () => {
     const [user, setUser] = useState(null);
@@ -14,16 +15,9 @@ const MyAccount = () => {
 
     const fetchUserInfo = useCallback(async () => {
         try {
-            const timestamp = new Date().getTime();
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/check-auth?_=${timestamp}`, {
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                },
-            });
-            const data = await response.json();
-            if (data.isAuthenticated) {
+            const token = getToken()
+            const data = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/user/check-auth`)
+            if (data?.isAuthenticated) {
                 setUser(data);
                 if (data.dob) {
                     const dobDate = new Date(data.dob);
@@ -78,19 +72,16 @@ const MyAccount = () => {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/${user.userId}`, {
+            const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/user/${user.userId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(updateData),
             });
 
-            if (response.ok) {
+            if (response) {
                 alert('Information updated successfully');
                 fetchUserInfo(); // Refresh user data after successful update
             } else {
-                const errorData = await response.json();
+                const errorData = response;
                 if (errorData.errors && errorData.errors.length > 0) {
                     const errorMessages = errorData.errors.map(err => `${err.path}: ${err.msg}`).join('\n');
                     alert(`Failed to update information:\n${errorMessages}`);

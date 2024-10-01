@@ -20,11 +20,11 @@ async function ProductContent({ id }) {
     );
 }
 
-export default function ProductDetailsPage({ params }) {
+export default async function ProductDetailsPage({params}) {
     return (
         <NotificationProvider>
-            <Suspense fallback={<Loading />}>
-                <ProductContent id={params.id} />
+            <Suspense fallback={<Loading/>}>
+                <ProductContent id={await params.id}/>
             </Suspense>
         </NotificationProvider>
     );

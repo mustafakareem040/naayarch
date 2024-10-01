@@ -9,35 +9,14 @@ import { CircleArrowLeft } from "lucide-react";
 import WishlistItem from "@/components/WishlistItem";
 import Loading from "@/components/Loading";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image"; // Import AnimatePresence and motion
+import Image from "next/image";
+import {fetchWithAuth} from "@/lib/api"; // Import AnimatePresence and motion
 
 export const getToken = () => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('token'); // Adjust based on your token storage strategy
 };
 
-export const fetchWithAuth = async (url, options = {}) => {
-    const token = getToken();
-    if (token) {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            ...options.headers,
-        };
-
-        const response = await fetch(url, {
-            ...options,
-            headers,
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'API request failed');
-        }
-
-        return response.json();
-    }
-};
 
 export default function Wishlist() {
     const router = useRouter();

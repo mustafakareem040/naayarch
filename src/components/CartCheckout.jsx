@@ -19,7 +19,7 @@ const CartCheckout = ({ subTotal, discount }) => {
     const { addNotification } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-
+    const [userId, setUserId] = useState(null)
     // Load orderData and userInfo on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -33,6 +33,18 @@ const CartCheckout = ({ subTotal, discount }) => {
                     setOrderData({...storedOrder,
                         shippingAddress: lastUsedAddress,
                     });
+                }
+                if (typeof window !== 'undefined') {
+                    const userId_temp = localStorage.getItem("userId")
+                    if (userId_temp) {
+                        try {
+                            console.log(userId_temp)
+                            setUserId(parseInt(userId_temp))
+                        }
+                        catch (error) {
+
+                        }
+                    }
                 }
 
                 setUserInfo(storedUserInfo || { userId: null });
@@ -96,9 +108,9 @@ const CartCheckout = ({ subTotal, discount }) => {
         }
 
         setIsSubmitting(true);
-        console.log(orderData.items)
+
         const submitData = {
-            user_id: userInfo.userId || null,
+            user_id: userId,
             notes: note,
             full_name: orderData.shippingAddress.full_name || '',
             governorate: orderData.shippingAddress.governorate || '',
@@ -142,7 +154,7 @@ const CartCheckout = ({ subTotal, discount }) => {
             addNotification('error', 'A network error occurred. Please try again.');
             setIsSubmitting(false);
         }
-    }, [note, orderData, userInfo, addNotification, router]);
+    }, [note, orderData, userId, addNotification, router]);
 
     return (
         <>

@@ -13,6 +13,7 @@ export function ProductWithSales() {
                 description="Glow Up & Save! 10% off all products"
                 bigimg="/face.webp"
                 flower="/pingwing.webp"
+                url={"/products"}
                 hideFlower={true}
             />
             <SaleBanner />

@@ -10,6 +10,7 @@ const CustomProduct = memo(function CustomProduct({
                                                       bigimg = '/face.webp',
                                                       flower,
                                                       hideFlower,
+    url
                                                   }) {
     const [isBigImgLoaded, setIsBigImgLoaded] = useState(false);
     const [isFlowerImgLoaded, setIsFlowerImgLoaded] = useState(false);
@@ -47,7 +48,7 @@ const CustomProduct = memo(function CustomProduct({
                     </p>
                     <p className="text-sm font-serif fig mb-7">{description}</p>
                     <Link
-                        href="/products"
+                        href={url}
                         prefetch={false}
                         className="text-sm font-serif pb-2 text-[#3B5345] font-bold border-b w-fit border-[#695C5C] inline-block"
                     >
