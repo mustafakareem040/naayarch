@@ -23,10 +23,10 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
-    "framer-motion": "^11.5.6",
+    "framer-motion": "^11.9.0",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.445.0",
+    "lucide-react": "^0.446.0",
     "next": "15.0.0-canary.173",
     "nextjs-toploader": "^3.6.15",
     "npm": "^10.8.3",
@@ -39,15 +39,15 @@
     "react-slick": "^0.30.2",
     "react-slider": "^2.0.6",
     "slick-carousel": "^1.8.1",
-    "tailwindcss-animate": "^1.0.7",
     "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7",
     "yet-another-react-lightbox": "^3.21.6"
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "^0.0.0-experimental-3feb7e4-20240930",
-    "eslint": "^9.11.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "15.0.0-canary.173",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.12"
+    "tailwindcss": "^3.4.13"
   }
 }

@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import Image from 'next/image';
 import debounce from 'lodash/debounce';
@@ -21,17 +22,7 @@ const ProductSearchComponent = () => {
     const containerRef = useRef(null); // Reference to the entire component
     const inputRef = useRef(null);
 
-    // Initialize recent searches and best-selling products
-    useEffect(() => {
-        // Load recent searches from localStorage
-        const savedSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
-        setRecentSearches(savedSearches.slice(0, 5));
-
-        // Fetch best selling products
-        fetchBestSelling();
-    }, []);
-
-    // Fetch best-selling products
+    // Fetch Best Selling Products
     const fetchBestSelling = useCallback(async () => {
         try {
             const response = await fetch(
@@ -47,48 +38,61 @@ const ProductSearchComponent = () => {
         }
     }, []);
 
+    // Initialize recent searches and best-selling products
+    useEffect(() => {
+        // Load recent searches from localStorage
+        const savedSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        setRecentSearches(savedSearches.slice(0, 5));
+
+        // Fetch best selling products
+        fetchBestSelling();
+    }, [fetchBestSelling]);
+
     // Update recent searches in state and localStorage
     const updateRecentSearches = useCallback(
         (search) => {
             if (search.trim() === '') return;
-            const updatedSearches = [search, ...recentSearches.filter((s) => s !== search)].slice(0, 5);
-            setRecentSearches(updatedSearches);
-            localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+            setRecentSearches((prevSearches) => {
+                const updatedSearches = [search, ...prevSearches.filter((s) => s !== search)].slice(0, 5);
+                localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+                return updatedSearches;
+            });
         },
-        [recentSearches]
+        [] // Dependencies handled within setRecentSearches functional update
     );
 
-    // Debounced search function
-    const debouncedSearch = useCallback(
-        debounce(async (searchQuery) => {
-            if (searchQuery.trim() === '') {
-                setSearchResults([]);
-                setHasMore(false);
-                setCurrentPage(1);
-                return;
-            }
-
-            setIsLoading(true);
-            try {
-                const response = await fetch(
-                    `https://dev.naayiq.com/products?page=1&search=${encodeURIComponent(searchQuery)}&itemsPerPage=${ITEMS_PER_PAGE}`
-                );
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+    // Debounced search function using useMemo
+    const debouncedSearch = useMemo(
+        () =>
+            debounce(async (searchQuery) => {
+                if (searchQuery.trim() === '') {
+                    setSearchResults([]);
+                    setHasMore(false);
+                    setCurrentPage(1);
+                    return;
                 }
-                const data = await response.json();
-                setSearchResults(data.products);
-                setCurrentPage(1); // Reset to first page
-                setHasMore(data.hasMore);
-                updateRecentSearches(searchQuery);
-            } catch (error) {
-                console.error('Error searching products:', error);
-                setSearchResults([]);
-                setHasMore(false);
-            } finally {
-                setIsLoading(false);
-            }
-        }, 300),
+
+                setIsLoading(true);
+                try {
+                    const response = await fetch(
+                        `https://dev.naayiq.com/products?page=1&search=${encodeURIComponent(searchQuery)}&itemsPerPage=${ITEMS_PER_PAGE}`
+                    );
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    setSearchResults(data.products);
+                    setCurrentPage(1); // Reset to first page
+                    setHasMore(data.hasMore);
+                    updateRecentSearches(searchQuery);
+                } catch (error) {
+                    console.error('Error searching products:', error);
+                    setSearchResults([]);
+                    setHasMore(false);
+                } finally {
+                    setIsLoading(false);
+                }
+            }, 300),
         [updateRecentSearches]
     );
 
@@ -100,11 +104,11 @@ const ProductSearchComponent = () => {
     };
 
     // Handle selection from recent searches
-    const handleRecentSearch = (search) => {
+    const handleRecentSearch = useCallback((search) => {
         setQuery(search);
         debouncedSearch(search);
         setIsFocused(true); // Ensure dropdown is visible
-    };
+    }, [debouncedSearch]);
 
     // Clear search input and results
     const handleClearSearch = () => {
@@ -118,7 +122,7 @@ const ProductSearchComponent = () => {
     };
 
     // Fetch more results for pagination
-    const fetchMoreResults = async () => {
+    const fetchMoreResults = useCallback(async () => {
         const nextPage = currentPage + 1;
         setIsLoadingMore(true);
         try {
@@ -137,7 +141,7 @@ const ProductSearchComponent = () => {
         } finally {
             setIsLoadingMore(false);
         }
-    };
+    }, [currentPage, query]);
 
     // Click outside handler to close dropdown
     useEffect(() => {
@@ -154,9 +158,9 @@ const ProductSearchComponent = () => {
 
     // Animation variants for the dropdown
     const dropdownVariants = {
-        hidden: {opacity: 0, scale: 0.95},
-        visible: {opacity: 1, scale: 1},
-        exit: {opacity: 0, scale: 0.95},
+        hidden: { opacity: 0, scale: 0.95 },
+        visible: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 1, transition: { duration: 0 } }, // Immediate exit
     };
 
     // Animation variants for the list
@@ -171,14 +175,13 @@ const ProductSearchComponent = () => {
 
     // Animation variants for each item
     const itemVariants = {
-        hidden: {opacity: 0, y: 5},
-        visible: {opacity: 1, y: 0},
+        hidden: { opacity: 0, y: 5 },
+        visible: { opacity: 1, y: 0 },
     };
 
     // Render individual search items (best-selling products or search results)
-    const renderSearchItem = (item) => (
+    const renderSearchItem = useCallback((item) => (
         <Link
-            key={item.id}
             href={`/products/${item.id}`} // Ensure the URL is correct
             prefetch={false}
             className="flex items-center space-x-2 p-2 hover:bg-gray-100 cursor-pointer"
@@ -191,11 +194,12 @@ const ProductSearchComponent = () => {
                     width={40}
                     height={40}
                     className="object-cover rounded"
+                    loading="lazy" // Enable lazy loading
                 />
             )}
             <span className="flex-grow truncate">{item.name}</span>
         </Link>
-    );
+    ), [updateRecentSearches]);
 
     // Cleanup debounced function on unmount
     useEffect(() => {
@@ -220,14 +224,14 @@ const ProductSearchComponent = () => {
                     placeholder="Search for product"
                     className="w-full p-2 pl-10 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20}/>
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 {query && (
                     <button
                         onClick={handleClearSearch}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                         aria-label="Clear search"
                     >
-                        <X size={20}/>
+                        <X size={20} />
                     </button>
                 )}
             </div>
@@ -235,27 +239,30 @@ const ProductSearchComponent = () => {
             {/* Recent Searches */}
             {!isFocused && recentSearches.length > 0 && (
                 <motion.div
-                    initial={{opacity: 0, y: -10}}
-                    animate={{opacity: 1, y: 0}}
-                    exit={{opacity: 0, y: -10}}
-                    transition={{duration: 0.2}}
-                    className=" rounded-md p-4 mt-2"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="rounded-md p-4 mt-2"
                 >
                     <h3 className="text-sm font-medium text-gray-700 mb-2">Recent Searches</h3>
-                    {recentSearches.map((search, index) => (
-                        <motion.div
-                            key={index}
-                            onClick={() => handleRecentSearch(search)}
-                            className="flex items-center space-x-2 p-2 hover:bg-gray-100 cursor-pointer rounded"
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{duration: 0.2}}
-                        >
-                            <Search size={16} className="text-gray-400"/>
-                            <span>{search}</span>
-                        </motion.div>
-                    ))}
+                    <AnimatePresence>
+                        {recentSearches.map((search, index) => (
+                            <motion.div
+                                key={index}
+                                onClick={() => handleRecentSearch(search)}
+                                className="flex items-center space-x-2 p-2 hover:bg-gray-100 cursor-pointer rounded"
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden" // Ensures proper exit state
+                                transition={{ duration: 0.2 }}
+                            >
+                                <Search size={16} className="text-gray-400" />
+                                <span>{search}</span>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </motion.div>
             )}
 
@@ -267,8 +274,7 @@ const ProductSearchComponent = () => {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        transition={{duration: 0.2}}
-                        className="absolute z-10 w-full mt-1 rounded-md max-h-96 overflow-y-auto"
+                        className="absolute z-10 w-full mt-1 rounded-md bg-white shadow-lg max-h-96 overflow-y-auto"
                     >
                         {query === '' ? (
                             <>
@@ -285,7 +291,7 @@ const ProductSearchComponent = () => {
                                                 <motion.div
                                                     key={item.id}
                                                     variants={itemVariants}
-                                                    transition={{duration: 0.2}}
+                                                    transition={{ duration: 0.2 }}
                                                 >
                                                     {renderSearchItem(item)}
                                                 </motion.div>
@@ -299,10 +305,10 @@ const ProductSearchComponent = () => {
                                 {isLoading && currentPage === 1 ? (
                                     <motion.div
                                         className="p-4 text-center text-gray-500"
-                                        initial={{opacity: 0}}
-                                        animate={{opacity: 1}}
-                                        exit={{opacity: 0}}
-                                        transition={{duration: 0.2}}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
                                     >
                                         Loading...
                                     </motion.div>
@@ -318,7 +324,7 @@ const ProductSearchComponent = () => {
                                                 <motion.div
                                                     key={item.id}
                                                     variants={itemVariants}
-                                                    transition={{duration: 0.2}}
+                                                    transition={{ duration: 0.2 }}
                                                 >
                                                     {renderSearchItem(item)}
                                                 </motion.div>
@@ -327,10 +333,10 @@ const ProductSearchComponent = () => {
                                         {hasMore && (
                                             <motion.div
                                                 className="p-4 text-center"
-                                                initial={{opacity: 0}}
-                                                animate={{opacity: 1}}
-                                                exit={{opacity: 0}}
-                                                transition={{duration: 0.2}}
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 0.2 }}
                                             >
                                                 <button
                                                     onClick={fetchMoreResults}
@@ -338,19 +344,27 @@ const ProductSearchComponent = () => {
                                                     className="bg-transparent text-center mx-auto flex flex-col items-center justify-center text-gray-900"
                                                 >
                                                     {isLoadingMore ? 'Loading...' : 'Show More'}
-                                                    {!isLoadingMore && <div>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24}
-                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                             strokeWidth={2} strokeLinecap="round"
-                                                             strokeLinejoin="round"
-                                                             className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-big-down-lines">
-                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                            <path
-                                                                d="M15 12h3.586a1 1 0 0 1 .707 1.707l-6.586 6.586a1 1 0 0 1 -1.414 0l-6.586 -6.586a1 1 0 0 1 .707 -1.707h3.586v-3h6v3z"/>
-                                                            <path d="M15 3h-6"/>
-                                                            <path d="M15 6h-6"/>
-                                                        </svg>
-                                                    </div>}
+                                                    {!isLoadingMore && (
+                                                        <div>
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width={24}
+                                                                height={24}
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth={2}
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-big-down-lines"
+                                                            >
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <path d="M15 12h3.586a1 1 0 0 1 .707 1.707l-6.586 6.586a1 1 0 0 1 -1.414 0l-6.586 -6.586a1 1 0 0 1 .707 -1.707h3.586v-3h6v3z" />
+                                                                <path d="M15 3h-6" />
+                                                                <path d="M15 6h-6" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
                                                 </button>
                                             </motion.div>
                                         )}
@@ -358,10 +372,10 @@ const ProductSearchComponent = () => {
                                 ) : (
                                     <motion.div
                                         className="p-4 text-center text-gray-500"
-                                        initial={{opacity: 0}}
-                                        animate={{opacity: 1}}
-                                        exit={{opacity: 0}}
-                                        transition={{duration: 0.2}}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
                                     >
                                         No products found
                                     </motion.div>
@@ -373,5 +387,6 @@ const ProductSearchComponent = () => {
             </AnimatePresence>
         </div>
     );
-}
-    export default ProductSearchComponent;
+};
+
+export default ProductSearchComponent;

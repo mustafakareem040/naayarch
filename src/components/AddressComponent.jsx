@@ -54,7 +54,7 @@ const ManageAddress = () => {
         };
         fetchAddresses();
         setIsLoading(false)
-    }, [dispatch, router]);
+    }, [dispatch, router, isAuthenticated]);
 
     const handleEdit = (address) => {
         router.push(`/profile/address/edit/${address.id}`);

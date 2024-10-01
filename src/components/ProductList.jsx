@@ -38,7 +38,6 @@ export default function ProductList({ initialFilters }) {
         threshold: 0,
         triggerOnce: false
     });
-    const { addNotification } = useNotification(); // Using Notification Context
 
     const fetchWishlist = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -59,7 +58,7 @@ export default function ProductList({ initialFilters }) {
         } catch (error) {
             console.error('Error fetching wishlist:', error);
         }
-    }, [wishlist, setWishlist]);
+    }, [setWishlist]);
 
     const pathname = usePathname(); // Import and use usePathname
 
@@ -101,12 +100,11 @@ export default function ProductList({ initialFilters }) {
         } finally {
             setLoading(false);
         }
-    }, [c, sc, b, minPrice, maxPrice, filter]);
+    }, [c, sc, b, minPrice, maxPrice, filter, fetchWishlist, sortBy]);
 
     // Initial fetch on mount
     useEffect(() => {
         fetchProducts(page, query); // Pass current query
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Only run on mount
 
     // Fetch more products when in view

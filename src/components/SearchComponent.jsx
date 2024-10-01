@@ -34,7 +34,7 @@ const SearchComponent = ({ query: initialQuery, setQuery, minPrice, maxPrice, fi
 
     const MemoizedFilterComponent = useMemo(() => (
         <FilterComponent minPrice={minPrice} maxPrice={maxPrice} modalRef={modalRef}  filterQuery={filterQuery} setFilterQuery={setFilterQuery} filter={filter} setFilter={setFilter} />
-    ), [filter, minPrice, maxPrice]);
+    ), [filter, minPrice, maxPrice, filterQuery, setFilterQuery]);
 
     return (
         <>

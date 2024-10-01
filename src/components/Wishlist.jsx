@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 import { CircleArrowLeft } from "lucide-react";
 import WishlistItem from "@/components/WishlistItem";
 import Loading from "@/components/Loading";
-import { AnimatePresence, motion } from "framer-motion"; // Import AnimatePresence and motion
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image"; // Import AnimatePresence and motion
 
 export const getToken = () => {
     if (typeof window === 'undefined') return null;
@@ -49,29 +50,30 @@ export default function Wishlist() {
     const fetchWishlist = useCallback(async () => {
         try {
             const data = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/wishlist`);
-            if (!Array.isArray(data.wishlist)) {
-                throw new Error('Invalid wishlist data format');
-            }
-            setWishlistProductIds(data.wishlist); // Assuming data.wishlist is an array of { id: ... }
-
-            // Fetch all products in parallel
-            const productPromises = data.wishlist.map(async (item) => {
-                try {
-                    const productData = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/products/${item.id}`);
-                    return productData.product;
-                } catch (err) {
-                    console.error(`Error fetching product with ID ${item.id}:`, err);
-                    setError('Some wishlist items failed to load.');
-                    return null;
+            if (data) {
+                if (!Array.isArray(data.wishlist)) {
+                    throw new Error('Invalid wishlist data format');
                 }
-            });
+                setWishlistProductIds(data.wishlist); // Assuming data.wishlist is an array of { id: ... }
 
-            const products = await Promise.all(productPromises);
-            const validProducts = products.filter(p => p !== null);
-            setWishlistProducts(validProducts);
+                // Fetch all products in parallel
+                const productPromises = data.wishlist.map(async (item) => {
+                    try {
+                        const productData = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API}/products/${item.id}`);
+                        return productData.product;
+                    } catch (err) {
+                        console.error(`Error fetching product with ID ${item.id}:`, err);
+                        setError('Some wishlist items failed to load.');
+                        return null;
+                    }
+                });
+
+                const products = await Promise.all(productPromises);
+                const validProducts = products.filter(p => p !== null);
+                setWishlistProducts(validProducts);
+            }
         } catch (err) {
             console.error('Error fetching wishlist:', err);
-            setError(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -154,17 +156,18 @@ export default function Wishlist() {
 const EmptyWishlist = () => (
     <>
         <div className="relative w-full h-[33vh]">
-            <img
+            <Image
                 src="https://storage.naayiq.com/resources/empty_wishlist.gif"
                 alt="Empty wishlist"
+                fill={true}
                 className="object-contain w-full h-full"
             />
         </div>
-        <section className="text-center">
-            <p className="font-serif text-3xl mb-2 font-semibold">Wishlist is empty!</p>
-            <p className="font-serif text-lg leading-none">Tap the Heart Button to start</p>
-            <p className="font-serif text-lg">saving your favorite items.</p>
-            <Link href="/" className="min-h-[56px] mt-4 inline-flex items-center justify-center px-3 sm:px-6 bg-[#3B5345] text-white text-xl rounded-lg">
+        <section className="font-serif text-center">
+            <p className="text-3xl mb-2 font-semibold">Wishlist is empty!</p>
+            <p className="text-lg leading-none">Tap the Heart Button to start</p>
+            <p className="text-lg">saving your favorite items.</p>
+            <Link href="/" className="min-h-[56px] mt-4 inline-flex items-center justify-center px-6 sm:px-6 bg-[#3B5345] text-white text-lg rounded-lg">
                 Start Browsing
             </Link>
         </section>

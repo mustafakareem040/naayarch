@@ -80,5 +80,5 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
         </div>
     );
 });
-
+CartItem.displayName = "CartItem"
 export default CartItem;

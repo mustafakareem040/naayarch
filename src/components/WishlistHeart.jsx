@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import SignInAlert from "@/components/SignInAlert";
 
 const WishlistHeart = ({ id, isInWishlist2 }) => {
     const [isInWishlist, setIsInWishlist] = useState(isInWishlist2);
@@ -82,22 +83,11 @@ const WishlistHeart = ({ id, isInWishlist2 }) => {
                     />
                 </motion.div>
             </div>
-            <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-                <AlertDialogContent className="z-50">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="font-sans font-medium">Sign in required</AlertDialogTitle>
-                        <AlertDialogDescription className="font-serif">
-                            You need to sign in first to add items to your wishlist.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="font-serif">
-                        <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                        <Button onClick={handleSignIn} disabled={isRedirecting}>
-                            {isRedirecting ? 'Redirecting' : 'Sign In'}
-                        </Button>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <SignInAlert
+                isOpen={showDialog}
+                onClose={() => setShowDialog(false)}
+                onLogin={handleSignIn}
+            />
         </>
     );
 };

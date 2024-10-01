@@ -11,6 +11,7 @@ const OrderConfirmation = ({ id }) => {
     useEffect(() => {
         localStorage.removeItem('cart');
         localStorage.removeItem('orderData');
+        localStorage.removeItem('lastUsedAddress')
         dispatch(setOrder({items: [], shippingAddress: null, coupon_id: null, note: '', info: {}}))
     }, [dispatch]);
 

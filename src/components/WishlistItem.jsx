@@ -75,5 +75,5 @@ const WishlistItem = React.memo(({ product, onRemove }) => {
         </motion.div>
     );
 });
-
+WishlistItem.displayName = "WishlistItem"
 export default WishlistItem;

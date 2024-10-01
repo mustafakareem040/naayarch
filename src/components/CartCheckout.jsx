@@ -130,6 +130,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 router.push(`/cart/order/confirm?id=${data.cart.id}`);
             } else {
                 const errorData = await response.json();
+                setIsSubmitting(false);
                 if (errorData.errors && errorData.errors.length > 0) {
                     addNotification('error', errorData.errors[0].msg || 'An error occurred while submitting the order.');
                 } else {
@@ -139,7 +140,6 @@ const CartCheckout = ({ subTotal, discount }) => {
         } catch (err) {
             console.error('Order submission failed:', err);
             addNotification('error', 'A network error occurred. Please try again.');
-        } finally {
             setIsSubmitting(false);
         }
     }, [note, orderData, userInfo, addNotification, router]);
@@ -148,7 +148,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         <>
             <header className="flex items-center mb-12">
                 <button
-                    onClick={() => router.back()}
+                    onClick={() => router.push("/cart")}
                     className="p-2 relative z-20 cursor-pointer"
                     aria-label="Go back"
                 >
