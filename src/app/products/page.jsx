@@ -6,9 +6,13 @@ import AsyncNavBar from '@/components/AsyncNavBar';
 
 export const dynamic = 'force-dynamic';
 
-const ProductsPage = ({ searchParams }) => {
-    const { c = '', sc = '', b = '', title = '', sortBy = '' } = searchParams;
+const ProductsPage = async ({ searchParams }) => {
+    // Await the searchParams Promise to get the actual params object
+    const resolvedSearchParams = await searchParams;
 
+    // Destructure the necessary parameters with default values
+    const { c = '', sc = '', b = '', title = '', sortBy = '' } = resolvedSearchParams;
+    console.log(c, sc, b, title)
     return (
         <>
             <AsyncNavBar />

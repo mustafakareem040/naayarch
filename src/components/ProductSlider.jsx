@@ -76,9 +76,10 @@ const ProductSlider = ({ products }) => { // Receive products as props
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex text-2xl leading-5 font-medium font-serif justify-between w-full items-center">
-                                    <h2 className="mt-4 min-h-12 ml-2 max-w-52">{product.title}</h2>
-                                    <p className="mt-2 min-h-12 self-end">{product.minPrice.toLocaleString()} IQD</p>
+                                <div
+                                    className="flex text-2xl leading-7 font-medium font-serif justify-between w-full items-center">
+                                    <h2 className="mt-4 ml-2 max-w-52 line-clamp-2 overflow-hidden">{product.title}</h2>
+                                    <p className="mt-2 self-center whitespace-nowrap">{product.minPrice.toLocaleString()} IQD</p>
                                 </div>
                                 <Link
                                     href={`/products/${product.id}`}

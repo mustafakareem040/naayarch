@@ -63,7 +63,7 @@ const ProductCategorySlider = () => {
                                     onLoad={() => handleImageLoad(product.id)}
                                 />
                             </div>
-                            <p className="font-serif text-2xl mb-6">{product.description}</p>
+                            <p className="font-serif min-h-24 text-2xl mb-6">{product.description}</p>
                         </div>
                         <Link
                             prefetch={false}

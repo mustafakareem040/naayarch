@@ -16,7 +16,7 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
         parseInt(new URLSearchParams(filterQuery).get('minPriceA')) || minPrice,
         parseInt(new URLSearchParams(filterQuery).get('maxPriceA')) || maxPrice
     ]);
-    const [inStock, setInStock] = useState(new URLSearchParams(filterQuery).get('availability') !== 'out_of_stock');
+    const [inStock, setInStock] = useState(new URLSearchParams(filterQuery).get('availability') === 'in_stock' ? true : new URLSearchParams(filterQuery).get('availability') === 'out_of_stock' ? false : null);
     const [sortBy, setSortBy] = useState(new URLSearchParams(filterQuery).get('sortBy') || '');
 
     const handleFilterClose = useCallback(() => {
@@ -35,7 +35,8 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
         const params = new URLSearchParams();
         if (priceRange[0] !== minPrice) params.set('minPriceA', priceRange[0]);
         if (priceRange[1] !== maxPrice) params.set('maxPriceA', priceRange[1]);
-        if (!inStock) params.set('availability', 'out_of_stock');
+        if (inStock === false) params.set('availability', 'out_of_stock');
+        if (inStock === true) params.set('availability', 'in_stock');
         if (sortBy) params.set('sortBy', sortBy);
 
         const newFilterQuery = params.toString();
@@ -169,6 +170,19 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
                     <div className="flex font-sans items-center space-x-4">
                         <button
                             type="button"
+                            onClick={() => setInStock(null)}
+                            className={`flex items-center text-black`}
+                        >
+                            <div
+                                className={`w-8 h-8 rounded-[100%] border flex items-center justify-center mr-2 ${inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
+                                {inStock === null && (
+                                    <div className="w-5 h-5 bg-[#97C86C] rounded-full"></div>
+                                )}
+                            </div>
+                            All
+                        </button>
+                        <button
+                            type="button"
                             onClick={() => setInStock(true)}
                             className={`flex items-center text-black`}
                         >
@@ -187,7 +201,7 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
                         >
                             <div
                                 className={`w-8 h-8 rounded-[100%] border flex items-center justify-center mr-2 ${!inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
-                                {!inStock && (
+                                {inStock === false && (
                                     <div className="w-5 h-5 bg-[#97C86C] rounded-full"></div>
                                 )}
                             </div>

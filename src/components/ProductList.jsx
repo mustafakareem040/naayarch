@@ -19,6 +19,7 @@ const ProductModal = dynamic(() => import('@/components/ProductDetailModal'), {
     ssr: false
 });
 
+// eslint-disable-next-line react/prop-types
 export default function ProductList({ initialFilters }) {
     const { c, sc, b, title, sortBy } = initialFilters;
     const [products, setProducts] = useState([]);
@@ -51,7 +52,6 @@ export default function ProductList({ initialFilters }) {
             });
             if (response.ok) {
                 const w = await response.json();
-                console.log('Fetched wishlist:', w.wishlist);
                 const wishlistIds = w.wishlist.map(item => item.id);
                 setWishlist(wishlistIds);
             }
@@ -101,31 +101,41 @@ export default function ProductList({ initialFilters }) {
             setLoading(false);
         }
     }, [c, sc, b, minPrice, maxPrice, filter, fetchWishlist, sortBy]);
-
-    // Initial fetch on mount
     useEffect(() => {
-        fetchProducts(page, query); // Pass current query
-    }, []); // Only run on mount
+        console.log('called 1')
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
+        setLoading(true)
+        first.current = true;
+        setQuery("")
+        fetchProducts(1, "")
+    }, [c, sc, b, title]);
 
     // Fetch more products when in view
     useEffect(() => {
-        if (inView && hasMore && !loading) {
+        console.log('called 2')
+        if (inView && hasMore && !loading && !first.current) {
             fetchProducts(page, query); // Pass current query
         }
     }, [inView, hasMore, loading, fetchProducts, page, query]);
 
     // Handle search functionality
     const handleSearch = useCallback((newQuery) => {
-        setQuery(newQuery);
-        setProducts([]);
-        setPage(1);
-        setHasMore(true);
-        first.current = true;
-        fetchProducts(1, newQuery); // Pass newQuery
-    }, [fetchProducts]);
+        console.log('3')
+        if (!loading) {
+            setQuery(newQuery);
+            setProducts([]);
+            setPage(1);
+            setHasMore(true);
+            first.current = true;
+            fetchProducts(1, newQuery); // Pass newQuery
+        }
+    }, [fetchProducts, loading]);
 
     // Handle filter changes
     const handleFilterChange = useCallback(() => {
+        console.log(4)
         setProducts([]);
         setPage(1);
         setHasMore(true);
