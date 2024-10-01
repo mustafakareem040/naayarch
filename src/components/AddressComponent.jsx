@@ -10,7 +10,6 @@ const AddressComponent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch addresses from localStorage on component mount
     useEffect(() => {
         try {
             const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
