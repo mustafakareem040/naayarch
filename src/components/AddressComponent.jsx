@@ -58,7 +58,7 @@ const AddressComponent = () => {
             {/* Add New Address Button */}
             <div className="w-full my-4 text-center">
                 <button
-                    className="py-4 px-2 flex items-center justify-center rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
+                    className="py-4 px-6 flex items-center justify-center rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
                     onClick={() => router.push("/profile/address/add")}
                     disabled={addresses.length >= 5}
                 >
