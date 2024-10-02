@@ -166,14 +166,14 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
                 {/* Availability section */}
                 <div>
                     <h3 className="text-lg font-sans font-medium mb-4">Availability</h3>
-                    <div className="flex font-sans items-center space-x-4">
+                    <div className="flex text-[12px] sssm:text-sm ssm:text-base font-sans items-center space-x-4">
                         <button
                             type="button"
                             onClick={() => setInStock(null)}
                             className={`flex items-center text-black`}
                         >
                             <div
-                                className={`w-8 h-8 rounded-[100%] border flex items-center justify-center mr-2 ${inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
+                                className={`h-7 w-7 ssm:w-8 ssm:h-8 rounded-[100%] border flex items-center justify-center mr-2 ${inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
                                 {inStock === null && (
                                     <div className="w-5 h-5 bg-[#97C86C] rounded-full"></div>
                                 )}
@@ -186,7 +186,7 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
                             className={`flex items-center text-black`}
                         >
                             <div
-                                className={`w-8 h-8 rounded-[100%] border flex items-center justify-center mr-2 ${inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
+                                className={`h-7 w-7 ssm:w-8 ssm:h-8 rounded-[100%] border flex items-center justify-center mr-2 ${inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
                                 {inStock && (
                                     <div className="w-5 h-5 bg-[#97C86C] rounded-full"></div>
                                 )}
@@ -199,7 +199,7 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
                             className={`flex items-center text-black`}
                         >
                             <div
-                                className={`w-8 h-8 rounded-[100%] border flex items-center justify-center mr-2 ${!inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
+                                className={`h-7 w-7 ssm:w-8 ssm:h-8 rounded-[100%] border flex items-center justify-center mr-2 ${!inStock ? 'border-[#3B5345]' : 'border-[#695C5C]/50'}`}>
                                 {inStock === false && (
                                     <div className="w-5 h-5 bg-[#97C86C] rounded-full"></div>
                                 )}

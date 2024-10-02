@@ -77,7 +77,7 @@ const ProductSlider = ({ products }) => { // Receive products as props
                                     )}
                                 </div>
                                 <div
-                                    className="flex text-lg h-10 mb-4 leading-7 font-medium font-serif justify-between w-full items-baseline">
+                                    className="flex text-lg ssm:text-xl h-10 mb-4 leading-7 font-medium font-serif justify-between w-full items-baseline">
                                     <h2 className="mt-4 ml-2 max-w-52 min-h-20 line-clamp-2  overflow-hidden">{product.title}</h2>
                                     <p className="whitespace-nowrap">{product.minPrice.toLocaleString()} IQD</p>
                                 </div>
