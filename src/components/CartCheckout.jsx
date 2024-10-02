@@ -38,7 +38,6 @@ const CartCheckout = ({ subTotal, discount }) => {
                     const userId_temp = localStorage.getItem("userId")
                     if (userId_temp) {
                         try {
-                            console.log(userId_temp)
                             setUserId(parseInt(userId_temp))
                         }
                         catch (error) {
@@ -127,7 +126,6 @@ const CartCheckout = ({ subTotal, discount }) => {
                 quantity: item.quantity,
             })),
         };
-        console.log(submitData)
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
                 method: 'POST',

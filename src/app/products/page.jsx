@@ -12,7 +12,6 @@ const ProductsPage = async ({ searchParams }) => {
 
     // Destructure the necessary parameters with default values
     const { c = '', sc = '', b = '', title = '', sortBy = '' } = resolvedSearchParams;
-    console.log(c, sc, b, title)
     return (
         <>
             <AsyncNavBar />

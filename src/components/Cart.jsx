@@ -193,7 +193,6 @@ const Cart = () => {
                     setCouponMessage(data.message || "Invalid coupon code");
                 }
             } catch (error) {
-                console.log(error)
                 setCouponMessage("Error applying coupon. Please try again.");
             } finally {
                 setIsApplyingCoupon(false);

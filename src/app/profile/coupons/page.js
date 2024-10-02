@@ -31,7 +31,7 @@ export default async function CouponPage() {
             'Content-Type': 'application/json',
         },
         // Revalidate the data every 60 seconds
-        next: { revalidate: 60 },
+        next: { revalidate: 3600 },
     });
 
     // Handle errors

@@ -203,7 +203,6 @@ export default function ProductDetail({ product, isInWishlist }) {
             });
             if (response.ok) {
                 const w = await response.json();
-                console.log('Fetched wishlist:', w.wishlist);
                 const wishlistIds = w.wishlist.map(item => item.id);
                 setInternalIsInWishlist(wishlistIds.includes(product.id));
             }

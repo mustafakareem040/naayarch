@@ -40,7 +40,6 @@ const ProductFilterComponent = ({ modalRef, filter, setFilter, minPrice, maxPric
         if (sortBy) params.set('sortBy', sortBy);
 
         const newFilterQuery = params.toString();
-        console.log(newFilterQuery);
         setFilterQuery(newFilterQuery);
         handleFilterClose();
     };

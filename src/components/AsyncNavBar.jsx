@@ -10,7 +10,7 @@ const fetchWithRevalidate = async (url) => {
         headers: {
             'Content-Type': "application/json"
         },
-        next: { revalidate: 60 }, // Revalidate every 60 seconds
+        next: { revalidate: 14400 }, // Revalidate every 60 seconds
     });
     if (!res.ok) {
         throw new Error(`Failed to fetch data from ${url}`);

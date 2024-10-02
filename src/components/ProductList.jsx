@@ -102,7 +102,6 @@ export default function ProductList({ initialFilters }) {
         }
     }, [c, sc, b, minPrice, maxPrice, filter, fetchWishlist, sortBy]);
     useEffect(() => {
-        console.log('called 1')
         setProducts([]);
         setPage(1);
         setHasMore(true);
@@ -114,7 +113,6 @@ export default function ProductList({ initialFilters }) {
 
     // Fetch more products when in view
     useEffect(() => {
-        console.log('called 2')
         if (inView && hasMore && !loading && !first.current) {
             fetchProducts(page, query); // Pass current query
         }
@@ -122,7 +120,6 @@ export default function ProductList({ initialFilters }) {
 
     // Handle search functionality
     const handleSearch = useCallback((newQuery) => {
-        console.log('3')
         if (!loading) {
             setQuery(newQuery);
             setProducts([]);
@@ -135,7 +132,6 @@ export default function ProductList({ initialFilters }) {
 
     // Handle filter changes
     const handleFilterChange = useCallback(() => {
-        console.log(4)
         setProducts([]);
         setPage(1);
         setHasMore(true);

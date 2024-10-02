@@ -14,7 +14,7 @@ const Footer = dynamic(() => import('@/components/Footer'));
 
 export default async function Dashboard() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API}/products/top-selling`, {
-        next: { revalidate: 3600 },
+        next: { revalidate: 14400 },
     });
 
     if (!res.ok) {
