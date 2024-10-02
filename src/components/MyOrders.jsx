@@ -1,12 +1,16 @@
-'use client'
-import React, {useEffect, useRef, useState} from 'react';
+// components/MyOrders.jsx
+'use client';
+
+import React, { useState } from 'react';
 import Image from "next/image";
-import {useRouter} from "next/navigation";
-
-import {MapPin, Search, Copy, X, Check, CircleArrowLeft} from 'lucide-react';
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {CircleArrowLeft, Search, Filter, Check, MapPin, Copy} from 'lucide-react';
+import EmptyOrders from './EmptyOrders';
+import FilterModal from "@/components/FilterModel";
+import useFetchOrders from "@/components/useFetchOrders";
 
-const OrderCard = ({ id, status, productImages, price, quantity, orderDate, location }) => {
+const OrderCard = ({ order }) => {
     const [copied, setCopied] = useState(false);
 
     const formatDate = (dateString) => {
@@ -19,193 +23,50 @@ const OrderCard = ({ id, status, productImages, price, quantity, orderDate, loca
         return `${day}/${month}/${year}, ${hours}:${minutes}`;
     };
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(id);
+    const handleCopy = (e) => {
+        e.preventDefault(); // Prevent navigating when clicking the copy button
+        navigator.clipboard.writeText(order.id);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
     return (
-        <Link prefetch={false} href={"/profile/orders/detail"} className="bg-white font-sans rounded-lg font-medium shadow-md p-4 max-w-sm">
+        <div className="bg-white font-serif rounded-lg font-medium shadow-md p-4 max-w-lg mx-auto block">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-baseline gap-3">
                     <h2 className="text-lg">Order ID</h2>
-                    <span className="text-[#695C5C] text-sm font-normal">#{id}</span>
+                    <span className="text-[#695C5C] text-sm font-normal">#{order.id}</span>
                     <button onClick={handleCopy} className="focus:outline-none">
                         {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} className="text-gray-400" />}
                     </button>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${status === 'Complete' ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
-          {status}
-        </span>
+                <span className={`px-3 py-1 rounded-full text-sm ${order.status === 'Complete' ? 'bg-emerald-500 text-white' : order.status === 'Cancelled' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                    {order.status}
+                </span>
             </div>
             <div className="flex mb-4 -space-x-4">
-                {productImages.map((image, index) => (
+                {order.items.map((item, index) => (
                     <Image
                         key={index}
-                        src={image}
+                        src={`https://storage.naayiq.com/resources/${item.product.images[0].url}`} // Assuming the first image
                         width={80}
                         height={80}
                         alt={`Product ${index + 1}`}
                         className="rounded-full object-cover border-2 border-white"
-                        style={{ zIndex: productImages.length - index }}
+                        style={{ zIndex: order.items.length - index }}
                     />
                 ))}
             </div>
             <div className="flex gap-4 items-baseline mb-4 py-2 border-[#695C5C]/30 border-solid border-b">
-                <span className="text-lg">{price.toLocaleString()} IQD</span>
-                <span className="text-[#695C5C] text-sm font-normal">{quantity} Product{quantity > 1 ? 's' : ''}</span>
+                <span className="text-[#695C5C] text-sm font-normal">{order.items.reduce((acc, item) => acc + item.quantity, 0)} Product{order.items.reduce((acc, item) => acc + item.quantity, 0) > 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-baseline justify-between font-normal text-black">
                 <div className="flex items-center">
+                    {/* Assuming location is part of the cart data */}
                     <MapPin size={16} className="mr-2" />
-                    <span className="mr-4 text-lg">{location}</span>
+                    <span className="mr-4 text-lg">{order.address}</span>
                 </div>
-                <span className="text-[#695C5C] font-medium text-sm">{formatDate(orderDate)}</span>
-            </div>
-        </Link>
-    );
-};
-
-
-
-const FilterModal = ({ isOpen, onClose, onApply }) => {
-    const [status, setStatus] = useState('All');
-    const [duration, setDuration] = useState('Any Time');
-    const [isAnimating, setIsAnimating] = useState(true);
-    const modalRef = useRef(null);
-
-    useEffect(() => {
-        let animationTimeout;
-
-        if (isOpen) {
-            // For slide-up, we need a slight delay to allow the element to be rendered before animating
-            animationTimeout = setTimeout(() => {
-                if (modalRef.current) {
-                    modalRef.current.style.transform = 'translateY(0)';
-                }
-            }, 50); // Adjust the delay (in milliseconds) as needed
-        } else {
-            if (modalRef.current) {
-                modalRef.current.style.transform = 'translateY(100%)';
-            }
-        }
-
-        return () => clearTimeout(animationTimeout);
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (isOpen) {
-            setIsAnimating(true);
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
-
-    const handleApply = () => {
-        onApply({ status, duration });
-        handleClose();
-    };
-
-    const handleReset = () => {
-        setStatus('All');
-        setDuration('Any Time');
-    };
-
-    const handleClose = () => {
-        setIsAnimating(true);
-        setTimeout(function() {
-            onClose()
-        }, 300)
-        setTimeout(function() {
-            setIsAnimating(false)
-        }, 400)
-    }
-
-
-    const handleOutsideClick = (e) => {
-        if (modalRef.current && !modalRef.current.contains(e.target)) {
-            handleClose();
-        }
-    };
-
-    if (!isOpen && !isAnimating) return null;
-
-    return (
-        <div
-            className={`fixed inset-0 items-end bg-black bg-opacity-50 flex bottom-0 top-0 z-50 transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-            onClick={handleOutsideClick}
-        >
-            <div
-                ref={modalRef}
-                style={{ transform: 'translateY(100%)' }} // Initial state: hidden
-                className={`bg-white max-h-[80vh] justify-end rounded-lg w-full flex flex-col transition-transform duration-300 ease-in-out`}
-            >
-
-
-                <div className="flex justify-center pt-2">
-                    <svg width="36" height="6" viewBox="0 0 36 6" fill="none" xmlns="http://www.w3.org/2000/svg"
-                         onClick={handleClose}>
-                        <rect opacity="0.7" width="36" height="6" rx="3" fill="#00003C"/>
-                    </svg>
-                </div>
-                <div className="p-4 font-sans font-medium border-b flex justify-between items-center">
-                    <h2 className="text-xl">Filter Orders</h2>
-                    <button className="text-[#97C86C] text-sm font-medium" onClick={handleReset}>
-                        Reset Filter
-                    </button>
-                </div>
-                <div className="flex-grow font-medium font-serif overflow-auto p-4">
-                    <div className="mb-6">
-                        <h3 className="text-base font-sans mb-4">Status</h3>
-                        {['All', 'On the way', 'Delivered', 'Cancelled'].map((option) => (
-                            <label key={option} className="flex font-normal items-center mb-4 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    className="hidden"
-                                    checked={status === option}
-                                    onChange={() => setStatus(option)}
-                                />
-                                <div
-                                    className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${status === option ? 'border-[#3B5345] bg-white' : 'border-gray-300'}`}>
-                                    {status === option && <div className="w-4 h-4 bg-[#97C86C] rounded-full"></div>}
-                                </div>
-                                <span className="text-lg">{option}</span>
-                            </label>
-                        ))}
-                    </div>
-                    <div>
-                        <h3 className="text-base font-sans mb-4">Duration</h3>
-                        {['Any Time', 'This Month', 'Last 3 Months', 'Last Year'].map((option) => (
-                            <label key={option} className="flex font-normal items-center mb-4 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    className="hidden"
-                                    checked={duration === option}
-                                    onChange={() => setDuration(option)}
-                                />
-                                <div
-                                    className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${duration === option ? 'bg-white border-[#3B5345]' : 'border-gray-300'}`}>
-                                    {duration === option && <div className="w-4 h-4 bg-[#97C86C] rounded-full"></div>}
-                                </div>
-                                <span className="text-lg">{option}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
-                <div className="p-4">
-                    <button
-                        className="w-full font-sans bg-[#3B5345] text-white py-3 rounded-lg text-lg font-medium"
-                        onClick={handleApply}
-                    >
-                        Apply Filter
-                    </button>
-                </div>
+                <span className="text-[#695C5C] font-medium text-sm">{formatDate(order.created_at)}</span>
             </div>
         </div>
     );
@@ -215,56 +76,72 @@ const MyOrders = () => {
     const router = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [filters, setFilters] = useState({status: '', date: ''});
+    const [filters, setFilters] = useState({ status: 'All', duration: 'Any Time' });
+    const { orders, loading, error } = useFetchOrders(/* Pass user ID if needed */);
 
-    const orders = [
-        {
-            id: '1000000',
-            date: Date.now(),
-            status: 'Complete',
-            location: 'Baghdad arasat',
-            price: 150000,
-            quantity: 6,
-            productImages: ["/water.webp", '/cream.webp'],
-        },
-        {
-            id: '1020000',
-            date: Date.now(),
-            status: 'Canceled',
-            location: 'Baghdad arasat',
-            price: 150000,
-            quantity: 6,
-            productImages: ["/water.png", '/cream.png']
-        },
-        {
-            id: '1030000',
-            date: Date.now(),
-            status: 'On The Way',
-            location: 'Baghdad arasat',
-            price: 150000,
-            quantity: 6,
-            productImages: ["/water.png", '/cream.png'],
-        },
-    ];
+    // Handle Filter Application
+    const handleApplyFilters = (appliedFilters) => {
+        setFilters(appliedFilters);
+        setIsFilterOpen(false);
+    };
 
+    // Filter Logic
     const filteredOrders = orders.filter((order) => {
-        const matchesSearch = order.id.includes(searchTerm) || order.location.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filters.status === 'All' || order.status === filters.status;
-        const matchesDuration = filters.duration === 'Any Time' || (
-            filters.duration === 'Past Month' && /* add logic for this month */ true ||
-            filters.duration === 'Past 3 Months' && /* add logic for last 3 months */ true ||
-            filters.duration === 'Past Year' && /* add logic for last year */ true
-        );
+        const matchesSearch = order.id.toString().includes(searchTerm) || order.full_name.toLowerCase().includes(searchTerm.toLowerCase()) || order.address.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = filters.status === 'All' || order.status.toLowerCase() === filters.status.toLowerCase();
+
+        // Duration Filter Logic
+        let matchesDuration = true;
+        const orderDate = new Date(order.created_at);
+        const now = new Date();
+        if (filters.duration !== 'Any Time') {
+            let compareDate;
+            switch (filters.duration) {
+                case 'This Month':
+                    compareDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'Last 3 Months':
+                    compareDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+                    break;
+                case 'Last Year':
+                    compareDate = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+                    break;
+                default:
+                    compareDate = new Date(0);
+            }
+            matchesDuration = orderDate >= compareDate;
+        }
+
         return matchesSearch && matchesStatus && matchesDuration;
     });
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-xl">Loading orders...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-xl text-red-500">Error: {error}</p>
+            </div>
+        );
+    }
+
+    if (orders.length === 0) {
+        return <EmptyOrders />;
+    }
 
     return (
         <div className="mt-2 px-4">
             <header className="flex items-center mb-6">
-                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={router.back} className="p-2 relative z-20" />
+                <CircleArrowLeft size={52} strokeWidth={0.7} onClick={() => router.back()} className="p-2 relative z-20 cursor-pointer" />
                 <h1 className="text-3xl z-10 text-[#181717] left-0 right-0 absolute font-sans text-center font-medium">My Orders</h1>
             </header>
-            <div className="flex items-center mb-4">
+            <div className="flex font-serif items-center mb-4">
                 <div className="relative flex-grow">
                     <input
                         type="text"
@@ -276,30 +153,26 @@ const MyOrders = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 </div>
                 <button
-                    className="bg-gray-100 py-2 px-4 rounded-r-lg"
+                    className="flex items-center bg-gray-100 py-2 px-4 rounded-r-lg ml-2"
                     onClick={() => setIsFilterOpen(true)}
                 >
+                    <Filter size={20} className="mr-2" />
                     Filter
                 </button>
             </div>
-            <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                    <OrderCard
-                        key={order.id}
-                        id={order.id}
-                        status={order.status}
-                        price={order.price}
-                        quantity={order.quantity}
-                        orderDate={order.date}
-                        location={order.location}
-                        productImages={order.productImages}
-                    />
-                ))}
-            </div>
+            {filteredOrders.length > 0 ? (
+                <div className="space-y-4">
+                    {filteredOrders.map((order) => (
+                        <OrderCard key={order.id} order={order} />
+                    ))}
+                </div>
+            ) : (
+                <EmptyOrders />
+            )}
             <FilterModal
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                onApply={setFilters}
+                onApply={handleApplyFilters}
             />
         </div>
     );

@@ -13,8 +13,8 @@ const ProductCategorySlider = dynamic(() => import('@/components/ProductCategory
 const Footer = dynamic(() => import('@/components/Footer'));
 
 export default async function Dashboard() {
-    const res = await fetch('https://dev.naayiq.com/products/top-selling', {
-        next: { revalidate: 60 },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API}/products/top-selling`, {
+        next: { revalidate: 3600 },
     });
 
     if (!res.ok) {

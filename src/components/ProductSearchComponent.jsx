@@ -27,7 +27,7 @@ const ProductSearchComponent = () => {
     const fetchBestSelling = useCallback(async () => {
         try {
             const response = await fetch(
-                `https://dev.naayiq.com/products?page=1&sortBy=Best%20Selling&itemsPerPage=${ITEMS_PER_PAGE}&availability=in_stock`
+                `${process.env.NEXT_PUBLIC_API}/products?page=1&sortBy=Best%20Selling&itemsPerPage=${ITEMS_PER_PAGE}&availability=in_stock`
             );
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -76,7 +76,7 @@ const ProductSearchComponent = () => {
                 setIsLoading(true);
                 try {
                     const response = await fetch(
-                        `https://dev.naayiq.com/products?page=1&search=${encodeURIComponent(searchQuery)}&itemsPerPage=${ITEMS_PER_PAGE}`
+                        `${process.env.NEXT_PUBLIC_API}/products?page=1&search=${encodeURIComponent(searchQuery)}&itemsPerPage=${ITEMS_PER_PAGE}`
                     );
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -128,7 +128,7 @@ const ProductSearchComponent = () => {
         setIsLoadingMore(true);
         try {
             const response = await fetch(
-                `https://dev.naayiq.com/products?page=${nextPage}&search=${encodeURIComponent(query)}&itemsPerPage=${ITEMS_PER_PAGE}`
+                `${process.env.NEXT_PUBLIC_API}/products?page=${nextPage}&search=${encodeURIComponent(query)}&itemsPerPage=${ITEMS_PER_PAGE}`
             );
             if (!response.ok) {
                 throw new Error('Network response was not ok');

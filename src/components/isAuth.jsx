@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react';
+import {React, useEffect } from 'react';
 export const getToken = () => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('token'); // Adjust based on your token storage strategy
@@ -23,13 +23,18 @@ export default function IsAuth() {
                         Authorization: `Bearer ${token}`,
                     }
                 });
+                const r = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                console.log(await r.json())
                 const data = await response.json();
-
+                console.log(data)
+                console.log(parseInt(data.userId))
                 if (data.isAuthenticated) {
-                    // Store addresses and userId separately
                     localStorage.setItem("addresses", JSON.stringify(data.addresses));
-                    console.log(data)
-                    console.log(data.userId )
                     localStorage.setItem("userId", data.userId);
 
                     // Store the rest of the user data
