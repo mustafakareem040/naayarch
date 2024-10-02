@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { CircleArrowLeft, FileText } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/components/NotificationContext';
 import './NotificationStyles.css';
@@ -19,30 +18,39 @@ const CartCheckout = ({ subTotal, discount }) => {
     const { addNotification } = useNotification();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
-    const [userId, setUserId] = useState(null)
+    const [userId, setUserId] = useState(null);
+    const [hasAddresses, setHasAddresses] = useState(false); // New state to track addresses
+    const handleChooseAddress = useCallback(() => {
+        if (hasAddresses) {
+            router.push("/cart/choose-address");
+        } else {
+            router.push("/profile/address/add?redirect=cart/order");
+        }
+    }, [hasAddresses, router]);
     // Load orderData and userInfo on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             try {
                 const storedOrder = JSON.parse(localStorage.getItem('orderData') || 'null');
                 const storedUserInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
-                // Check for lastUsedAddress
+                const storedAddresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+
+                setHasAddresses(storedAddresses.length > 0);
+
                 const lastUsedAddress = JSON.parse(localStorage.getItem('lastUsedAddress') || 'null');
 
                 if (lastUsedAddress) {
-                    setOrderData({...storedOrder,
+                    setOrderData({
+                        ...storedOrder,
                         shippingAddress: lastUsedAddress,
                     });
                 }
-                if (typeof window !== 'undefined') {
-                    const userId_temp = localStorage.getItem("userId")
-                    if (userId_temp) {
-                        try {
-                            setUserId(parseInt(userId_temp))
-                        }
-                        catch (error) {
 
-                        }
+                const userId_temp = localStorage.getItem("userId");
+                if (userId_temp) {
+                    const parsedUserId = parseInt(userId_temp, 10);
+                    if (!isNaN(parsedUserId)) {
+                        setUserId(parsedUserId);
                     }
                 }
 
@@ -77,28 +85,30 @@ const CartCheckout = ({ subTotal, discount }) => {
                         <p>{address}</p>
                         <p>{phone_number}</p>
                     </div>
-                    <Link
-                        href="/cart/choose-address"
+                    <button
+                        onClick={handleChooseAddress}
                         className="w-full border mt-2 border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
                         aria-label="Choose another address"
                     >
                         <span className="text-base font-semibold">Choose another address</span>
-                    </Link>
+                    </button>
                 </>
             );
         } else {
             return (
-                <Link
-                    href="/cart/choose-address"
-                    prefetch={false}
+                <button
+                    onClick={handleChooseAddress}
                     className="w-full border border-[#37474F] rounded-lg p-3 flex items-center justify-center text-[#3B5345] bg-[rgba(59,83,69,0.05)]"
                     aria-label="Choose address"
                 >
                     <span className="text-base font-semibold">Choose address</span>
-                </Link>
+                </button>
             );
         }
-    }, [orderData.shippingAddress]);
+    }, [orderData.shippingAddress, handleChooseAddress]);
+
+    // New function to handle navigation based on address availability
+
 
     const handleSubmitOrder = useCallback(async () => {
         if (!orderData.shippingAddress) {
@@ -126,6 +136,7 @@ const CartCheckout = ({ subTotal, discount }) => {
                 quantity: item.quantity,
             })),
         };
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
                 method: 'POST',
