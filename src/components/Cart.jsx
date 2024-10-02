@@ -75,9 +75,9 @@ const Cart = () => {
                 return {
                     ...item,
                     title: product.name,
-                    image: selectedSize && selectedSize.images.length > 0
-                        ? `https://storage.naayiq.com/resources/${selectedSize.images[0]}`
-                        : '/placeholder-image.png', // **Fallback image**
+                    image:  product.images.length > 0
+                        ? `https://storage.naayiq.com/resources/${product.images[0].url}`
+                        : 'https://storage.naayiq.com/resources/noimage.webp', // **Fallback image**
                     price: parseInt(selectedSize?.price || product.price, 10),
                     color: selectedColor?.name || 'N/A',
                     size: selectedSize?.name || 'N/A',
