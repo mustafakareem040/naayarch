@@ -158,7 +158,7 @@ const CartCheckout = ({ subTotal, discount }) => {
         <>
             <header className="flex items-center mb-12">
                 <button
-                    onClick={() => router.push("/cart")}
+                    onClick={() => router.replace("/cart")}
                     className="p-2 relative z-20 cursor-pointer"
                     aria-label="Go back"
                 >
