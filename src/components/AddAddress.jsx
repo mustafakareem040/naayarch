@@ -74,7 +74,7 @@ export default function AddAddress() {
                 ...prev,
                 general: 'Failed to save the address. Please try again.'
             }));
-            addNotification('error', 'Failed to save the address.');
+            addNotification('error', `Failed to save the address. ${error}`);
         } finally {
             setIsLoading(false);
         }
