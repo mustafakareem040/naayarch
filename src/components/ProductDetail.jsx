@@ -92,7 +92,7 @@ export default function ProductDetail({ product, isInWishlist }) {
             setSelectedSize(product.sizes[0]);
         }
         updatePrice();
-    }, [product, updatePrice]);
+    }, []);
 
     useEffect(() => {
         setMaxQuantity(determineMaxQuantity());
