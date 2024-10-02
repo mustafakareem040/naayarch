@@ -58,7 +58,7 @@ const AddressComponent = () => {
             {/* Add New Address Button */}
             <div className="w-full my-4 text-center">
                 <button
-                    className="py-4 px-14 flex items-center justify-center rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
+                    className="py-4 px-2 flex items-center justify-center rounded-lg m-auto font-serif text-center text-white bg-[#3B5345] text-xl"
                     onClick={() => router.push("/profile/address/add")}
                     disabled={addresses.length >= 5}
                 >
@@ -95,16 +95,14 @@ const AddressComponent = () => {
                                 <p className="">{address.phone_number}</p>
                             </div>
                             <div className="flex flex-col items-center space-y-2">
-                                <button onClick={() => handleEdit(address)} aria-label="Edit Address">
-                                    <Edit size={24} className="text-blue-500 hover:text-blue-700" />
-                                </button>
+
                                 <button onClick={() => handleDelete(address.id)} aria-label="Delete Address">
                                     <Trash2 size={24} className="text-red-500 hover:text-red-700" />
                                 </button>
                             </div>
                         </div>
                     )) : (
-                        <p className="text-center">No addresses found. Please add a new address.</p>
+                        ""
                     )}
                 </div>
             )}
