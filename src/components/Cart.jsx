@@ -299,7 +299,7 @@ const Cart = () => {
             <>
                 <header className="flex items-center mb-6">
                     <button
-                        onClick={() => router.back()}
+                        onClick={() => router.push("/")}
                         className="p-2 relative z-20 cursor-pointer"
                         aria-label="Go back"
                     >
