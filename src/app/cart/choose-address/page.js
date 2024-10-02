@@ -3,8 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import { CircleArrowLeft, Home, Building2, PlusCircle, MapPin, Phone, Trash2 } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import {Button} from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const ChooseAddress = () => {
     const router = useRouter();
@@ -19,9 +18,6 @@ const ChooseAddress = () => {
             const storedOrder = JSON.parse(localStorage.getItem('orderData') || '{}');
             setAddresses(storedAddresses);
             setOrder(storedOrder);
-            if (storedAddresses.length === 0) {
-                router.push("/profile/address/add?redirect=cart/order")
-            }
         } catch (err) {
             console.error('Failed to load from localStorage:', err);
             setError('Failed to load addresses. Please try again.');
@@ -48,10 +44,7 @@ const ChooseAddress = () => {
         const updatedAddresses = addresses.filter((_, i) => i !== index);
         setAddresses(updatedAddresses);
         localStorage.setItem('addresses', JSON.stringify(updatedAddresses));
-        if (updatedAddresses.length === 0) {
-            router.push("/profile/address/add?redirect=cart/order");
-        }
-    }, [addresses, router]);
+    }, [addresses]);
 
     const getAddressIcon = (type) => {
         switch (type) {
