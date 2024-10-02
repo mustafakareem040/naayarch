@@ -39,6 +39,8 @@ export default function ProductList({ initialFilters }) {
         threshold: 0,
         triggerOnce: false
     });
+    const [shouldScroll, setShouldScroll] = useState(false);
+    const scroll = useRef(0);
 
     const fetchWishlist = useCallback(async () => {
         const token = localStorage.getItem("token");
@@ -150,30 +152,22 @@ export default function ProductList({ initialFilters }) {
     useEffect(() => {
         if (pathname === '/products') {
             setDetail(null);
+            setShouldScroll(true);
         }
     }, [pathname]);
-
+    useEffect(() => {
+        if (shouldScroll) {
+            window.scrollTo(0, scroll.current);
+            setShouldScroll(false);
+        }
+    }, [shouldScroll]);
     const handleProductClick = useCallback((product) => {
+        scroll.current = window.scrollY;
         setDetail(product);
         const newURL = `/products/${product.id}`;
         window.history.pushState({ path: newURL }, '', newURL);
-    }, []);
+    }, [scroll]);
 
-    useEffect(() => {
-        const handlePopState = (event) => {
-            const currentPath = window.location.pathname;
-            if (currentPath === '/products') {
-                setDetail(null);
-            } else {
-            }
-        };
-
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []);
 
     // Handle cart interactions
     const handleCartClick = useCallback((product) => {

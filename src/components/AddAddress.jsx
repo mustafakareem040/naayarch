@@ -23,9 +23,15 @@ export default function AddAddress() {
     const formRef = useRef(null);
 
     // Validate phone number with optional starting '0'
+
+    const arabicToEnglish = (str) => {
+        const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return str.replace(/[٠-٩]/g, d => arabicNumerals.indexOf(d));
+    };
     const validatePhoneNumber = useCallback((number) => {
-        const regex = /^0?7\d{9}$/; // Starts with '07' or '7' followed by 9 digits
-        return regex.test(number);
+        const englishNumber = arabicToEnglish(number);
+        const regex = /^0?7\d{9}$/;
+        return regex.test(englishNumber);
     }, []);
 
     // Handle input change
@@ -50,7 +56,7 @@ export default function AddAddress() {
         if (!validatePhoneNumber(formData.phone_number)) {
             setErrors(prev => ({
                 ...prev,
-                phone_number: 'Please enter a correct phone number starting with 07xxxxxxxxx or 7xxxxxxxxx.'
+                phone_number: 'Please enter a correct phone number format 07xxxxxxxxx or 7xxxxxxxxx.'
             }));
             setIsLoading(false);
             return;
@@ -285,10 +291,9 @@ export default function AddAddress() {
                         value={formData.phone_number}
                         onChange={handleInputChange}
                         required
-                        type={"tel"}
+                        type="tel"
                         maxLength={11}
-                        pattern="^0?7\d{9}$"
-                        title="07xxxxxxxxx or 7xxxxxxxxx."
+                        title="07xxxxxxxxx or 7xxxxxxxxx"
                         aria-invalid={errors.phone_number ? 'true' : 'false'}
                         aria-describedby={errors.phone_number ? 'phone_number-error' : undefined}
                     />
