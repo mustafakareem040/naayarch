@@ -10,7 +10,6 @@ export default function IsAuth() {
         if (!token) {
             // Clear all related data if there's no token
             localStorage.removeItem("userData");
-            localStorage.removeItem("addresses");
             localStorage.removeItem("userId");
             return;
         }
@@ -23,16 +22,8 @@ export default function IsAuth() {
                         Authorization: `Bearer ${token}`,
                     }
                 });
-                const r = await fetch(`${process.env.NEXT_PUBLIC_API}/cart`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-                console.log(await r.json())
                 const data = await response.json();
-                console.log(data)
-                console.log(parseInt(data.userId))
+
                 if (data.isAuthenticated) {
                     localStorage.setItem("addresses", JSON.stringify(data.addresses));
                     localStorage.setItem("userId", data.userId);
