@@ -96,7 +96,7 @@ export default function LoginPage() {
                         <button
                             type="button"
                             onClick={togglePasswordVisibility}
-                            className="absolute right-3 top-10 text-gray-500"
+                            className="absolute right-3 top-12 text-gray-500"
                         >
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
@@ -122,9 +122,6 @@ export default function LoginPage() {
                                 <span className="text-[1rem] font-medium text-gray-700">Remember Me</span>
                             </label>
                         </div>
-                        <Link prefetch={false} href="/forgot-password" className="text-[#44594A] font-medium hover:text-[#374c3d]">
-                            Forgot Password?
-                        </Link>
                     </div>
                     <div className="mb-4">
                         <button
