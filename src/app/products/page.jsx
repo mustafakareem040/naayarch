@@ -18,12 +18,12 @@ export async function generateMetadata({ searchParams }) {
     const { title } = searchParams;
 
     // Determine the page title
-    const pageTitle = title ? `${title} - Naayiq.com` : 'All Products - Naayiq.com';
+    const pageTitle = title ? `${title}` : 'All Products';
 
     // Define a dynamic description
     const description = title
-        ? `Explore our ${title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at Naayiq.com.`
-        : 'Discover a wide range of Korean and global beauty products at Naayiq.com. Shop skincare, makeup, and body care items from top brands worldwide.';
+        ? `Explore our ${title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at naayiq.com.`
+        : 'Discover a wide range of Korean and global beauty products at naayiq.com. Shop skincare, makeup, and body care items from top brands worldwide.';
 
     return {
         title: pageTitle,
