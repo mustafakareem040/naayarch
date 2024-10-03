@@ -4,7 +4,7 @@ Allow: /
 Disallow: /cart/choose-address
 Disallow: /cart/order
 Disallow: /cart/
-
+Disallow: /login/
 Allow: /products/
 
 Crawl-delay: 10
