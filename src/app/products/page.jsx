@@ -32,7 +32,7 @@ export async function generateMetadata({ searchParams }) {
             title: pageTitle,
             description: description,
             url: 'https://naayiq.com/products',
-            siteName: 'Naayiq',
+            siteName: 'NaayIraq',
             locale: 'en_IQ',
             type: 'website',
         },
