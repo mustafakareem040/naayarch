@@ -69,7 +69,7 @@ const ProductsPage = async ({ searchParams }) => {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify({
                         "@context": "https://schema.org",
                         "@type": "CollectionPage",
-                        "name": title ? `${title} - Naayiq.com` : "All Products - Naayiq.com",
+                        "name": title ? `${title}` : "All Products",
                         "description": title
                             ? `Explore our ${title} collection of Korean and global beauty products.`
                             : 'Discover a wide range of Korean and global beauty products.',
