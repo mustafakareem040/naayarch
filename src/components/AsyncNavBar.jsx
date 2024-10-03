@@ -4,13 +4,13 @@ import { NavBar } from "@/components/NavBar";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
 import React from "react"
-// Optimized fetch function with caching and revalidation
+export const revalidate = 14400;
 const fetchWithRevalidate = async (url) => {
     const res = await fetch(url, {
         headers: {
             'Content-Type': "application/json"
         },
-        next: { revalidate: 14400 }, // Revalidate every 60 seconds
+        next: { revalidate: 14400 }
     });
     if (!res.ok) {
         throw new Error(`Failed to fetch data from ${url}`);

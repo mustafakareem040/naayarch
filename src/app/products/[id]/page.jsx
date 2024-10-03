@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import ProductDetail from "@/components/ProductDetail";
 import Loading from "@/components/Loading";
 import { NotificationProvider } from "@/components/NotificationContext";
-export const dynamic = 'force-dynamic';
 async function fetchProduct(id) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products/${id}`);
     if (!response.ok) {

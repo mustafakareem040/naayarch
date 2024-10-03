@@ -4,18 +4,23 @@ import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
-export const dynamic = 'force-dynamic';
-
+export const revalidate = 14400;
+export const metadata = {
+    title: "Shop Beauty Products | Naay",
+    description: "Explore our wide range of Korean and global beauty products. Find skincare, makeup, and body care items from top brands at Naay.",
+    openGraph: {
+        title: "Shop Beauty Products | Naay",
+        description: "Discover premium beauty products from Korean and global brands at Naay. Your trusted source for skincare, makeup, and body care in Iraq.",
+    },
+};
 const ProductsPage = async ({ searchParams }) => {
-    // Await the searchParams Promise to get the actual params object
     const resolvedSearchParams = await searchParams;
 
-    // Destructure the necessary parameters with default values
-    const { c = '', sc = '', b = '', title = '', sortBy = '' } = resolvedSearchParams;
+    const { c = '', sc = '', b = '', title = '', sortBy = '' } = await resolvedSearchParams;
     return (
         <>
             <AsyncNavBar />
-            <ProductList initialFilters={{ c, sc, b, title, sortBy }} />
+            <ProductList initialFilters={{c, sc, b, title, sortBy}} />
         </>
     );
 };

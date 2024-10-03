@@ -8,7 +8,7 @@ import ProductItem from './ProductItem';
 import ProductLoading from '@/components/ProductLoading';
 import NoProductsFound from '@/components/NoProductsFound';
 import ProductDetail from '@/components/ProductDetail';
-import {NotificationProvider, useNotification} from '@/components/NotificationContext';
+import {NotificationProvider} from '@/components/NotificationContext';
 
 const SearchComponent = dynamic(() => import('@/components/SearchComponent'), {
     ssr: false,
@@ -19,7 +19,6 @@ const ProductModal = dynamic(() => import('@/components/ProductDetailModal'), {
     ssr: false
 });
 
-// eslint-disable-next-line react/prop-types
 export default function ProductList({ initialFilters }) {
     const { c, sc, b, title, sortBy } = initialFilters;
     const [products, setProducts] = useState([]);

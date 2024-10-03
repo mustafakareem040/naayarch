@@ -25,14 +25,36 @@ const nnFont = localFont({
 });
 
 export const metadata = {
-    title: "NaayIraq",
-    description: "An Iraqi store for skin care products",
+    title: {
+        default: "Naay - Your Iraqi Store for Korean and Global Beauty Products",
+        template: "%s | Naay"
+    },
+    description: "Discover premium Korean and global beauty products at Naay, Iraq's leading online store for skincare, makeup, and body care.",
+    keywords: ["Iraqi beauty store", "Korean skincare", "Iraqi skincare store", "Naay Iraq", "NaayIraq", "naayiq", "Naay", "Global beauty brands", "Makeup", "Skincare", "Body care"],
+    openGraph: {
+        title: "Naay - Premium Beauty Products in Iraq",
+        description: "Shop the best Korean and global beauty products at Naay. Your one-stop shop for skincare, makeup, and more in Iraq.",
+        url: "https://naayiq.com",
+        siteName: "Naay",
+        locale: "en_US",
+        type: "website",
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    }
 };
 
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-        {/* Remove <Head> and manage metadata via head.js */}
         <body className={`m-4 box-border overflow-x-hidden ${nnFont.variable} ${figtree.variable}`}>
         <NextTopLoader
             color="#3B5345"
@@ -44,8 +66,8 @@ export default function RootLayout({ children }) {
             speed={300}
             shadow="0 0 10px #2299DD,0 0 5px #2299DD"
         />
-            <IsAuth />
-            {children}
+        <IsAuth />
+        {children}
         </body>
         </html>
     );
