@@ -4,25 +4,82 @@ import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
 
+/**
+ * Revalidate the page every 4 hours (14400 seconds)
+ */
 export const revalidate = 14400;
-export const metadata = {
-    title: "Products",
-    description: "Explore our wide range of Korean and global beauty products. Find skincare, makeup, and body care items from top brands at Naay.",
-    openGraph: {
-        title: "Products",
-        description: "Discover premium beauty products from Korean and global brands at Naay. Your trusted source for skincare, makeup, and body care in Iraq.",
-    },
-};
-const ProductsPage = async ({ searchParams }) => {
-    const resolvedSearchParams = await searchParams;
 
-    const { c = '', sc = '', b = '', title = '', sortBy = '' } = await resolvedSearchParams;
+/**
+ * Dynamically generate metadata based on search parameters.
+ * If 'title' is provided in the searchParams, use it in the title;
+ * Otherwise, default to 'All Products'.
+ */
+export async function generateMetadata({ searchParams }) {
+    const { title } = searchParams;
+
+    // Determine the page title
+    const pageTitle = title ? `${title} - Naayiq.com` : 'All Products - Naayiq.com';
+
+    // Define a dynamic description
+    const description = title
+        ? `Explore our ${title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at Naayiq.com.`
+        : 'Discover a wide range of Korean and global beauty products at Naayiq.com. Shop skincare, makeup, and body care items from top brands worldwide.';
+
+    return {
+        title: pageTitle,
+        description: description,
+        openGraph: {
+            title: pageTitle,
+            description: description,
+            url: 'https://naayiq.com/products',
+            siteName: 'Naayiq',
+            locale: 'en_IQ',
+            type: 'website',
+        },
+        additionalMetaTags: [
+            {
+                name: "robots",
+                content: "index, follow"
+            },
+            {
+                name: "viewport",
+                content: "width=device-width, initial-scale=1"
+            }
+        ],
+        alternates: {
+            canonical: 'https://naayiq.com/products',
+            languages: {
+                'en-us': 'https://naayiq.com/products',
+            },
+        },
+    };
+}
+
+const ProductsPage = async ({ searchParams }) => {
+    const { c = '', sc = '', b = '', title = '', sortBy = '' } = searchParams;
+
     return (
         <>
             <AsyncNavBar />
-            <ProductList initialFilters={{c, sc, b, title, sortBy}} />
+            <ProductList initialFilters={{ c, sc, b, title, sortBy }} />
+
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        "name": title ? `${title} - Naayiq.com` : "All Products - Naayiq.com",
+                        "description": title
+                            ? `Explore our ${title} collection of Korean and global beauty products.`
+                            : 'Discover a wide range of Korean and global beauty products.',
+                        "url": "https://naayiq.com/products"
+                    }) }}
+            />
         </>
     );
 };
+
+
 
 export default ProductsPage;
