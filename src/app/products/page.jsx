@@ -6,10 +6,10 @@ import AsyncNavBar from '@/components/AsyncNavBar';
 
 export const revalidate = 14400;
 export const metadata = {
-    title: "Shop Beauty Products | Naay",
+    title: "NaayIraq",
     description: "Explore our wide range of Korean and global beauty products. Find skincare, makeup, and body care items from top brands at Naay.",
     openGraph: {
-        title: "Shop Beauty Products | Naay",
+        title: "NaayIraq",
         description: "Discover premium beauty products from Korean and global brands at Naay. Your trusted source for skincare, makeup, and body care in Iraq.",
     },
 };
