@@ -8,6 +8,7 @@ Disallow: /login/
 Disallow: /wishlist/
 Disallow: /profile/
 Allow: /products/
+Allow: /search/
 
 Crawl-delay: 10
 
