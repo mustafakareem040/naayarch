@@ -62,16 +62,6 @@ async function ProductContent({ id }) {
     );
 }
 
-export default async function ProductDetailsPage({params}) {
-    return (
-        <NotificationProvider>
-            <Suspense fallback={<Loading/>}>
-                <ProductContent id={await params.id}/>
-            </Suspense>
-        </NotificationProvider>
-    );
-}
-
 // Optionally, add JSON-LD structured data
 export async function generateJsonLd({ params }) {
     try {
