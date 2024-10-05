@@ -255,7 +255,7 @@ const getCheapestPrice = (product) => {
         ]) || []),
     ].filter((price) => !isNaN(price) && isFinite(price));
 
-    return prices.length > 0 ? Math.min(...prices) : null;
+    return prices.length > 0 ? Math.min(...prices.filter(it => it > 0)) : null;
 };
 
 const formatPrice = (price) => {

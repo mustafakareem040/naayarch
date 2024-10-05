@@ -1,4 +1,5 @@
 'use client';
+
 import React, {
     useState,
     useEffect,
@@ -43,9 +44,13 @@ export default function ProductDetail({ product, isInWishlist }) {
     // New state for internal wishlist status
     const [internalIsInWishlist, setInternalIsInWishlist] = useState(false);
 
-    // Memoize images to prevent re-computation
+    // **New State for Color Images**
+    const [colorImages, setColorImages] = useState({});
+
+    // **Memoize unique images to prevent duplicates**
     const images = useMemo(() => {
-        return product.images.map(img => img.url || img);
+        const uniqueUrls = new Set(product.images.map(img => img.url || img));
+        return Array.from(uniqueUrls);
     }, [product.images]);
 
     // Memoize lightbox slides
@@ -54,6 +59,30 @@ export default function ProductDetail({ product, isInWishlist }) {
             src: `https://storage.naayiq.com/resources/${src}`
         }));
     }, [images]);
+
+    // **Fetch color images using the API**
+    useEffect(() => {
+        const fetchColorImages = async () => {
+            const updatedColorImages = {};
+            await Promise.all(product.colors.map(async (color) => {
+                try {
+                    const response = await fetch(`https://dev.naayiq.com/colors/${encodeURIComponent(color.name)}`);
+                    const data = await response.json();
+                    if (data.url) {
+                        updatedColorImages[color.id] = `https://storage.naayiq.com/resources/${data.url}`;
+                    } else {
+                        updatedColorImages[color.id] = null; // Image not found
+                    }
+                } catch (error) {
+                    console.error(`Error fetching image for color ${color.name}:`, error);
+                    updatedColorImages[color.id] = null; // On error, treat as not found
+                }
+            }));
+            setColorImages(updatedColorImages);
+        };
+
+        fetchColorImages();
+    }, [product.colors]);
 
     // Determine the maximum available quantity based on selected attributes
     const determineMaxQuantity = useCallback(() => {
@@ -68,31 +97,42 @@ export default function ProductDetail({ product, isInWishlist }) {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+        const initializeSelections = () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            setCartItems(cart);
+            if (product.has_color && product.colors.length > 0) {
+                const defaultColor = product.colors.find(color => color.qty > 0 || (color.has_size && color.sizes.some(size => size.qty > 0))) || product.colors[0];
+                setSelectedColor(defaultColor);
+
+                if (defaultColor.has_size && defaultColor.sizes.length > 0) {
+                    const defaultSize = defaultColor.sizes.find(size => size.qty > 0) || defaultColor.sizes[0];
+                    setSelectedSize(defaultSize);
+                } else {
+                    setSelectedSize(null);
+                }
+            } else if (product.has_size && product.sizes.length > 0) {
+                const defaultSize = product.sizes.find(size => size.qty > 0) || product.sizes[0];
+                setSelectedSize(defaultSize);
+            } else {
+                setSelectedSize(null);
+            }
+            updatePrice();
+        };
+
+        initializeSelections();
+    }, [product]);
 
     const updatePrice = useCallback(() => {
         let price = product.price;
+
         if (selectedSize && selectedSize.price) {
             price = selectedSize.price;
         } else if (selectedColor && selectedColor.price) {
             price = selectedColor.price;
         }
+
         setCurrentPrice(parseFloat(price));
     }, [product, selectedColor, selectedSize]);
-
-    useEffect(() => {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCartItems(cart);
-
-        // Set initial color and size if available
-        if (product.has_color && product.colors.length > 0) {
-            setSelectedColor(product.colors[0]);
-        }
-        if (product.has_size && product.sizes.length > 0) {
-            setSelectedSize(product.sizes[0]);
-        }
-        updatePrice();
-    }, []);
 
     useEffect(() => {
         setMaxQuantity(determineMaxQuantity());
@@ -107,8 +147,9 @@ export default function ProductDetail({ product, isInWishlist }) {
 
     const handleColorChange = (color) => {
         setSelectedColor(color);
-        if (color.sizes && color.sizes.length > 0) {
-            setSelectedSize(color.sizes[0]);
+        if (color.has_size && color.sizes.length > 0) {
+            const availableSize = color.sizes.find(size => size.qty > 0) || color.sizes[0];
+            setSelectedSize(availableSize);
         } else {
             setSelectedSize(null);
         }
@@ -116,7 +157,8 @@ export default function ProductDetail({ product, isInWishlist }) {
 
     const handleSizeChange = (e) => {
         const sizeId = parseInt(e.target.value);
-        const newSize = product.sizes.find(size => size.id === sizeId);
+        const availableSizes = selectedColor && selectedColor.has_size ? selectedColor.sizes : product.sizes;
+        const newSize = availableSizes.find(size => size.id === sizeId);
         setSelectedSize(newSize);
     };
 
@@ -179,18 +221,19 @@ export default function ProductDetail({ product, isInWishlist }) {
         },
     }), [images.length]);
 
-
     const isOutOfStock = useMemo(() => {
-        if (product.has_size && selectedSize) {
-            return selectedSize.qty === 0;
-        } else if (product.has_color && selectedColor) {
+        if (product.has_color && selectedColor) {
+            if (selectedColor.has_size) {
+                return !selectedColor.sizes.some(size => size.qty > 0);
+            }
             return selectedColor.qty === 0;
+        } else if (product.has_size && selectedSize) {
+            return selectedSize.qty === 0;
         } else {
             return product.qty === 0;
         }
-    }, [product.has_size, selectedSize, product.has_color, selectedColor, product.qty]);
+    }, [product, selectedColor, selectedSize]);
 
-    // Function to fetch the wishlist
     const fetchWishlist = useCallback(async () => {
         const token = localStorage.getItem("token");
         if (!token) return;
@@ -254,7 +297,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                         finite: images.length <= 1,
                         navigationDisabled: images.length <= 1
                     }}
-                    animation={{zoom: 500}}
+                    animation={{ zoom: 500 }}
                     zoom={{
                         maxZoomPixelRatio: 5,
                         zoomInMultiplier: 2,
@@ -273,7 +316,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
                 onClick={() => router.push("/products")}
             >
-                <ArrowLeft width={30} height={30} strokeWidth={1}/>
+                <ArrowLeft width={30} height={30} strokeWidth={1} />
             </button>
             {wishReady && <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
@@ -287,7 +330,7 @@ export default function ProductDetail({ product, isInWishlist }) {
 
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
-                <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6"/>
+                <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6" />
                 <h1 className="text-xl font-semibold mb-1 capitalize">{product.name}</h1>
 
                 {isOutOfStock && (
@@ -303,29 +346,32 @@ export default function ProductDetail({ product, isInWishlist }) {
                                     <button
                                         className={`w-20 h-20 rounded-full border-2 ${selectedColor?.id === color.id ? 'border-[#3B5345]' : 'border-[#695C5C] border-opacity-50'} mb-2 overflow-hidden`}
                                         onClick={() => handleColorChange(color)}
-                                        disabled={color.qty === 0}
+                                        disabled={color.qty === 0 && !color.has_size}
                                         aria-label={`Select color ${color.name}`}
                                     >
-                                        {color.images && color.images.length > 0 ? (
+                                        {/* **Render fetched color image or fallback to white circle** */}
+                                        {colorImages[color.id] ? (
                                             <Image
-                                                src={color.images[0]}
+                                                src={colorImages[color.id]}
                                                 alt={color.name}
                                                 width={80}
                                                 height={80}
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <span className="text-sm">{color.name}</span>
+                                            <div className="w-full h-full bg-white flex items-center justify-center">
+                                                <span className="text-sm text-gray-500 capitalize">{color.name.charAt(0)}</span>
+                                            </div>
                                         )}
                                     </button>
-                                    <span className="text-sm">{color.name}</span>
+                                    <span className="text-sm capitalize">{color.name}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
 
-                {((product.has_size && product.sizes.length > 0) || (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0)) && (
+                {((product.has_size && product.sizes.length > 0) || (selectedColor && selectedColor.has_size && selectedColor.sizes.length > 0)) && (
                     <div className="mb-6 font-serif">
                         <select
                             value={selectedSize ? selectedSize.id : ''}
@@ -334,7 +380,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                             aria-label="Select size"
                         >
                             <option value="" disabled>Select Size</option>
-                            {(selectedColor && selectedColor.sizes ? selectedColor.sizes : product.sizes).map((size) => (
+                            {(selectedColor && selectedColor.has_size ? selectedColor.sizes : product.sizes).map((size) => (
                                 <option key={size.id} value={size.id} disabled={size.qty === 0}>
                                     Size: {size.name} {size.qty === 0 && '(Out of Stock)'}
                                 </option>
@@ -346,7 +392,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                 <div className="mb-6 pb-28">
                     <h2 className="text-xl font-semibold w-fit mb-2">Description</h2>
                     <div
-                        style={{direction: "rtl"}}
+                        style={{ direction: "rtl" }}
                         className="text-xl mr-2 font-normal text-right font-serif"
                         dangerouslySetInnerHTML={{
                             __html: product.description.split('\n').map((item, index) => {
@@ -380,7 +426,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                                         disabled={isOutOfStock || quantity <= 1}
                                         aria-label="Decrease quantity"
                                     >
-                                        <Minus className="w-4 h-4 text-[#3B5345]"/>
+                                        <Minus className="w-4 h-4 text-[#3B5345]" />
                                     </button>
                                     <span className="text-lg font-medium">{quantity}</span>
                                     <button
@@ -389,7 +435,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                                         disabled={isOutOfStock || quantity >= maxQuantity}
                                         aria-label="Increase quantity"
                                     >
-                                        <Plus className="w-4 h-4 text-[#3B5345]"/>
+                                        <Plus className="w-4 h-4 text-[#3B5345]" />
                                     </button>
                                 </div>
                             </>}
@@ -407,15 +453,15 @@ export default function ProductDetail({ product, isInWishlist }) {
                                     <path
                                         d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
                                         stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
+                                        strokeLinejoin="round" />
                                     <path
                                         d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
                                         stroke="#3B5345" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
+                                        strokeLinejoin="round" />
                                     <path d="M18.8318 14.0001H18.8423" stroke="#3B5345" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                          strokeLinecap="round" strokeLinejoin="round" />
                                     <path d="M10.6638 14.0001H10.6743" stroke="#3B5345" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                          strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 Buy Now
                             </Link>
@@ -429,15 +475,15 @@ export default function ProductDetail({ product, isInWishlist }) {
                                     <path
                                         d="M9.50391 8.94834V7.81668C9.50391 5.19168 11.6156 2.61334 14.2406 2.36834C17.3672 2.06501 20.0039 4.52668 20.0039 7.59501V9.20501"
                                         stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
+                                        strokeLinejoin="round" />
                                     <path
                                         d="M11.2542 25.6666H18.2542C22.9442 25.6666 23.7842 23.7883 24.0292 21.5016L24.9042 14.5016C25.2192 11.6549 24.4025 9.33325 19.4209 9.33325H10.0875C5.10586 9.33325 4.28919 11.6549 4.60419 14.5016L5.47919 21.5016C5.72419 23.7883 6.56419 25.6666 11.2542 25.6666Z"
                                         stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round"
-                                        strokeLinejoin="round"/>
+                                        strokeLinejoin="round" />
                                     <path d="M18.8318 14.0001H18.8423" stroke="white" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                          strokeLinecap="round" strokeLinejoin="round" />
                                     <path d="M10.6638 14.0001H10.6743" stroke="white" strokeWidth="2"
-                                          strokeLinecap="round" strokeLinejoin="round"/>
+                                          strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 Add To Cart
                             </button>

@@ -25,11 +25,10 @@ const Cart = () => {
     const [appliedCoupon, setAppliedCoupon] = useState('');
     const [isOrderSet, setIsOrderSet] = useState(false);
     const [confirmationAction, setConfirmationAction] = useState(null);
-    const [couponDetails, setCouponDetails] = useState(null); // **Added state for coupon details**
+    const [couponDetails, setCouponDetails] = useState(null);
     const [minimum, setMinimum] = useState(0)
     const router = useRouter();
     const { addNotification } = useNotification();
-
 
     const fetchCartItems = useCallback(async () => {
         try {
@@ -41,7 +40,7 @@ const Cart = () => {
 
             const uniqueProductIds = [...new Set(storedCart.map(item => item.product_id))];
             const productDetailsMap = {};
-            const failedProductIds = []; // **Track failed product IDs**
+            const failedProductIds = [];
 
             await Promise.all(uniqueProductIds.map(async (productId) => {
                 try {
@@ -52,12 +51,11 @@ const Cart = () => {
                     const data = await response.json();
                     productDetailsMap[productId] = data.product;
                 } catch (error) {
-                    failedProductIds.push(productId); // **Add to failed list**
+                    failedProductIds.push(productId);
                     addNotification('error', `Error fetching product ${productId}. It will be removed from your cart.`);
                 }
             }));
 
-            // **Remove failed products from localStorage**
             if (failedProductIds.length > 0) {
                 const updatedStoredCart = storedCart.filter(item => !failedProductIds.includes(item.product_id));
                 localStorage.setItem('cart', JSON.stringify(updatedStoredCart));
@@ -66,24 +64,51 @@ const Cart = () => {
             const itemsWithDetails = storedCart.map(item => {
                 const product = productDetailsMap[item.product_id];
                 if (!product) {
-                    return null; // **Skip items with failed fetches**
+                    return null;
                 }
 
-                const selectedSize = product.sizes.find(size => size.id === item.size_id);
-                const selectedColor = product.colors.find(color => color.id === item.color_id);
+                let selectedSize, selectedColor, availableQty, price;
+
+                if (product.has_color && item.color_id) {
+                    selectedColor = product.colors.find(color => color.id === item.color_id);
+                    if (selectedColor) {
+                        if (selectedColor.has_size && item.size_id) {
+                            selectedSize = selectedColor.sizes.find(size => size.id === item.size_id);
+                            if (selectedSize) {
+                                availableQty = selectedSize.qty;
+                                price = selectedSize.price;
+                            }
+                        } else {
+                            availableQty = selectedColor.qty;
+                            price = selectedColor.price;
+                        }
+                    }
+                } else if (product.has_size && item.size_id) {
+                    selectedSize = product.sizes.find(size => size.id === item.size_id);
+                    if (selectedSize) {
+                        availableQty = selectedSize.qty;
+                        price = selectedSize.price;
+                    }
+                }
+
+                if (!availableQty && !price) {
+                    availableQty = product.qty;
+                    price = product.price;
+                }
 
                 return {
                     ...item,
+                    cartItemId: `${item.product_id}-${item.color_id || 'nocolor'}-${item.size_id || 'nosize'}`, // Add this line
                     title: product.name,
-                    image:  product.images.length > 0
+                    image: product.images.length > 0
                         ? `https://storage.naayiq.com/resources/${product.images[0].url}`
-                        : 'https://storage.naayiq.com/resources/noimage.webp', // **Fallback image**
-                    price: parseInt(selectedSize?.price || product.price, 10),
+                        : 'https://storage.naayiq.com/resources/noimage.webp',
+                    price: parseInt(price, 10),
                     color: selectedColor?.name || 'N/A',
                     size: selectedSize?.name || 'N/A',
-                    availableQty: selectedSize?.qty || 0, // **Added availableQty**
+                    availableQty: availableQty,
                 };
-            }).filter(item => item !== null); // **Remove null items**
+            }).filter(item => item !== null);
 
             setCartItems(itemsWithDetails);
         } catch (error) {
@@ -105,17 +130,17 @@ const Cart = () => {
     }, [cartItems]);
 
 
-    const handleUpdateQuantity = useCallback((id, newQty) => {
+    const handleUpdateQuantity = useCallback((cartItemId, newQty) => {
         setCartItems(prevItems => {
             const updatedItems = prevItems.map(item => {
-                if (item.product_id === id) {
+                if (item.cartItemId === cartItemId) {
                     const finalQty = Math.min(newQty, item.availableQty);
                     return { ...item, qty: finalQty };
                 }
                 return item;
             });
             try {
-                localStorage.setItem('cart', JSON.stringify(updatedItems));
+                localStorage.setItem('cart', JSON.stringify(updatedItems.map(({ cartItemId, ...item }) => item)));
             } catch (error) {
                 addNotification('error', 'Failed to update cart in localStorage.');
             }
@@ -123,13 +148,13 @@ const Cart = () => {
         });
     }, [addNotification]);
 
-    const handleRemoveItem = useCallback((id) => {
+    const handleRemoveItem = useCallback((cartItemId) => {
         setConfirmationMessage('Are you sure you want to remove this item from your cart?');
         setConfirmationAction(() => () => {
             setCartItems(prevItems => {
-                const updatedItems = prevItems.filter(item => item.product_id !== id);
+                const updatedItems = prevItems.filter(item => item.cartItemId !== cartItemId);
                 try {
-                    localStorage.setItem('cart', JSON.stringify(updatedItems));
+                    localStorage.setItem('cart', JSON.stringify(updatedItems.map(({ cartItemId, ...item }) => item)));
                 } catch (error) {
                     addNotification('error', 'Failed to update cart in localStorage.');
                 }
@@ -354,20 +379,20 @@ const Cart = () => {
                     <AnimatePresence>
                         {cartItemsWithDiscount.map(item => (
                             <motion.div
-                                key={item.product_id}
+                                key={item.cartItemId}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
                             >
                                 <CartItem
-                                    id={item.product_id}
+                                    id={item.cartItemId}
                                     title={item.title}
                                     color={item.color}
                                     image={item.image}
                                     size={item.size}
                                     qty={item.qty || 1}
-                                    availableQty={item.availableQty} // **Passed availableQty**
+                                    availableQty={item.availableQty}
                                     originalPrice={item.originalTotal}
                                     discountedPrice={item.discountedTotal}
                                     onUpdateQuantity={handleUpdateQuantity}

@@ -41,7 +41,21 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
     };
 
     const isOutOfStock = React.useMemo(() => {
-        return product.sizes.every(size => !size.qty) && !product.qty && product.colors.every(color => !color.qty);
+        if (product.has_color) {
+            // If the product has colors, check each color's stock
+            return product.colors.every(color => {
+                if (color.has_size) {
+                    return color.sizes.every(size => size.qty === 0);
+                }
+                return color.qty === 0;
+            });
+        } else if (product.has_size) {
+            // If the product has sizes directly
+            return product.sizes.every(size => size.qty === 0);
+        } else {
+            // Check product-level quantity
+            return product.qty === 0;
+        }
     }, [product]);
 
     return (

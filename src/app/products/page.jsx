@@ -15,14 +15,14 @@ export const revalidate = 14400;
  * Otherwise, default to 'All Products'.
  */
 export async function generateMetadata({ searchParams }) {
-    const { title } = searchParams;
+    const { title } = await searchParams;
 
     // Determine the page title
-    const pageTitle = title ? `${title}` : 'All Products';
+    const pageTitle = await title ? `${await title}` : 'All Products';
 
     // Define a dynamic description
-    const description = title
-        ? `Explore our ${title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at naayiq.com.`
+    const description = await title
+        ? `Explore our ${await title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at naayiq.com.`
         : 'Discover a wide range of Korean and global beauty products at naayiq.com. Shop skincare, makeup, and body care items from top brands worldwide.';
 
     return {
@@ -56,14 +56,13 @@ export async function generateMetadata({ searchParams }) {
 }
 
 const ProductsPage = async ({ searchParams }) => {
-    const { c = '', sc = '', b = '', title = '', sortBy = '' } = searchParams;
+    const { c = '', sc = '', b = '', title = '', sortBy = '' } = await searchParams;
 
     return (
         <>
             <AsyncNavBar />
             <ProductList initialFilters={{ c, sc, b, title, sortBy }} />
 
-            {/* JSON-LD Structured Data */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify({

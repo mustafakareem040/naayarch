@@ -1,3 +1,4 @@
+'use client'
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronDown, Plus, Minus } from 'lucide-react';
@@ -46,9 +47,8 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
                 <div className="text-center">
                     {isOutOfStock ? (
                         <p className="text-red-500 font-sans font-medium text-sm">Out of Stock</p>
-                    ): ""}
+                    ) : ""}
                 </div>
-                {/**/}
                 <div className="text-center">
                     {discountedPrice < originalPrice ? (
                         <>
@@ -82,5 +82,6 @@ const CartItem = React.memo(({ id, title, color, image, size, qty, availableQty,
         </div>
     );
 });
-CartItem.displayName = "CartItem"
+
+CartItem.displayName = "CartItem";
 export default CartItem;
