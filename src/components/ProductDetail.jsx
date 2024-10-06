@@ -37,7 +37,6 @@ export default function ProductDetail({ product, isInWishlist }) {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
-    const [wishReady, setWishReady] = useState(false)
     const [cartItems, setCartItems] = useState([]);
     const router = useRouter();
 
@@ -252,7 +251,6 @@ export default function ProductDetail({ product, isInWishlist }) {
         } catch (error) {
             console.error('Error fetching wishlist:', error);
         }
-        setWishReady(true)
     }, [product.id]);
 
     // Fetch wishlist if isInWishlist prop is undefined
@@ -318,14 +316,13 @@ export default function ProductDetail({ product, isInWishlist }) {
             >
                 <ArrowLeft width={30} height={30} strokeWidth={1} />
             </button>
-            {wishReady && <button
-                className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-10 bg-white-gradient flex justify-center items-center"
-            >
+           <button
+                className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-50 bg-white-gradient flex justify-center items-center">
                 <WishlistHeart
                     id={product.id}
                     isInWishlist2={isInWishlist !== undefined ? isInWishlist : internalIsInWishlist}
                 />
-            </button>}
+            </button>
 
 
             <div
