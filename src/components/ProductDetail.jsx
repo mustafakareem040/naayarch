@@ -312,7 +312,7 @@ export default function ProductDetail({ product, isInWishlist }) {
 
             <button
                 className="absolute h-12 rounded-[100%] w-12 bg-white-gradient flex justify-center items-center top-4 left-4 z-10"
-                onClick={() => router.push("/products")}
+                onClick={router.back}
             >
                 <ArrowLeft width={30} height={30} strokeWidth={1} />
             </button>
