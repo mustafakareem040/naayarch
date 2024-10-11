@@ -2,7 +2,7 @@
 import React, { useState, useCallback, memo } from 'react';
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import {Heart, X} from "lucide-react";
+import {Heart, UserRound, X} from "lucide-react";
 import ShoppingBag from "@/components/ShoppingBag";
 const Drawer = dynamic(() => import('./Drawer'), { ssr: false });
 
@@ -10,7 +10,6 @@ const Drawer = dynamic(() => import('./Drawer'), { ssr: false });
 
 export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCategories }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
     const toggleDrawer = useCallback(() => {
         setIsDrawerOpen(prev => !prev);
     }, []);
@@ -38,6 +37,9 @@ export const NavBar = memo(function NavBar({ bg = "#FFFFFF", categories, subCate
                     </svg>
                 </Link>
                 <div className="flex items-center space-x-2">
+                    <Link href={"/profile"}>
+                        <UserRound size={32} strokeWidth={"1"}/>
+                    </Link>
                     <Link href={"/search"}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none">
                             <g stroke="#181717" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.25"

@@ -98,7 +98,7 @@ const Cart = () => {
 
                 return {
                     ...item,
-                    cartItemId: `${item.product_id}-${item.color_id || 'nocolor'}-${item.size_id || 'nosize'}`, // Add this line
+                    cartItemId: `${item.product_id}-${item.color_id || 'nocolor'}-${item.size_id || 'nosize'}`,
                     title: product.name,
                     image: product.images.length > 0
                         ? `https://storage.naayiq.com/resources/${product.images[0].url}`
@@ -177,7 +177,6 @@ const Cart = () => {
 
     const handleApplyCoupon = useCallback(async () => {
         if (appliedCoupon) {
-            // Removing the applied coupon
             setConfirmationMessage('Are you sure you want to remove the applied coupon?');
             setConfirmationAction(() => () => {
                 setAppliedCoupon(null);
@@ -185,7 +184,7 @@ const Cart = () => {
                 setDiscount(0);
                 setCoupon('');
                 setCouponMessage('');
-                setCouponDetails(null); // **Reset couponDetails**
+                setCouponDetails(null);
                 setShowConfirmation(false);
                 addNotification('success', 'Coupon removed successfully.');
             });
@@ -195,7 +194,6 @@ const Cart = () => {
                 addNotification('error', 'Please enter a coupon code.');
                 return;
             }
-            // Applying a new coupon
             setIsApplyingCoupon(true);
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API}/coupons/${encodeURIComponent(coupon.trim())}/activate`, {
@@ -212,7 +210,7 @@ const Cart = () => {
                     setDiscount(calculatedDiscount);
                     setAppliedCoupon(data.coupon.code);
                     setAppliedCouponId(data.coupon.id);
-                    setCouponDetails(data.coupon); // **Store coupon details**
+                    setCouponDetails(data.coupon);
                     setCouponMessage(data.message || 'Coupon applied successfully!');
                 } else {
                     setCouponMessage(data.message || "Invalid coupon code");
@@ -265,7 +263,6 @@ const Cart = () => {
     }, [cartItems, discount, subTotal]);
 
     const handleProceed = useCallback(() => {
-        // **Check for out of stock items before proceeding**
         const outOfStockItems = cartItems.filter(item => item.availableQty < (item.qty || 1));
         if (outOfStockItems.length > 0) {
             addNotification('error', 'Some items are out of stock or do not have sufficient quantity.');
@@ -310,7 +307,6 @@ const Cart = () => {
         setConfirmationAction(null);
     }, []);
 
-    // **Determine if any item is out of stock to disable the Proceed button**
     const hasOutOfStock = useMemo(() => {
         return cartItems.some(item => item.availableQty < (item.qty || 1));
     }, [cartItems]);
