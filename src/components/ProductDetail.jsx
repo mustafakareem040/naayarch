@@ -341,7 +341,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                             {product.colors.map((color) => (
                                 <div key={color.id} className="flex flex-col items-center">
                                     <button
-                                        className="w-20 h-20 rounded-full border-[#695C5C]/50 border flex items-center justify-center overflow-hidden"
+                                        className={`w-20 h-20 flex justify-center items-center rounded-full border-[#695C5C]/50 border ${selectedColor?.id === color.id ? 'shadow-none' : 'shadow-[0px_4px_4px_rgba(105,92,92,0.2)]'} mb-2 overflow-hidden`}
                                         onClick={() => handleColorChange(color)}
                                         disabled={color.qty === 0 && !color.has_size}
                                         aria-label={`Select color ${color.name}`}
