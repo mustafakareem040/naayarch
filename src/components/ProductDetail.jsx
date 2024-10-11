@@ -341,24 +341,26 @@ export default function ProductDetail({ product, isInWishlist }) {
                             {product.colors.map((color) => (
                                 <div key={color.id} className="flex flex-col items-center">
                                     <button
-                                        className={`w-20 h-20 rounded-full border-[#695C5C]/50 border ${selectedColor?.id === color.id ? 'shadow-none' : 'shadow-[0px_4px_4px_rgba(105,92,92,0.2)]'} mb-2 overflow-hidden`}
+                                        className="w-20 h-20 rounded-full border-[#695C5C]/50 border flex items-center justify-center overflow-hidden"
                                         onClick={() => handleColorChange(color)}
                                         disabled={color.qty === 0 && !color.has_size}
                                         aria-label={`Select color ${color.name}`}
                                     >
-                                        {/* **Render fetched color image or fallback to white circle** */}
                                         {colorImages[color.id] ? (
-                                            <Image
-                                                src={colorImages[color.id]}
-                                                alt={color.name}
-                                                width={60}
-                                                height={60}
-                                                unoptimized={true}
-                                                className="object-cover"
-                                            />
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Image
+                                                    src={colorImages[color.id]}
+                                                    alt={color.name}
+                                                    width={60}
+                                                    height={60}
+                                                    unoptimized={true}
+                                                    className="object-cover"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="w-full h-full bg-white flex items-center justify-center">
-                                                <span className="text-sm text-gray-500 capitalize">{color.name.charAt(0)}</span>
+                                                <span
+                                                    className="text-sm text-gray-500 capitalize">{color.name.charAt(0)}</span>
                                             </div>
                                         )}
                                     </button>
