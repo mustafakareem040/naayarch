@@ -351,8 +351,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                                                 <Image
                                                     src={colorImages[color.id]}
                                                     alt={color.name}
-                                                    width={60}
-                                                    height={60}
+                                                    fill={true}
                                                     unoptimized={true}
                                                     className="object-cover"
                                                 />
