@@ -347,13 +347,14 @@ export default function ProductDetail({ product, isInWishlist }) {
                                         aria-label={`Select color ${color.name}`}
                                     >
                                         {colorImages[color.id] ? (
-                                            <div className="w-full h-full flex items-center justify-center">
+                                            <div className="w-full rounded-full h-full flex items-center justify-center">
                                                 <Image
                                                     src={colorImages[color.id]}
                                                     alt={color.name}
-                                                    fill={true}
+                                                    width={60}
+                                                    height={60}
                                                     unoptimized={true}
-                                                    className="object-cover"
+                                                    className="object-cover rounded-full"
                                                 />
                                             </div>
                                         ) : (
