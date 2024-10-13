@@ -1,4 +1,5 @@
 import Wishlist from "@/components/Wishlist";
+import AsyncNavBar from "@/components/AsyncNavBar";
 export const metadata = {
     title: "Wishlist",
     description: "Add your favorite products to the wishlist!",
@@ -9,6 +10,9 @@ export const metadata = {
 };
 export default function WishlistPage() {
     return (
-        <Wishlist />
+        <>
+            <AsyncNavBar />
+            <Wishlist />
+        </>
     )
 }

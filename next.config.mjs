@@ -2,8 +2,7 @@
 const nextConfig = {
     experimental: {
         reactCompiler: true,
-        optimisticClientCache: true,
-        optimizeServerReact: true
+        ppr: true
     },
     images: {
         remotePatterns: [
