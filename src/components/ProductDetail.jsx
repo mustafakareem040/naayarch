@@ -28,12 +28,12 @@ const formatPrice = (price) => {
     return `${formattedPrice} IQD`;
 };
 
-export default function ProductDetail({ product, isInWishlist }) {
+export default function ProductDetail({ product, isInWishlist = false }) {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [maxQuantity, setMaxQuantity] = useState(1); // New state for max quantity
-    const [currentPrice, setCurrentPrice] = useState(product.price);
+    const [currentPrice, setCurrentPrice] = useState(product?.price);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const { addNotification } = useNotification();
@@ -48,9 +48,9 @@ export default function ProductDetail({ product, isInWishlist }) {
 
     // **Memoize unique images to prevent duplicates**
     const images = useMemo(() => {
-        const uniqueUrls = new Set(product.images.map(img => img.url || img));
+        const uniqueUrls = new Set(product?.images.map(img => img.url || img));
         return Array.from(uniqueUrls);
-    }, [product.images]);
+    }, [product?.images]);
 
     // Memoize lightbox slides
     const lightboxSlides = useMemo(() => {
@@ -63,7 +63,7 @@ export default function ProductDetail({ product, isInWishlist }) {
     useEffect(() => {
         const fetchColorImages = async () => {
             const updatedColorImages = {};
-            await Promise.all(product.colors.map(async (color) => {
+            await Promise.all(product?.colors.map(async (color) => {
                 try {
                     const response = await fetch(`https://dev.naayiq.com/colors/${encodeURIComponent(color.name)}`);
                     const data = await response.json();
@@ -81,7 +81,7 @@ export default function ProductDetail({ product, isInWishlist }) {
         };
 
         fetchColorImages();
-    }, [product.colors]);
+    }, [product?.colors]);
 
     // Determine the maximum available quantity based on selected attributes
     const determineMaxQuantity = useCallback(() => {
@@ -90,17 +90,17 @@ export default function ProductDetail({ product, isInWishlist }) {
         } else if (selectedColor) {
             return selectedColor.qty;
         } else {
-            return product.qty;
+            return product?.qty;
         }
-    }, [selectedSize, selectedColor, product.qty]);
+    }, [selectedSize, selectedColor, product?.qty]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
         const initializeSelections = () => {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             setCartItems(cart);
-            if (product.has_color && product.colors.length > 0) {
-                const defaultColor = product.colors.find(color => color.qty > 0 || (color.has_size && color.sizes.some(size => size.qty > 0))) || product.colors[0];
+            if (product?.has_color && product?.colors.length > 0) {
+                const defaultColor = product?.colors.find(color => color.qty > 0 || (color.has_size && color.sizes.some(size => size.qty > 0))) || product?.colors[0];
                 setSelectedColor(defaultColor);
 
                 if (defaultColor.has_size && defaultColor.sizes.length > 0) {
@@ -109,8 +109,8 @@ export default function ProductDetail({ product, isInWishlist }) {
                 } else {
                     setSelectedSize(null);
                 }
-            } else if (product.has_size && product.sizes.length > 0) {
-                const defaultSize = product.sizes.find(size => size.qty > 0) || product.sizes[0];
+            } else if (product?.has_size && product?.sizes.length > 0) {
+                const defaultSize = product?.sizes.find(size => size.qty > 0) || product?.sizes[0];
                 setSelectedSize(defaultSize);
             } else {
                 setSelectedSize(null);
@@ -122,7 +122,7 @@ export default function ProductDetail({ product, isInWishlist }) {
     }, [product]);
 
     const updatePrice = useCallback(() => {
-        let price = product.price;
+        let price = product?.price;
 
         if (selectedSize && selectedSize.price) {
             price = selectedSize.price;
@@ -156,18 +156,18 @@ export default function ProductDetail({ product, isInWishlist }) {
 
     const handleSizeChange = (e) => {
         const sizeId = parseInt(e.target.value);
-        const availableSizes = selectedColor && selectedColor.has_size ? selectedColor.sizes : product.sizes;
+        const availableSizes = selectedColor && selectedColor.has_size ? selectedColor.sizes : product?.sizes;
         const newSize = availableSizes.find(size => size.id === sizeId);
         setSelectedSize(newSize);
     };
 
     const isInCart = useCallback(() => {
         return cartItems.some(item =>
-            item.product_id === product.id &&
+            item.product_id === product?.id &&
             item.color_id === selectedColor?.id &&
             item.size_id === selectedSize?.id
         );
-    }, [cartItems, product.id, selectedColor, selectedSize]);
+    }, [cartItems, product?.id, selectedColor, selectedSize]);
 
     const handleAddToCart = () => {
         const finalQuantity = Math.min(quantity, maxQuantity);
@@ -221,15 +221,15 @@ export default function ProductDetail({ product, isInWishlist }) {
     }), [images.length]);
 
     const isOutOfStock = useMemo(() => {
-        if (product.has_color && selectedColor) {
+        if (product?.has_color && selectedColor) {
             if (selectedColor.has_size) {
                 return !selectedColor.sizes.some(size => size.qty > 0);
             }
             return selectedColor.qty === 0;
-        } else if (product.has_size && selectedSize) {
+        } else if (product?.has_size && selectedSize) {
             return selectedSize.qty === 0;
         } else {
-            return product.qty === 0;
+            return product?.qty === 0;
         }
     }, [product, selectedColor, selectedSize]);
 
@@ -246,12 +246,12 @@ export default function ProductDetail({ product, isInWishlist }) {
             if (response.ok) {
                 const w = await response.json();
                 const wishlistIds = w.wishlist.map(item => item.id);
-                setInternalIsInWishlist(wishlistIds.includes(product.id));
+                setInternalIsInWishlist(wishlistIds.includes(product?.id));
             }
         } catch (error) {
             console.error('Error fetching wishlist:', error);
         }
-    }, [product.id]);
+    }, [product?.id]);
 
     // Fetch wishlist if isInWishlist prop is undefined
     useEffect(() => {
@@ -319,7 +319,7 @@ export default function ProductDetail({ product, isInWishlist }) {
            <button
                 className="h-12 rounded-[100%] w-12 absolute top-4 right-4 z-50 bg-white-gradient flex justify-center items-center">
                 <WishlistHeart
-                    id={product.id}
+                    id={product?.id}
                     isInWishlist2={isInWishlist !== undefined ? isInWishlist : internalIsInWishlist}
                 />
             </button>
@@ -328,17 +328,17 @@ export default function ProductDetail({ product, isInWishlist }) {
             <div
                 className="flex-grow bg-white rounded-t-xl shadow-[0px_-4px_8px_3px_rgba(105,92,92,0.1)] p-6 mt-2 relative z-30">
                 <div className="w-9 h-1 bg-black opacity-70 rounded-full mx-auto mb-6" />
-                <h1 className="text-xl font-semibold mb-1 capitalize">{product.name}</h1>
+                <h1 className="text-xl font-semibold mb-1 capitalize">{product?.name}</h1>
 
                 {isOutOfStock && (
                     <p className="text-red-500 mt-2 text-lg font-semibold">Out of Stock</p>
                 )}
 
-                {product.has_color && product.colors.length > 0 && (
+                {product?.has_color && product?.colors.length > 0 && (
                     <div className="mb-10 mt-6">
                         <h2 className="text-xl font-medium mb-2">Color</h2>
                         <div className="flex space-x-4 overflow-x-auto pb-2">
-                            {product.colors.map((color) => (
+                            {product?.colors.map((color) => (
                                 <div key={color.id} className="flex flex-col items-center">
                                     <button
                                         className={`w-20 h-20 flex justify-center items-center rounded-full border ${selectedColor?.id === color.id ? 'shadow-[0px_4px_4px_rgba(105,92,92,0.2)]' : 'shadow-none border-[#695C5C]/50'} mb-2 overflow-hidden border-[#37474F]`}
@@ -371,7 +371,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                     </div>
                 )}
 
-                {((product.has_size && product.sizes.length > 0) || (selectedColor && selectedColor.has_size && selectedColor.sizes.length > 0)) && (
+                {((product?.has_size && product?.sizes.length > 0) || (selectedColor && selectedColor.has_size && selectedColor.sizes.length > 0)) && (
                     <div className="mb-6 font-serif">
                         <select
                             value={selectedSize ? selectedSize.id : ''}
@@ -380,7 +380,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                             aria-label="Select size"
                         >
                             <option value="" disabled>Select Size</option>
-                            {(selectedColor && selectedColor.has_size ? selectedColor.sizes : product.sizes).map((size) => (
+                            {(selectedColor && selectedColor.has_size ? selectedColor.sizes : product?.sizes).map((size) => (
                                 <option key={size.id} value={size.id} disabled={size.qty === 0}>
                                     Size: {size.name} {size.qty === 0 && '(Out of Stock)'}
                                 </option>
@@ -395,7 +395,7 @@ export default function ProductDetail({ product, isInWishlist }) {
                         style={{ direction: "rtl" }}
                         className="text-xl mr-2 font-normal text-right font-serif"
                         dangerouslySetInnerHTML={{
-                            __html: product.description.split('\n').map((item, index) => {
+                            __html: product?.description.split('\n').map((item, index) => {
                                 if (index === 0) {
                                     return `<p class="text-xl font-semibold mb-2">${item}</p>`;
                                 } else if (item.includes(':')) {
