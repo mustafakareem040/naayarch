@@ -74,7 +74,7 @@ const ProductItem = memo(({ id, name, price, imageUrl, product, handleClick, onC
                     }}
                     width={300}
                     height={300}
-                    quality={90}
+                    quality={100}
                     onLoad={handleImageLoad}
                     className={`object-cover relative rounded-t-lg w-full h-full overflow-hidden transition-transform duration-300 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 />
