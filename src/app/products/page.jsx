@@ -3,24 +3,13 @@
 import React from 'react';
 import ProductList from '@/components/ProductList';
 import AsyncNavBar from '@/components/AsyncNavBar';
+export const revalidate = 28800;
 
-/**
- * Revalidate the page every 4 hours (14400 seconds)
- */
-export const revalidate = 14400;
-
-/**
- * Dynamically generate metadata based on search parameters.
- * If 'title' is provided in the searchParams, use it in the title;
- * Otherwise, default to 'All Products'.
- */
 export async function generateMetadata({ searchParams }) {
     const { title } = await searchParams;
 
-    // Determine the page title
     const pageTitle = await title ? `${await title}` : 'All Products';
 
-    // Define a dynamic description
     const description = await title
         ? `Explore our ${await title} collection of Korean and global beauty products. Find the best skincare, makeup, and body care items from top brands at naayiq.com.`
         : 'Discover a wide range of Korean and global beauty products at naayiq.com. Shop skincare, makeup, and body care items from top brands worldwide.';
